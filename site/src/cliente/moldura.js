@@ -23,7 +23,7 @@ export function iniciarMoldura() {
   // Revelar ao rolar
   const revelar = new IntersectionObserver((entradas) => {
     for (const e of entradas) if (e.isIntersecting) { e.target.dataset.revelado = ''; revelar.unobserve(e.target); }
-  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  }, { threshold: 0, rootMargin: '0px 0px -40px 0px' });
   document.querySelectorAll('[data-revelar]').forEach((el) => revelar.observe(el));
 
   // Progresso de leitura + fio condutor

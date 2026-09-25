@@ -1,10 +1,11 @@
 import { cabecalho, rodape, contatoFinal, barraFixa } from './moldura.js';
 import { abertura } from './abertura.js';
+import { secaoPlanos } from './planos.js';
 
 const secoes = {
   cabecalho,
   abertura,
-  planos: () => '',
+  planos: secaoPlanos,
   configurador: () => '',
   'como-funciona': () => '',
   contato: contatoFinal,
