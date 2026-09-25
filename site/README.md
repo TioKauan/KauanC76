@@ -29,6 +29,8 @@ Lembre de manter o documento de planos, os contratos e o site com os mesmos valo
 
 ## Conferir se está tudo certo antes de publicar
 
+Na primeira vez, instale o navegador de testes: `npx playwright install chromium`.
+
 ```bash
 npm run validar            # confere a checklist (43+ itens) e escreve docs/inovacao/RELATORIO-VALIDACAO.md
 npm run validar -- --fotos # também tira fotos do site e monta a comparação com os mockups
