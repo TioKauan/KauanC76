@@ -1,0 +1,30 @@
+---
+import Icone from './Icone.astro';
+import { contato, empresa, linkWhatsapp } from '../lib/dados';
+import { msgGeral } from '../lib/site';
+---
+
+<section class="contato-final" id="contato" aria-labelledby="contato-titulo">
+  <div class="wrap contato-caixa" data-revelar>
+    <div>
+      <p class="sobretitulo">Fale com a SC</p>
+      <h2 id="contato-titulo">Vamos fazer a tecnologia <span class="destaque">funcionar para você?</span></h2>
+      <p class="contato-texto">
+        Conte o que você precisa proteger, conectar ou organizar. A SC entende o seu ambiente e indica o próximo passo.
+      </p>
+    </div>
+    <div class="contato-acoes">
+      <a class="btn btn-primario btn-g" href={linkWhatsapp(msgGeral)} target="_blank" rel="noopener">
+        <Icone nome="message-circle" tamanho={20} /> Conversar pelo WhatsApp
+      </a>
+      <dl class="contato-dados">
+        <div><dt>WhatsApp</dt><dd>{contato.whatsappExibicao}</dd></div>
+        <div><dt>Atendimento</dt><dd>{empresa.regiao}</dd></div>
+      </dl>
+      <p class="contato-nota">
+        <Icone nome="users" tamanho={16} />
+        {contato.atendimento}. Se preferir, monte seu sistema antes e a mensagem já vai pronta.
+      </p>
+    </div>
+  </div>
+</section>

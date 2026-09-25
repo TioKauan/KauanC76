@@ -1,0 +1,11 @@
+---
+/** Logo oficial (arquivo aprovado, recortado por CSS; nunca redesenhar). */
+interface Props {
+  grande?: boolean;
+}
+const { grande = false } = Astro.props;
+---
+
+<span class:list={['logo', { 'logo-g': grande }]}>
+  <img src="/marca/sc-logo.webp" width="1536" height="1024" alt="SC Soluções" decoding="async" />
+</span>

@@ -1,0 +1,144 @@
+---
+/** Tela 1: abertura com a cena viva de cada ambiente e o "E se…?". Interação em src/scripts/abertura.ts. */
+import Icone from './Icone.astro';
+import { cenas } from '../lib/cenas';
+import { ambientes, situacoes, sistemas, estadoCena, type SistemaId } from '../lib/cenarios';
+import { formatarPreco, menorPreco, mostrarPrecos, condicoes } from '../lib/dados';
+
+const f = (n: number) => n.toFixed(2);
+const inicial = estadoCena('casa', 'normal', false);
+const prazo = condicoes[0]?.titulo.toLowerCase() ?? '';
+const precoMenor = `R$ ${formatarPreco(menorPreco)}`;
+
+// Cada ambiente: SVG gerado no build + posição dos rótulos em % do desenho (760 × 600).
+const palcos = ambientes.map((a) => {
+  const cena = cenas[a.id]();
+  const { textos } = estadoCena(a.id, 'normal', false);
+  const rotulos = (Object.entries(cena.rotulos) as [SistemaId, [number, number, number]][]).map(([sistema, [dx, dy, indice]]) => {
+    const ponto = cena.pontos.filter((pt) => pt.sistema === sistema)[indice];
+    if (!ponto) throw new Error(`Ponto ${sistema}[${indice}] não existe na cena ${a.id}`);
+    return {
+      sistema,
+      abaixo: dy > 0,
+      x: f(((ponto.x + dx) / 760) * 100),
+      y: f(((ponto.y + dy) / 600) * 100),
+      px: f((ponto.x / 760) * 100),
+      py: f((ponto.y / 600) * 100),
+      nome: sistemas[sistema].nome,
+      icone: sistemas[sistema].icone,
+      texto: textos[sistema],
+    };
+  });
+  return { id: a.id, svg: cena.svg, rotulos };
+});
+
+const servicos = [
+  { aba: null, icone: 'cctv', titulo: 'Locação de câmeras', sub: 'Planos de 1 a 8 câmeras' },
+  { aba: 'redes', icone: 'network', titulo: 'Redes gerenciadas', sub: 'Wi-Fi e cabeamento' },
+  { aba: 'condominio', icone: 'scan-face', titulo: 'Controle de acesso', sub: 'Facial, biometria, vídeo porteiro' },
+  { aba: 'alarme', icone: 'bell-ring', titulo: 'Alarme monitorado', sub: 'Integrado às câmeras' },
+  { aba: 'nobreak', icone: 'battery-charging', titulo: 'Energia e nobreak', sub: 'Continuidade dos sistemas' },
+] as const;
+---
+
+<section class="abertura" id="inicio" aria-labelledby="abertura-titulo">
+  <div class="wrap abertura-grade">
+    <div class="abertura-texto">
+      <p class="sobretitulo">Integradora de segurança e tecnologia</p>
+      <h1 id="abertura-titulo">Porque tecnologia não deve apenas estar instalada. <span class="destaque">Ela precisa funcionar.</span></h1>
+      <p class="abertura-lead">
+        Câmeras, rede, acesso e energia conectados em um só projeto. E, se preferir, com planos de locação para começar sem
+        comprar os equipamentos.
+      </p>
+      <div class="abertura-acoes">
+        <a class="btn btn-primario btn-g" href="#planos">
+          <span class="so-grande">Ver planos de locação</span>
+          <span class="so-celular">{mostrarPrecos ? `Ver planos a partir de ${precoMenor}` : 'Ver planos de locação'}</span>
+          <Icone nome="arrow-right" tamanho={18} traco={2} />
+        </a>
+        <a class="btn btn-contorno btn-g" href="#monte"><Icone nome="mouse-pointer-click" tamanho={18} /> Monte seu sistema</a>
+      </div>
+      <div class="ambientes" role="group" aria-label="Veja no seu ambiente">
+        <span class="ambientes-rotulo">Veja no seu ambiente:</span>
+        {
+          ambientes.map((a, i) => (
+            <button type="button" class="chip" data-ambiente={a.id} aria-pressed={i === 0 ? 'true' : 'false'}>
+              <Icone nome={a.icone} tamanho={16} /> {a.nome}
+            </button>
+          ))
+        }
+      </div>
+      <a class="preco-chamada" href="#planos">
+        <Icone nome="cctv" tamanho={30} traco={1.4} />
+        <span>
+          <strong>
+            {mostrarPrecos ? <>Locação de câmeras a partir de <em>{precoMenor}</em>/mês</> : 'Planos de locação de câmeras'}
+          </strong>
+          <small>Instalação padrão inclusa · {prazo}</small>
+        </span>
+      </a>
+    </div>
+
+    <div class="abertura-cena">
+      <div class="cena" data-cenario="normal" data-reserva="nao" data-ambiente-ativo="casa">
+        {
+          palcos.map((palco, i) => (
+            <div class="cena-ambiente" data-ambiente={palco.id} hidden={i > 0}>
+              <Fragment set:html={palco.svg} />
+              {palco.rotulos.map((r) => (
+                <>
+                  <svg class="rotulo-linha" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" data-sistema={r.sistema} data-estado="ok">
+                    <line x1={r.px} y1={r.py} x2={r.x} y2={r.y} vector-effect="non-scaling-stroke" />
+                  </svg>
+                  <div class:list={['rotulo', { 'rotulo-baixo': r.abaixo }]} style={`left:${r.x}%;top:${r.y}%`} data-sistema={r.sistema} data-estado="ok">
+                    <Icone nome={r.icone} tamanho={18} />
+                    <span><b>{r.nome}</b><small data-texto>{r.texto}</small></span>
+                  </div>
+                </>
+              ))}
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="ese" aria-labelledby="ese-titulo">
+        <div class="ese-cabeca">
+          <div class="ese-topo"><h2 id="ese-titulo">E se…?</h2><span class="ese-selo">Simulação</span></div>
+          <div class="ese-opcoes" role="group" aria-label="Situações para simular">
+            {
+              situacoes.map((s, i) => (
+                <button type="button" class="ese-opcao" data-situacao={s.id} aria-pressed={i === 0 ? 'true' : 'false'}>
+                  <Icone nome={s.icone} tamanho={18} /><span>{s.nome}</span>
+                </button>
+              ))
+            }
+          </div>
+        </div>
+        <div class="ese-corpo">
+          <div class="ese-resultado" aria-live="polite">
+            <p class="ese-titulo-resultado" data-ese-titulo>{inicial.titulo}</p>
+            <p class="ese-explicacao" data-ese-explicacao>{inicial.explicacao}</p>
+            <p class="ese-condicao" data-ese-condicao>{inicial.condicao}</p>
+          </div>
+          <label class="ese-reserva" hidden>
+            <input type="checkbox" data-reserva />
+            <span class="interruptor" aria-hidden="true"></span>
+            <span><b>Com nobreak</b><small>Para câmeras, rede, gravador e acesso</small></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap faixa-servicos" data-revelar>
+    {
+      servicos.map((s) => (
+        <a href="#planos" data-abrir-aba={s.aba ?? undefined}>
+          <Icone nome={s.icone} tamanho={26} traco={1.4} />
+          <span>{s.titulo}<small>{s.sub}</small></span>
+        </a>
+      ))
+    }
+  </div>
+</section>
+<div class="fio" aria-hidden="true"></div>

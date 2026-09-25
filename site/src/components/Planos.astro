@@ -1,0 +1,113 @@
+---
+/** Tela 2: planos de locação. Abas e carrossel em src/scripts/planos.ts. */
+import Icone from './Icone.astro';
+import MiniPlanta from './MiniPlanta.astro';
+import {
+  planos, upgrades, condicoes, letraMiuda, porQueLocar, servicosProposta, textoProposta,
+  formatarPreco, mostrarPrecos, nomePlano, linkWhatsapp, mensagemPlano,
+} from '../lib/dados';
+
+const cameras = (n: number) => `${n} ${n > 1 ? 'câmeras' : 'câmera'}`;
+---
+
+<section class="secao planos" id="planos" aria-labelledby="planos-titulo">
+  <div class="wrap">
+    <div class="cabeca-secao" data-revelar>
+      <div>
+        <p class="sobretitulo">Planos de locação</p>
+        <h2 class="titulo-secao" id="planos-titulo">Proteção sem precisar<br /><span class="destaque">comprar os equipamentos.</span></h2>
+      </div>
+      <p>Você escolhe quantas câmeras. A SC instala, configura o acesso pelo celular e cuida da manutenção durante o contrato.</p>
+    </div>
+
+    <div class="guias" role="tablist" aria-label="Tipo de solução">
+      <button type="button" role="tab" class="guia" id="guia-cameras" aria-controls="aba-cameras" aria-selected="true">
+        <Icone nome="cctv" tamanho={17} /> Câmeras
+      </button>
+      {
+        servicosProposta.map((s) => (
+          <button type="button" role="tab" class="guia" id={`guia-${s.id}`} aria-controls={`aba-${s.id}`} aria-selected="false" tabindex="-1">
+            <Icone nome={s.icone} tamanho={17} /> {s.nome} <small>Proposta</small>
+          </button>
+        ))
+      }
+    </div>
+
+    <div role="tabpanel" id="aba-cameras" aria-labelledby="guia-cameras">
+      <div class="planos-trilho" tabindex="-1">
+        <div class="planos-grade">
+          {
+            planos.map((p) => (
+              <article class:list={['cartao plano', { 'plano-destaque': p.destaque }]} id={`plano-${p.cameras}`} data-plano={p.cameras} aria-labelledby={`plano-${p.cameras}-titulo`}>
+                {p.destaque && (
+                  <span class="selo selo-laranja plano-selo"><Icone nome="sparkles" tamanho={13} traco={2} /> {p.destaque}</span>
+                )}
+                <div class="plano-mapa"><MiniPlanta cameras={p.cameras} destaque={Boolean(p.destaque)} /></div>
+                <h3 id={`plano-${p.cameras}-titulo`}>{cameras(p.cameras)}</h3>
+                <p class="plano-uso">{p.uso}</p>
+                {mostrarPrecos ? (
+                  <div class="preco"><small>R$</small><strong>{formatarPreco(p.preco)}</strong><em>/mês</em></div>
+                ) : (
+                  <div class="preco"><strong class="preco-consulta">Sob consulta</strong></div>
+                )}
+                <p class="plano-cabo"><Icone nome="cable" tamanho={15} /><span>Instalação inclusa<br />até {p.caboMetros} m de cabo</span></p>
+                <ul class="plano-lista">
+                  <li><Icone nome="check" tamanho={16} traco={2.2} />{cameras(p.cameras)} 2 MP ou superior</li>
+                  <li><Icone nome="check" tamanho={16} traco={2.2} />Gravação local ≈ 10 dias</li>
+                  <li><Icone nome="check" tamanho={16} traco={2.2} />{p.gravador} e imagens no celular</li>
+                  <li><Icone nome="check" tamanho={16} traco={2.2} />Suporte e manutenção</li>
+                </ul>
+                <a class:list={['btn plano-cta', p.destaque ? 'btn-primario' : 'btn-contorno']} href={linkWhatsapp(mensagemPlano(p))} target="_blank" rel="noopener" data-plano-cta={p.cameras}>
+                  Quero este plano <Icone nome="arrow-up-right" tamanho={16} traco={2} /><span class="sr"> ({nomePlano(p)}, abre o WhatsApp)</span>
+                </a>
+                <a class="plano-simular" href="#monte" data-configurar={p.cameras}>Ver no configurador <Icone nome="arrow-right" tamanho={14} /></a>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+      <div class="planos-pontos" role="group" aria-label="Escolher plano">
+        {planos.map((p) => <button type="button" data-ir-plano={p.cameras} aria-label={`Ver ${nomePlano(p)}`} />)}
+      </div>
+      <div class="cartao upgrades">
+        <strong>Personalize seu sistema</strong>
+        <ul>{upgrades.map((u) => <li title={u.detalhe}><Icone nome={u.icone} tamanho={17} /> {u.nome}</li>)}</ul>
+        <em>Upgrades sob orçamento</em>
+      </div>
+    </div>
+
+    {
+      servicosProposta.map((s) => (
+        <div class="painel-servico cartao" role="tabpanel" id={`aba-${s.id}`} aria-labelledby={`guia-${s.id}`} hidden>
+          <div class="servico-texto">
+            <span class="selo selo-ciano"><Icone nome={s.icone} tamanho={14} /> Proposta personalizada</span>
+            <h3>{s.titulo}</h3>
+            <p>{s.texto}</p>
+            <ul>{s.itens.map((i) => <li><Icone nome="check" tamanho={16} traco={2.2} />{i}</li>)}</ul>
+          </div>
+          <div class="servico-acao">
+            <p>{textoProposta}</p>
+            <a class="btn btn-primario" href={linkWhatsapp(`Olá! Gostaria de uma proposta de ${s.titulo.toLowerCase()} para o meu ambiente.`)} target="_blank" rel="noopener">
+              Pedir proposta pelo WhatsApp <Icone nome="arrow-up-right" tamanho={16} traco={2} />
+            </a>
+            {s.id === 'condominio' && (
+              <a class="btn btn-contorno" href="#monte" data-configurar-ambiente="condominio">Montar a proposta no configurador</a>
+            )}
+          </div>
+        </div>
+      ))
+    }
+
+    <div class="por-que" data-revelar>
+      <div class="por-que-titulo"><h3>Por que locar em vez de comprar?</h3><p>O que muda para quem só quer o sistema funcionando.</p></div>
+      {porQueLocar.map((m) => <div class="por-que-item"><Icone nome={m.icone} tamanho={26} traco={1.4} /><b>{m.titulo}</b><span>{m.texto}</span></div>)}
+    </div>
+
+    <div class="tudo-claro" data-revelar>
+      <h3>Tudo claro antes de assinar<small>As regras do contrato, sem letra miúda.</small></h3>
+      {condicoes.map((c) => <div class="condicao"><Icone nome={c.icone} tamanho={20} /><div><b>{c.titulo}</b><span>{c.texto}</span></div></div>)}
+    </div>
+    <p class="letra-miuda">{letraMiuda}</p>
+  </div>
+</section>
+<div class="fio" aria-hidden="true"></div>

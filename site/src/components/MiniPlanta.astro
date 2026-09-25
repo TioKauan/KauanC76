@@ -1,0 +1,51 @@
+---
+/** Mini-planta de um plano: N câmeras com o campo de visão de cada uma (planta 200 × 132). */
+interface Props {
+  cameras: number;
+  destaque?: boolean;
+}
+const { cameras, destaque = false } = Astro.props;
+
+// Posição (x, y, ângulo em graus) das câmeras para cada plano.
+const posicoes: Record<number, [number, number, number][]> = {
+  1: [[100, 116, 90]],
+  2: [[60, 116, 90], [140, 16, -90]],
+  3: [[60, 116, 90], [140, 16, -90], [172, 66, 180]],
+  4: [[28, 116, 45], [172, 116, 135], [28, 16, -45], [172, 16, -135]],
+  8: [[28, 116, 45], [172, 116, 135], [28, 16, -45], [172, 16, -135], [100, 116, 90], [100, 16, -90], [28, 66, 0], [172, 66, 180]],
+};
+const cor = destaque ? '#ff9a4a' : '#6de9f6';
+const raio = 50;
+const abertura = (30 * Math.PI) / 180;
+const pontos = (posicoes[cameras] ?? []).map(([x, y, graus]) => {
+  const t = (graus * Math.PI) / 180;
+  const x1 = (x + Math.cos(t - abertura) * raio).toFixed(1);
+  const y1 = (y - Math.sin(t - abertura) * raio).toFixed(1);
+  const x2 = (x + Math.cos(t + abertura) * raio).toFixed(1);
+  const y2 = (y - Math.sin(t + abertura) * raio).toFixed(1);
+  return { x, y, cone: `M${x} ${y} L${x1} ${y1} A${raio} ${raio} 0 0 0 ${x2} ${y2} Z` };
+});
+const gradiente = `mp-${cameras}`;
+---
+
+<svg class="mini-planta" viewBox="0 0 200 132" role="img" aria-label={`Planta de exemplo com ${cameras} ${cameras > 1 ? 'câmeras' : 'câmera'} e o campo de visão de cada uma`}>
+  <defs>
+    <radialGradient id={gradiente} cx="0" cy="0" r="1">
+      <stop offset="0" stop-color={cor} stop-opacity=".5" />
+      <stop offset="1" stop-color={cor} stop-opacity=".05" />
+    </radialGradient>
+  </defs>
+  <path d="M0 33 H200 M0 66 H200 M0 99 H200 M50 0 V132 M100 0 V132 M150 0 V132" stroke="#0f2336" fill="none" />
+  <rect x="26" y="14" width="148" height="104" rx="2" stroke="#2f5677" stroke-width="1.6" fill="#0a1a2b" />
+  <path d="M26 64 H96 M96 14 V118 M96 84 H174 M136 84 V118" stroke="#244565" fill="none" />
+  <path d="M86 118 h18" stroke="#6de9f6" stroke-width="2.2" />
+  {pontos.map((pt) => <path class="cone-mini" style={`transform-origin:${pt.x}px ${pt.y}px`} d={pt.cone} fill={`url(#${gradiente})`} />)}
+  {
+    pontos.map((pt) => (
+      <>
+        <circle cx={pt.x} cy={pt.y} r="9" fill={cor} opacity=".18" />
+        <circle class="camera-mini" cx={pt.x} cy={pt.y} r="4.2" fill={cor} stroke="#fff" stroke-width="1" />
+      </>
+    ))
+  }
+</svg>

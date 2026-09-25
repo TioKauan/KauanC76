@@ -1,0 +1,21 @@
+---
+import Icone from './Icone.astro';
+import Logo from './Logo.astro';
+import { empresa } from '../lib/dados';
+import { links } from '../lib/site';
+---
+
+<footer class="rodape">
+  <div class="wrap rodape-linha">
+    <a href="#inicio" class="logo-link" aria-label="SC Soluções, voltar ao início"><Logo grande /></a>
+    <p class="rodape-desc">Soluções em<br />Segurança e Tecnologia</p>
+    <nav class="rodape-nav" aria-label="Rodapé">
+      {links.slice(1).map((l) => <a href={l.href}>{l.rotulo}</a>)}
+    </nav>
+    <a class="voltar-topo" href="#inicio">Voltar ao início <Icone nome="arrow-up" tamanho={16} /></a>
+  </div>
+  <div class="wrap rodape-base">
+    <span>© {new Date().getFullYear()} {empresa.nome} · somoscella.online</span>
+    <span>Segurança · Redes · Acesso · Energia</span>
+  </div>
+</footer>

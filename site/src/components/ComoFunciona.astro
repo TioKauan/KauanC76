@@ -1,0 +1,99 @@
+---
+/** Tela 4: linha do tempo, dúvidas com busca e área do cliente (exemplo). Interação em src/scripts/como-funciona.ts. */
+import Icone from './Icone.astro';
+import { etapas, duvidas, linkWhatsapp } from '../lib/dados';
+
+// A dúvida mais comum começa aberta (mesma do mockup).
+const abertaNoInicio = duvidas.findIndex((d) => d.pergunta.startsWith('Quantos dias'));
+const acompanhamento = [
+  { estado: 'feito', icone: 'check', titulo: 'Avaliação do local', sub: 'Pontos e cabeamento confirmados', rotulo: 'concluído' },
+  { estado: 'feito', icone: 'check', titulo: 'Contrato assinado', sub: 'Pela ZapSign', rotulo: 'concluído' },
+  { estado: 'agora', icone: 'calendar-check', titulo: 'Instalação agendada', sub: 'Data e horário combinados', rotulo: 'próximo' },
+  { estado: null, icone: 'smartphone', titulo: 'Sistema ativado', sub: 'App configurado no seu celular', rotulo: '' },
+] as const;
+---
+
+<section class="secao como-funciona" id="como-funciona" aria-labelledby="como-titulo">
+  <div class="wrap">
+    <div class="cabeca-secao" data-revelar>
+      <div>
+        <p class="sobretitulo">Como funciona a locação</p>
+        <h2 class="titulo-secao" id="como-titulo">Do primeiro contato ao<br /><span class="destaque">sistema funcionando.</span></h2>
+      </div>
+      <p>Cinco etapas, sem burocracia. Da escolha do plano ao suporte durante todo o contrato.</p>
+    </div>
+
+    <ol class="linha-tempo" data-linha-tempo>
+      <li class="linha-tempo-cabo" aria-hidden="true"><span></span></li>
+      {
+        etapas.map((e, i) => (
+          <li class="etapa" data-etapa={i}>
+            <span class="etapa-num" aria-hidden="true">0{i + 1}</span>
+            <Icone nome={e.icone} tamanho={30} traco={1.3} classe="etapa-icone" />
+            <h3><span class="sr">Etapa {i + 1}: </span>{e.titulo}</h3>
+            <p>{e.texto}</p>
+            <span class="etapa-meta">{e.meta}</span>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="duvidas-grade" id="duvidas">
+      <div class="duvidas">
+        <p class="sobretitulo">Perguntas frequentes</p>
+        <h2 class="titulo-secao duvidas-titulo">Antes de começar, <span class="destaque">tire suas dúvidas.</span></h2>
+        <label class="busca">
+          <Icone nome="search" tamanho={18} />
+          <span class="sr">Buscar nas dúvidas</span>
+          <input type="search" placeholder="Digite sua dúvida, ex.: ver pelo celular" data-busca autocomplete="off" />
+        </label>
+        <p class="busca-status" data-busca-status aria-live="polite"></p>
+        <div class="perguntas" data-perguntas>
+          {
+            duvidas.map((d, i) => (
+              <details class="pergunta" data-pergunta open={i === abertaNoInicio}>
+                <summary>{d.pergunta}<Icone nome="plus" tamanho={18} classe="ic-mais" /></summary>
+                <p>{d.resposta}</p>
+              </details>
+            ))
+          }
+        </div>
+        <div class="sem-resultado" data-sem-resultado hidden>
+          <p>Não achamos essa dúvida por aqui. Pergunte direto para a equipe da SC:</p>
+          <a class="btn btn-contorno btn-p" data-pergunta-whatsapp href={linkWhatsapp('Olá! Tenho uma dúvida sobre os planos de locação.')} target="_blank" rel="noopener">
+            <Icone nome="message-circle" tamanho={16} /> Perguntar pelo WhatsApp
+          </a>
+        </div>
+      </div>
+
+      <div class="cartao cliente" aria-labelledby="cliente-titulo">
+        <span class="selo selo-ciano cliente-selo">Em breve · exemplo</span>
+        <p class="cliente-k">Área do cliente</p>
+        <h3 id="cliente-titulo">Acompanhe seu pedido pelo celular.</h3>
+        <p class="cliente-sub">Um link pessoal, enviado pelo WhatsApp, vai mostrar em que etapa está a sua instalação. Veja como vai ficar:</p>
+        <div class="cliente-previa" aria-label="Exemplo ilustrativo da área do cliente">
+          <p class="cliente-plano">Plano de 4 câmeras</p>
+          <ol class="acompanha">
+            {
+              acompanhamento.map((a) => (
+                <li data-estado={a.estado ?? undefined}>
+                  <span class="bolinha"><Icone nome={a.icone} tamanho={13} traco={a.icone === 'check' ? 3 : 1.75} /></span>
+                  <div><b>{a.titulo}</b><small>{a.sub}</small></div>
+                  <em>{a.rotulo}</em>
+                </li>
+              ))
+            }
+          </ol>
+          <div class="cliente-equip">
+            <span><Icone nome="cctv" tamanho={15} /> 4 câmeras</span>
+            <span><Icone nome="hard-drive" tamanho={15} /> Gravador 4 canais</span>
+            <span><Icone nome="shield-check" tamanho={15} /> Manutenção ativa</span>
+          </div>
+        </div>
+        <a class="btn btn-contorno cliente-cta" href={linkWhatsapp('Olá! Já sou cliente da SC e preciso de suporte.')} target="_blank" rel="noopener">
+          <Icone nome="headset" tamanho={17} /> Já é cliente? Peça suporte
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

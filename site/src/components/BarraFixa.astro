@@ -1,0 +1,16 @@
+---
+/** Barra fixa do celular; o conteúdo muda conforme a seção (src/scripts/barra.ts). */
+import Icone from './Icone.astro';
+import { formatarPreco, linkWhatsapp, menorPreco, mostrarPrecos } from '../lib/dados';
+import { msgGeral } from '../lib/site';
+
+const preco = mostrarPrecos ? `A partir de R$ ${formatarPreco(menorPreco)}/mês` : 'Planos de locação de câmeras';
+---
+
+<div class="barra-fixa" data-modo="contato" aria-live="polite">
+  <div class="barra-texto"><b data-barra-titulo>Fale com a SC</b><span data-barra-sub>{preco}</span></div>
+  <a class="btn btn-primario btn-p" data-barra-link href={linkWhatsapp(msgGeral)} target="_blank" rel="noopener">
+    <span data-barra-acao>Conversar</span>
+    <Icone nome="arrow-up-right" tamanho={15} traco={2.2} />
+  </a>
+</div>

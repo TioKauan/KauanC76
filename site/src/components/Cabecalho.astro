@@ -1,0 +1,32 @@
+---
+import Icone from './Icone.astro';
+import Logo from './Logo.astro';
+import { contato, empresa, linkWhatsapp } from '../lib/dados';
+import { links, msgGeral } from '../lib/site';
+---
+
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+<div class="progresso-leitura" aria-hidden="true"></div>
+<header class="cabecalho">
+  <div class="wrap cabecalho-linha">
+    <a href="#inicio" class="logo-link" aria-label="SC Soluções, voltar ao início"><Logo /></a>
+    <nav class="nav" aria-label="Navegação principal">
+      {links.map((l) => <a href={l.href}>{l.rotulo}</a>)}
+    </nav>
+    <a class="btn btn-contorno btn-p cabecalho-cta" href={linkWhatsapp(msgGeral)} target="_blank" rel="noopener">
+      Fale com a SC <Icone nome="arrow-up-right" tamanho={16} />
+    </a>
+    <button class="menu-botao" type="button" aria-expanded="false" aria-controls="menu-celular" aria-label="Abrir menu">
+      <Icone nome="menu" tamanho={22} classe="ic-abrir" /><Icone nome="x" tamanho={22} classe="ic-fechar" />
+    </button>
+  </div>
+  <div class="menu-celular" id="menu-celular" hidden>
+    <nav aria-label="Navegação no celular">
+      {links.map((l, i) => <a href={l.href}><span>0{i + 1}</span>{l.rotulo}<Icone nome="arrow-right" tamanho={18} /></a>)}
+    </nav>
+    <a class="btn btn-primario" href={linkWhatsapp(msgGeral)} target="_blank" rel="noopener">
+      <Icone nome="message-circle" tamanho={18} /> Fale com a SC pelo WhatsApp
+    </a>
+    <p class="menu-nota">{contato.atendimento} · {empresa.regiao}</p>
+  </div>
+</header>

@@ -1,0 +1,14 @@
+---
+/** Ícone Lucide embutido (decorativo). */
+import { icone, type NomeIcone } from '../lib/icones';
+
+interface Props {
+  nome: NomeIcone;
+  tamanho?: number;
+  traco?: number;
+  classe?: string;
+}
+const { nome, ...opcoes } = Astro.props;
+---
+
+<Fragment set:html={icone(nome, opcoes)} />

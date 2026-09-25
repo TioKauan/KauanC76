@@ -1,0 +1,49 @@
+---
+/** Estrutura da página: metadados, fonte, estilos e o script de interação. */
+import fonteLatina from '../assets/fontes/manrope-latin-wght-normal.woff2?url';
+import '../styles/base.css';
+import '../styles/abertura.css';
+import '../styles/planos.css';
+import '../styles/configurador.css';
+import '../styles/como-funciona.css';
+import { empresa } from '../lib/dados';
+
+interface Props {
+  titulo: string;
+  descricao: string;
+  tituloSocial: string;
+  descricaoSocial: string;
+}
+const { titulo, descricao, tituloSocial, descricaoSocial } = Astro.props;
+const canonica = new URL(Astro.url.pathname, empresa.site).href;
+const imagemSocial = new URL('/marca/og-imagem.png', empresa.site).href;
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titulo}</title>
+    <meta name="description" content={descricao} />
+    <link rel="canonical" href={canonica} />
+    <meta name="theme-color" content="#020710" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content={empresa.nome} />
+    <meta property="og:title" content={tituloSocial} />
+    <meta property="og:description" content={descricaoSocial} />
+    <meta property="og:url" content={canonica} />
+    <meta property="og:image" content={imagemSocial} />
+    <link rel="icon" href="/marca/favicon-64.png" sizes="64x64" type="image/png" />
+    <link rel="apple-touch-icon" href="/marca/icone-180.png" />
+    <link rel="preload" href={fonteLatina} as="font" type="font/woff2" crossorigin />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+  </head>
+  <body>
+    <slot />
+    <script>
+      import '../scripts/main';
+    </script>
+  </body>
+</html>

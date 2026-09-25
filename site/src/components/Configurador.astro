@@ -1,0 +1,145 @@
+---
+/** Tela 3: configurador "Monte seu sistema". Interação em src/scripts/configurador.ts; regras em src/lib/configurador-logica.ts. */
+import Icone from './Icone.astro';
+import { upgrades, linkWhatsapp } from '../lib/dados';
+import { ambientesConfig, sistemasCondominio } from '../lib/configurador-dados';
+import { desenhoPlanta } from '../lib/plantas-svg';
+import { mensagemInicial } from '../lib/configurador-logica';
+
+const desenhos = (['casa', 'comercio', 'empresa'] as const).map((id) => ({ id, svg: desenhoPlanta(id) }));
+const msgInicial = mensagemInicial('casa');
+---
+
+<section class="secao configurador" id="monte" aria-labelledby="monte-titulo">
+  <div class="wrap">
+    <div class="cabeca-secao" data-revelar>
+      <div>
+        <p class="sobretitulo">Monte seu sistema</p>
+        <h2 class="titulo-secao" id="monte-titulo">Marque o que você quer proteger.<br /><span class="destaque">A SC dimensiona o resto.</span></h2>
+      </div>
+      <ol class="passos" aria-label="Etapas">
+        <li data-passo="ambiente" data-estado="feito"><span>1</span>Ambiente</li>
+        <li data-passo="pontos" data-estado="atual"><span>2</span>Pontos</li>
+        <li data-passo="recursos"><span>3</span>Recursos</li>
+        <li data-passo="enviar"><span>4</span>Enviar</li>
+      </ol>
+    </div>
+
+    <div class="config-ambientes" role="group" aria-label="Qual é o ambiente?">
+      {
+        ambientesConfig.map((a, i) => (
+          <button type="button" class="chip" data-config-ambiente={a.id} aria-pressed={i === 0 ? 'true' : 'false'}>
+            <Icone nome={a.icone} tamanho={16} /> {a.nome}
+          </button>
+        ))
+      }
+    </div>
+
+    <div class="config-grade">
+      <div class="cartao config-planta">
+        <div class="config-planta-topo">
+          <p class="config-dica">
+            <Icone nome="mouse-pointer-click" tamanho={17} />
+            <span data-config-dica>Toque na planta para marcar uma câmera. Toque de novo para tirar.</span>
+          </p>
+          <button type="button" class="btn btn-contorno btn-p" data-config-limpar><Icone nome="rotate-ccw" tamanho={15} /> Recomeçar</button>
+        </div>
+        <div class="planta-caixa" data-planta-caixa>
+          <svg class="planta" viewBox="0 0 818 540" role="application" aria-label="Planta de exemplo: toque para marcar câmeras" data-planta>
+            <defs>
+              <pattern id="planta-grama" width="14" height="14" patternUnits="userSpaceOnUse"><path d="M0 14 L14 0" stroke="#0e2a2a" stroke-width="1" /></pattern>
+              <filter id="planta-brilho" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="3" result="b" /><feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+            </defs>
+            {desenhos.map((d) => <g class="planta-desenho" data-desenho={d.id} data-ativo={d.id === 'casa' ? '' : undefined} set:html={d.svg} />)}
+            <g data-camada="cones"></g><g data-camada="cabos"></g><g data-camada="sugestoes"></g><g data-camada="cameras"></g>
+            <g data-camada="dvr"></g>
+          </svg>
+          <div class="condominio-proposta" data-condominio hidden>
+            <span class="selo selo-ciano"><Icone nome="building-2" tamanho={14} /> Proposta personalizada</span>
+            <h3>Condomínio Evoluído</h3>
+            <p>Condomínios recebem projeto e contrato sob medida. Marque o que interessa e a SC monta a proposta.</p>
+            <fieldset class="condominio-sistemas">
+              <legend class="sr">Sistemas de interesse</legend>
+              {
+                sistemasCondominio.map((s) => (
+                  <label class="opcao">
+                    <input type="checkbox" value={s.id} data-cond-sistema />
+                    <span class="caixinha" aria-hidden="true"><Icone nome="check" tamanho={13} traco={3} /></span>
+                    <Icone nome={s.icone} tamanho={17} /><span>{s.nome}</span>
+                  </label>
+                ))
+              }
+            </fieldset>
+          </div>
+        </div>
+        <p class="planta-arraste" data-legenda><Icone nome="move" tamanho={14} /> Arraste para os lados para ver a planta toda</p>
+        <div class="planta-legenda" data-legenda>
+          <span><i class="leg-camera"></i> Câmera marcada</span>
+          <span><i class="leg-sugestao"></i> Ponto sugerido</span>
+          <span><i class="leg-dvr"></i> Gravador (DVR)</span>
+          <span class="leg-nota">Metragens ilustrativas, confirmadas na visita técnica</span>
+        </div>
+
+        <div class="config-ese" data-config-ese>
+          <p class="config-ese-titulo">Teste antes de contratar · E se…?</p>
+          <div class="config-ese-grade">
+            <div class="ese-cartao" data-ese-cartao="energia">
+              <b><Icone nome="zap-off" tamanho={16} /> Faltou energia</b>
+              <p data-ese-texto>Sem nobreak, câmeras e gravador desligam até a luz voltar.</p>
+              <button type="button" class="ese-acao" data-ese-acao="nobreak">+ Adicionar nobreak</button>
+            </div>
+            <div class="ese-cartao" data-ese-cartao="internet">
+              <b><Icone nome="wifi-off" tamanho={16} /> A internet caiu</b>
+              <p>A gravação continua no gravador do imóvel. Só as imagens pelo celular param até a conexão voltar.</p>
+              <span class="ese-acao ese-acao-texto">Nada a adicionar</span>
+            </div>
+            <div class="ese-cartao" data-ese-cartao="noite">
+              <b><Icone nome="moon" tamanho={16} /> Pouca luz à noite</b>
+              <p data-ese-texto>Com imagem colorida à noite, as cores aparecem melhor em baixa iluminação, conforme a luz do local.</p>
+              <button type="button" class="ese-acao" data-ese-acao="colorida">+ Adicionar imagem colorida</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="cartao config-resumo" aria-labelledby="resumo-titulo">
+        <div>
+          <h3 id="resumo-titulo">Seu sistema</h3>
+          <p class="resumo-sub" data-resumo-sub>Casa · nenhum ponto marcado</p>
+        </div>
+        <ol class="resumo-pontos" data-resumo-pontos></ol>
+        <div class="resumo-sugestoes" data-resumo-sugestoes-caixa>
+          <p>Pontos sugeridos</p>
+          <div data-resumo-sugestoes></div>
+        </div>
+        <div class="recomendacao" data-recomendacao data-tipo="vazio" aria-live="polite">
+          <p class="rec-k">Plano recomendado</p>
+          <p class="rec-vazio">Marque pelo menos um ponto na planta ou escolha um ponto sugerido.</p>
+        </div>
+        <fieldset class="resumo-recursos" data-resumo-recursos>
+          <legend>Recursos opcionais <small>sob orçamento</small></legend>
+          {
+            upgrades.map((u) => (
+              <label class="opcao">
+                <input type="checkbox" value={u.id} data-recurso />
+                <span class="caixinha" aria-hidden="true"><Icone nome="check" tamanho={13} traco={3} /></span>
+                <Icone nome={u.icone} tamanho={16} /><span>{u.nome}</span>
+              </label>
+            ))
+          }
+        </fieldset>
+        <div class="mensagem-previa">
+          <p class="mensagem-previa-topo"><Icone nome="message-circle" tamanho={14} /> Prévia da mensagem</p>
+          <p data-mensagem>{msgInicial}</p>
+        </div>
+        <a class="btn btn-primario btn-g config-enviar" data-config-enviar href={linkWhatsapp(msgInicial)} target="_blank" rel="noopener">
+          <Icone nome="message-circle" tamanho={19} /> Enviar para a SC pelo WhatsApp
+        </a>
+        <p class="resumo-nota">Atendimento pela equipe da SC. A solução final é definida na visita técnica.</p>
+      </aside>
+    </div>
+  </div>
+</section>
+<div class="fio" aria-hidden="true"></div>

@@ -12,7 +12,7 @@ import { execSync } from 'node:child_process';
 import { readFileSync, writeFileSync, existsSync, statSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { planos, contato, formatarPreco } from '../src/dados.js';
+import { planos, contato, formatarPreco } from '../src/lib/dados.ts';
 
 const aqui = path.dirname(fileURLToPath(import.meta.url));
 const raizSite = path.resolve(aqui, '..');
@@ -32,16 +32,16 @@ const conferir = (item, ok, detalhe = '') => {
 grupo('Geral');
 let buildOk = true;
 try {
-  execSync('npx vite build', { cwd: raizSite, stdio: 'pipe' });
+  execSync('npx astro check && npx astro build', { cwd: raizSite, stdio: 'pipe', shell: true });
 } catch (e) {
   buildOk = false;
   console.error(String(e.stdout || e));
 }
-conferir('npm run build termina sem erro', buildOk);
+conferir('Tipos conferidos (astro check) e build sem erro', buildOk);
 if (!buildOk) process.exit(1);
 
 /* ---------- servidor estático do dist/ ---------- */
-const tipos = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.woff2': 'font/woff2', '.webp': 'image/webp', '.png': 'image/png', '.svg': 'image/svg+xml', '.md': 'text/plain' };
+const tipos = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.woff2': 'font/woff2', '.webp': 'image/webp', '.png': 'image/png', '.svg': 'image/svg+xml', '.md': 'text/plain', '.xml': 'application/xml' };
 const servidor = createServer((req, res) => {
   const url = decodeURIComponent(new URL(req.url, 'http://x').pathname);
   let arquivo = path.join(dist, url === '/' ? 'index.html' : url);
@@ -95,7 +95,7 @@ const rolarTudo = (pagina) => pagina.evaluate(async () => {
   const precosValidos = new Set(planos.map((p) => formatarPreco(p.preco)));
   const achados = [...textoTodo.matchAll(/R\$\s?(\d{1,3},\d{2})/g)].map((m) => m[1]);
   const invalidos = achados.filter((v) => !precosValidos.has(v));
-  conferir('Todo preço na página bate com dados.js', achados.length > 0 && invalidos.length === 0, `${achados.length} preços encontrados${invalidos.length ? `; fora da tabela: ${invalidos.join(', ')}` : ''}`);
+  conferir('Todo preço na página bate com dados.ts', achados.length > 0 && invalidos.length === 0, `${achados.length} preços encontrados${invalidos.length ? `; fora da tabela: ${invalidos.join(', ')}` : ''}`);
 
   const cores = await pagina.evaluate(() => { const c = getComputedStyle(document.documentElement); return ['--azul', '--ciano', '--laranja', '--fundo'].map((v) => c.getPropertyValue(v).trim().toLowerCase()); });
   conferir('Cores-base iguais às da logo', cores.join(' ') === '#09a0f6 #6de9f6 #ff6a00 #020710', cores.join(' '));

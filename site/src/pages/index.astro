@@ -1,0 +1,32 @@
+---
+import Base from '../layouts/Base.astro';
+import Cabecalho from '../components/Cabecalho.astro';
+import Abertura from '../components/Abertura.astro';
+import Planos from '../components/Planos.astro';
+import Configurador from '../components/Configurador.astro';
+import ComoFunciona from '../components/ComoFunciona.astro';
+import ContatoFinal from '../components/ContatoFinal.astro';
+import Rodape from '../components/Rodape.astro';
+import BarraFixa from '../components/BarraFixa.astro';
+import { formatarPreco, menorPreco, mostrarPrecos } from '../lib/dados';
+
+const aPartir = mostrarPrecos ? ` a partir de R$ ${formatarPreco(menorPreco)}/mês` : '';
+---
+
+<Base
+  titulo="SC Soluções | Câmeras em locação, redes e segurança em Francisco Beltrão"
+  descricao={`Planos de locação de câmeras${aPartir}, com instalação, gravação local e imagens no celular. Segurança, redes, acesso e energia integrados pela SC Soluções.`}
+  tituloSocial="SC Soluções | Tecnologia que precisa funcionar"
+  descricaoSocial="Planos de locação de câmeras com instalação, gravação local e imagens no celular."
+>
+  <Cabecalho />
+  <main id="conteudo">
+    <Abertura />
+    <Planos />
+    <Configurador />
+    <ComoFunciona />
+    <ContatoFinal />
+  </main>
+  <Rodape />
+  <BarraFixa />
+</Base>
