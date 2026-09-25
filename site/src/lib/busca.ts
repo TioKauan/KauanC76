@@ -36,14 +36,18 @@ export function buscarDuvidas(consulta: string, duvidas: Duvida[]): ResultadoBus
   // Comparação pelo radical (sem a última letra) para "cancelar" achar "cancelamento" e vice-versa.
   const radical = (g: string) => (g.length > 4 ? g.slice(0, -1) : g);
   const grupos = palavras.map((w) => [w, ...(sinonimos[w] ?? [])].map(radical));
-  const notas = duvidas.map((d) => {
+  const textos = duvidas.map((d) => {
     const titulo = normalizar(d.pergunta);
-    const tudo = `${titulo} ${normalizar(d.resposta)}`;
-    return grupos.reduce((soma, g) => soma + (g.some((t) => titulo.includes(t)) ? 3 : g.some((t) => tudo.includes(t)) ? 1 : 0), 0);
+    return { titulo, tudo: `${titulo} ${normalizar(d.resposta)}` };
   });
+  // Palavra que aparece em muitas dúvidas (ex.: "câmera") pesa menos que uma específica (ex.: "quebrou").
+  const peso = grupos.map((g) => 1 / Math.max(1, textos.filter((t) => g.some((x) => t.tudo.includes(x))).length));
+  const notas = textos.map((t) =>
+    grupos.reduce((soma, g, i) => soma + (peso[i] ?? 0) * (g.some((x) => t.titulo.includes(x)) ? 3 : g.some((x) => t.tudo.includes(x)) ? 1 : 0), 0),
+  );
   const melhor = Math.max(0, ...notas);
   if (!melhor) return { tipo: 'resultado', mostrar: [], abrir: [] };
-  const corte = Math.max(1, melhor * 0.5);
+  const corte = melhor * 0.5;
   const mostrar = notas.flatMap((n, i) => (n >= corte ? [i] : []));
   const abrir = notas.flatMap((n, i) => (n === melhor ? [i] : []));
   return { tipo: 'resultado', mostrar, abrir };

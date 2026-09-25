@@ -20,15 +20,16 @@ Fonte da verdade: `PLANO-DE-INOVACAO.md`, os 5 mockups em `mockups/` e o documen
 
 ## 2. Decisões técnicas
 
-| Tema | Escolha | Motivo |
-|---|---|---|
-| Estrutura | **Vite + JavaScript puro + CSS puro**, sem framework | Menos peças para manter; o resultado é HTML estático, igual ao site atual no Nginx |
-| Pasta | `site/` na raiz do repositório | Não conflita com o projeto atual (React/Vinext) se ele vier para este repositório |
-| Conteúdo | **Um arquivo só**: `site/src/dados.js` (planos, preços, cabos, contatos, dúvidas, condições) | Mudou preço? Troca em um lugar e o site todo acompanha |
-| Fonte | Manrope embutida (licença OFL) | Mesma fonte do site atual, sem depender do Google Fonts |
-| Ícones | Lucide (licença ISC), só os usados, embutidos | Nenhum pacote extra no navegador |
-| Animação | CSS + Web Animations API + IntersectionObserver | Leve; respeita "reduzir movimento" do aparelho |
-| Validação | Script com Playwright (`npm run validar`) | Confere a checklist abaixo de forma automática e tira fotos para comparar com os mockups |
+Versão atual: **Astro 7 + TypeScript estrito + Vitest** (a primeira versão foi Vite + JavaScript puro;
+a troca e os motivos estão em `DECISOES.md`).
+
+| Tema | Escolha |
+|---|---|
+| Estrutura | Astro (saída estática) em `site/`, componentes `.astro` por seção |
+| Conteúdo | Um arquivo só: `site/src/lib/dados.ts` (planos, preços, cabos, contatos, dúvidas, condições) |
+| Regras | `src/lib/*.ts` sem tela, com testes em `tests/` |
+| Interação | TypeScript no navegador (`src/scripts/`), sem framework de cliente |
+| Validação | `npm run validar`: tipos + build + testes + 43 conferências em navegador real |
 
 ## 3. Etapas (um commit por etapa)
 
@@ -50,13 +51,13 @@ os itens daquela tela estiverem ✅.
 > `npm run validar` (em `site/`); o resultado detalhado fica em `RELATORIO-VALIDACAO.md`.
 
 ### Geral
-- [x] `npm run build` termina sem erro.
+- [x] `npm run build` termina sem erro (inclui checagem de tipos) e os testes unitários passam.
 - [x] Página inicial com peso total ≤ 500 KB (HTML + CSS + JS + imagens + fontes).
 - [x] Zero erros no console, no computador e no celular.
 - [x] Sem rolagem horizontal em 360, 390, 768, 1024 e 1440 px de largura.
 - [x] Todo link interno (`#…`) leva a uma seção que existe.
 - [x] Todo link de WhatsApp usa `wa.me/5546991331306` com mensagem preenchida; o número antigo não aparece.
-- [x] Todo preço na página bate com `dados.js` (o validador compara).
+- [x] Todo preço na página bate com `dados.ts` (o validador compara).
 - [x] Cores-base iguais às da logo: azul `#09a0f6`, ciano `#6de9f6`, laranja `#ff6a00`, fundo `#020710`.
 - [x] Contraste do texto principal e do secundário ≥ 4,5:1 sobre o fundo.
 - [x] No celular, botões e controles principais com área de toque ≥ 44 px.

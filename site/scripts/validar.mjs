@@ -39,6 +39,16 @@ try {
 }
 conferir('Tipos conferidos (astro check) e build sem erro', buildOk);
 if (!buildOk) process.exit(1);
+let testes = '';
+let testesOk = true;
+try {
+  testes = execSync('npx vitest run', { cwd: raizSite, stdio: 'pipe' }).toString();
+} catch (e) {
+  testesOk = false;
+  testes = String(e.stdout || e);
+}
+const totalTestes = testes.match(/Tests\s+(\d+) passed/)?.[1];
+conferir('Testes unitários das regras (Vitest) passam', testesOk && Boolean(totalTestes), totalTestes ? `${totalTestes} testes` : testes.slice(-200));
 
 /* ---------- servidor estático do dist/ ---------- */
 const tipos = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.woff2': 'font/woff2', '.webp': 'image/webp', '.png': 'image/png', '.svg': 'image/svg+xml', '.md': 'text/plain', '.xml': 'application/xml' };

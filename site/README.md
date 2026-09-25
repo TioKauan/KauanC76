@@ -1,72 +1,77 @@
 # Site da SC Soluções
 
-Nova versão de `somoscella.online`, construída a partir do plano de inovação
-(`docs/inovacao/`). É um site estático: o resultado final é uma pasta com HTML, CSS,
-JavaScript e imagens, que pode ser copiada para o Nginx do VPS como o site atual.
+Nova versão de `somoscella.online`, construída a partir do plano de inovação (`docs/inovacao/`).
+**Astro 7 + TypeScript estrito**, saída 100% estática (a pasta `dist/` vai para o Nginx do VPS).
 
-## Ver o site no seu computador
+## Comandos
 
-Precisa do [Node.js](https://nodejs.org) 22 ou mais novo (o mesmo usado no projeto atual).
-
-```bash
-cd site
-npm install        # só na primeira vez
-npm run dev        # abre em http://localhost:5173 e atualiza sozinho quando você salva um arquivo
-```
-
-## Mudar preço, prazo, texto de plano ou número do WhatsApp
-
-Tudo fica em **um arquivo só: `src/dados.js`**. Exemplos:
-
-- Preço do plano de 4 câmeras: procure `cameras: 4` e troque `preco: 99.9`.
-- Limite de cabo: `caboMetros`.
-- Número do WhatsApp: `contato.whatsapp` (só números, com 55 e DDD).
-- Esconder os preços: troque `mostrarPrecos = true` por `false` (aparece "Sob consulta").
-- Dúvidas frequentes: lista `duvidas`.
-
-Salvou? A abertura, os planos, o configurador e as mensagens do WhatsApp acompanham.
-Lembre de manter o documento de planos, os contratos e o site com os mesmos valores.
-
-## Conferir se está tudo certo antes de publicar
-
-Na primeira vez, instale o navegador de testes: `npx playwright install chromium`.
+Requer Node.js ≥ 22.18.
 
 ```bash
-npm run validar            # confere a checklist (43+ itens) e escreve docs/inovacao/RELATORIO-VALIDACAO.md
-npm run validar -- --fotos # também tira fotos do site e monta a comparação com os mockups
+npm install
+npx playwright install chromium   # uma vez, para o validador
+
+npm run dev        # http://localhost:4321 com recarga automática
+npm run check      # checagem de tipos (astro check)
+npm test           # testes das regras (Vitest)
+npm run build      # checagem de tipos + dist/
+npm run preview    # serve o dist/ em http://localhost:4173
+npm run validar    # tipos, build, testes e 43 conferências em navegador → docs/inovacao/RELATORIO-VALIDACAO.md
+npm run validar -- --fotos   # + fotos em docs/inovacao/site-final/ e lado a lado com os mockups em comparacao/
 ```
 
-O validador confere, entre outras coisas: preços iguais aos de `dados.js`, todos os links de
-WhatsApp com o número certo, nada sobrando para os lados no celular, botões grandes o
-suficiente para o dedo, o configurador calculando o plano certo e o site funcionando sem animação.
+## Arquitetura
 
-## Gerar a versão para publicar
-
-```bash
-npm run build      # cria a pasta dist/
-npm run preview    # abre a versão final em http://localhost:4173 para uma última olhada
+```
+src/
+  pages/index.astro        página (compõe as seções)
+  layouts/Base.astro       <head>, estilos, fonte e o script de interação
+  components/*.astro       uma seção por componente (Abertura, Planos, Configurador, ComoFunciona…)
+  lib/                     dados e regras, sem DOM (rodam no build e no navegador)
+    dados.ts               conteúdo comercial: planos, preços, condições, dúvidas, contato
+    cenarios.ts            estados do "E se…?" por ambiente e situação
+    cenas.ts + iso.ts      cenas isométricas geradas como SVG no build
+    configurador-dados.ts  plantas, zonas e pontos sugeridos
+    configurador-logica.ts cabo estimado, recomendação de plano, nomes, mensagem do WhatsApp
+    busca.ts               busca nas dúvidas (sinônimos, peso por raridade, intenção de preço)
+    plantas-svg.ts         desenho das plantas do configurador
+    icones.ts              subconjunto do Lucide
+  scripts/*.ts             interação no navegador (sem framework de cliente)
+  styles/*.css             estilos por seção; tokens de cor da logo em base.css
+tests/*.test.ts            Vitest (regras de negócio)
+scripts/validar.mjs        validador de ponta a ponta (Playwright)
+scripts/gerar-marca.mjs    favicon, ícone e imagem Open Graph a partir da logo oficial
 ```
 
-**Publicar é manual e só com decisão do Kauan.** O procedimento é o mesmo do site atual:
-guardar a versão que está no ar, depois copiar o conteúdo de `dist/` para a pasta do site no
-Nginx do painel ICP (`/etc/icontainer/apps/nginx/nginx/www/sites/somoscella.online/index`).
+Princípios:
 
-## Onde fica cada coisa
+- **Conteúdo só em `src/lib/dados.ts`**, com os valores do documento *Planos de Locação de CFTV*.
+  O HTML, as mensagens do WhatsApp, a barra fixa e o configurador derivam dele.
+- **Regras sem DOM** em `src/lib/`, com testes. Os scripts de `src/scripts/` só ligam as regras à tela.
+- **Funciona sem JavaScript**: todo o conteúdo e os links de contato já vêm no HTML; o script só acrescenta interação.
+- **Acessibilidade**: controles de verdade (botões, abas com setas, `details`), foco visível, alvos ≥ 44 px no
+  celular, "reduzir movimento" respeitado.
+- Eventos entre módulos: `sc:plano-visivel`, `sc:resumo-config`, `sc:configurar`, `sc:abrir-aba` (tipados nos scripts).
 
-| Pasta / arquivo | O que tem |
+## Mudanças comuns
+
+| Quero… | Onde |
 |---|---|
-| `src/dados.js` | Planos, preços, condições, dúvidas, contatos (o conteúdo comercial) |
-| `src/cenarios.js` | Ambientes e situações do "E se…?" da abertura |
-| `src/configurador-dados.js` | Plantas e pontos sugeridos do "Monte seu sistema" |
-| `src/render/` | Monta o HTML de cada seção na hora do build |
-| `src/cliente/` | Interações no navegador (simulação, abas, configurador, barra do celular) |
-| `src/estilos/` | Aparência (cores da logo em `base.css`) |
-| `public/marca/` | Logo, ícone da aba e imagem de compartilhamento |
-| `public/fotos/` | Onde vão entrar as fotos reais (ver `LEIA-ME.md`) |
-| `scripts/validar.mjs` | O validador automático |
-| `scripts/gerar-marca.mjs` | Gera ícone e imagem de compartilhamento a partir da logo oficial |
+| Mudar preço, cabo incluso ou texto de um plano | `src/lib/dados.ts` → `planos` |
+| Esconder os preços ("Sob consulta") | `src/lib/dados.ts` → `mostrarPrecos = false` |
+| Trocar o número do WhatsApp | `src/lib/dados.ts` → `contato.whatsapp` |
+| Editar as dúvidas frequentes | `src/lib/dados.ts` → `duvidas` (e sinônimos em `src/lib/busca.ts`) |
+| Mudar pontos sugeridos do configurador | `src/lib/configurador-dados.ts` |
+
+Depois de qualquer mudança: `npm run validar`. Os testes em `tests/dados.test.ts` conferem invariantes
+(preço e cabo crescendo com as câmeras, gravador com canais suficientes, só um destaque, número antigo ausente).
+
+## Publicação
+
+Manual e **só com decisão do Kauan**: guardar a versão no ar e copiar `dist/` para
+`/etc/icontainer/apps/nginx/nginx/www/sites/somoscella.online/index` (Nginx do painel ICP no VPS).
 
 ## Licenças de terceiros
 
 - Fonte Manrope: SIL Open Font License (`src/assets/fontes/OFL-Manrope.txt`).
-- Ícones Lucide: licença ISC (texto no topo de `src/render/icones.js`).
+- Ícones Lucide: licença ISC (texto no topo de `src/lib/icones.ts`).

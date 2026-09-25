@@ -1,18 +1,19 @@
 # Relatório de validação do site
 
-Gerado por `npm run validar` em 25/09/2026, 01:20:18.
-Resultado: **45 de 45 itens ✅** — checklist completa.
+Gerado por `npm run validar` em 25/09/2026, 01:34:43.
+Resultado: **46 de 46 itens ✅** — checklist completa.
 
 ## Geral
 
 | | Item | Detalhe |
 |---|---|---|
-| ✅ | npm run build termina sem erro |  |
-| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 349 KB em 5 arquivos; maiores: / 196 KB, /marca/sc-logo.webp 52 KB, /assets/index-WxdYzbqr.css 43 KB |
+| ✅ | Tipos conferidos (astro check) e build sem erro |  |
+| ✅ | Testes unitários das regras (Vitest) passam | 66 testes |
+| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 346 KB em 5 arquivos; maiores: / 193 KB, /marca/sc-logo.webp 52 KB, /assets/index.CCWjk9oH.css 43 KB |
 | ✅ | Todo link interno leva a uma seção que existe | 6 destinos conferidos |
 | ✅ | Todo WhatsApp usa wa.me/5546991331306 com mensagem preenchida | 16 links |
 | ✅ | Número antigo (46) 99113-8360 não aparece |  |
-| ✅ | Todo preço na página bate com dados.js | 6 preços encontrados |
+| ✅ | Todo preço na página bate com dados.ts | 6 preços encontrados |
 | ✅ | Cores-base iguais às da logo | #09a0f6 #6de9f6 #ff6a00 #020710 |
 | ✅ | Contraste do texto secundário ≥ 4,5:1 (fundo e cartões) | menor: 6.02:1; texto principal 18.8:1 |
 | ✅ | Todo controle tem nome acessível |  |
