@@ -41,6 +41,10 @@ a pessoa quer. O site diz "atendimento pela equipe da SC" e não promete respost
 | Área do cliente | Aparece como **exemplo, em breve** (não é um sistema funcionando) | Fase 4 do plano; depende da operação |
 | Destaque do plano de 4 câmeras | "Cobertura completa", texto do próprio documento | Sem "mais vendido" inventado |
 | Clientes, depoimentos, números de mercado | Não usados | Regra do projeto: nada inventado |
+| Prazo mínimo, cancelamento, cobranças extras, reajuste | **Ficam no contrato**, apresentado antes da assinatura; o site não os repete. A seção de condições virou "Simples de contratar" (assinatura, taxa de instalação, mensalidades na ativação, pagamento) | Decisão do Kauan em 25/09/2026 |
+| Taxa de instalação | **Valor de 1 mensalidade do plano, pago antecipadamente** (1 câmera → R$ 49,90; 4 câmeras → R$ 99,90). Aparece nos cartões, na abertura, na barra do celular, em "Simples de contratar" e na dúvida sobre instalação; as mensalidades começam na ativação. Número de mensalidades em `taxaInstalacaoMensalidades` (`dados.ts`) | Decisão do Kauan em 25/09/2026. Substitui "instalação inclusa" do documento de planos |
+| Reajuste | "Sujeita a reajustes por melhorias no sistema e na renovação" | Decisão do Kauan em 25/09/2026 (não é anual pelo IPCA) |
+| Alarme | "Alarme monitorado pelo app" | A SC não tem central de monitoramento |
 
 ## Decisões técnicas
 

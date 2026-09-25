@@ -3,8 +3,8 @@
 import Icone from './Icone.astro';
 import MiniPlanta from './MiniPlanta.astro';
 import {
-  planos, upgrades, condicoes, letraMiuda, porQueLocar, servicosProposta, textoProposta,
-  formatarPreco, mostrarPrecos, nomePlano, linkWhatsapp, mensagemPlano,
+  planos, upgrades, condicoes, porQueLocar, servicosProposta, textoProposta,
+  formatarPreco, mostrarPrecos, nomePlano, linkWhatsapp, mensagemPlano, textoTaxaInstalacao, rotuloTaxa,
 } from '../lib/dados';
 
 const cameras = (n: number) => `${n} ${n > 1 ? 'câmeras' : 'câmera'}`;
@@ -50,12 +50,12 @@ const cameras = (n: number) => `${n} ${n > 1 ? 'câmeras' : 'câmera'}`;
                 ) : (
                   <div class="preco"><strong class="preco-consulta">Sob consulta</strong></div>
                 )}
-                <p class="plano-cabo"><Icone nome="cable" tamanho={15} /><span>Instalação inclusa<br />até {p.caboMetros} m de cabo</span></p>
+                <p class="plano-cabo"><Icone nome="cable" tamanho={15} /><span>Instalação: {textoTaxaInstalacao(p)}{mostrarPrecos && ` (${rotuloTaxa})`}<br />até {p.caboMetros} m de cabo</span></p>
                 <ul class="plano-lista">
                   <li><Icone nome="check" tamanho={16} traco={2.2} />{cameras(p.cameras)} 2 MP ou superior</li>
                   <li><Icone nome="check" tamanho={16} traco={2.2} />Gravação local ≈ 10 dias</li>
                   <li><Icone nome="check" tamanho={16} traco={2.2} />{p.gravador} e imagens no celular</li>
-                  <li><Icone nome="check" tamanho={16} traco={2.2} />Suporte e manutenção</li>
+                  <li><Icone nome="check" tamanho={16} traco={2.2} />Revisão semestral e manutenção</li>
                 </ul>
                 <a class:list={['btn plano-cta', p.destaque ? 'btn-primario' : 'btn-contorno']} href={linkWhatsapp(mensagemPlano(p))} target="_blank" rel="noopener" data-plano-cta={p.cameras}>
                   Quero este plano <Icone nome="arrow-up-right" tamanho={16} traco={2} /><span class="sr"> ({nomePlano(p)}, abre o WhatsApp)</span>
@@ -104,10 +104,9 @@ const cameras = (n: number) => `${n} ${n > 1 ? 'câmeras' : 'câmera'}`;
     </div>
 
     <div class="tudo-claro" data-revelar>
-      <h3>Tudo claro antes de assinar<small>As regras do contrato, sem letra miúda.</small></h3>
+      <h3>Simples de contratar<small>Sem papel e sem burocracia.</small></h3>
       {condicoes.map((c) => <div class="condicao"><Icone nome={c.icone} tamanho={20} /><div><b>{c.titulo}</b><span>{c.texto}</span></div></div>)}
     </div>
-    <p class="letra-miuda">{letraMiuda}</p>
   </div>
 </section>
 <div class="fio" aria-hidden="true"></div>

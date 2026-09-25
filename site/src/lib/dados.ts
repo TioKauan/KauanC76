@@ -2,7 +2,7 @@
  * TODO O CONTEÚDO COMERCIAL DO SITE FICA AQUI.
  *
  * Fonte: documento "Planos de Locação de CFTV | SC Soluções".
- * Mudou preço, prazo, multa ou limite de cabo? Altere só este arquivo:
+ * Mudou preço, condição ou limite de cabo? Altere só este arquivo:
  * a abertura, os planos, o configurador e as mensagens do WhatsApp acompanham.
  */
 
@@ -36,17 +36,25 @@ export const empresa = {
   descricao: 'Segurança e Tecnologia',
   site: 'https://somoscella.online',
   regiao: 'Francisco Beltrão e região',
+  // Identificação no rodapé: só o CNPJ, sem o nome do titular (decisão do Kauan, 25/09/2026).
+  cnpj: '62.768.829/0001-96',
+  cidade: 'Francisco Beltrão - PR', // espaços que não quebram: "PR" não fica sozinho na linha
 };
 
 export const contato = {
   // Número usado em todos os botões de WhatsApp (atendimento pela equipe; o robô está fora do ar).
   whatsapp: '5546991331306',
   whatsappExibicao: '(46) 99133-1306',
+  email: 'somoscella@gmail.com',
   atendimento: 'Atendimento pela equipe da SC',
 };
 
 // false = troca todos os valores por "Sob consulta".
 export const mostrarPrecos: boolean = true;
+
+// Taxa de instalação = valor de N mensalidades do plano, pago antecipadamente (Kauan, 25/09/2026).
+export const taxaInstalacaoMensalidades: number = 1;
+export const rotuloTaxa = `${taxaInstalacaoMensalidades} ${taxaInstalacaoMensalidades > 1 ? 'mensalidades' : 'mensalidade'}`;
 
 export const planos: Plano[] = [
   {
@@ -101,23 +109,23 @@ export const upgrades: Upgrade[] = [
   { id: 'nobreak', nome: 'Nobreak', icone: 'battery-charging', detalhe: 'Mantém o sistema por um período na falta de energia. Depende da bateria e da carga.' },
 ];
 
+/*
+ * "Simples de contratar": como é a contratação (25/09/2026).
+ * As condições contratuais completas (prazo, cancelamento, cobranças extras,
+ * reajuste) ficam no contrato, apresentado ao cliente antes da assinatura.
+ * Só acrescente condições aqui com pedido do Kauan; o validador confere isso.
+ */
 export const condicoes: ItemIcone[] = [
-  { icone: 'clock-3', titulo: 'Prazo mínimo de 24 meses', texto: 'Depois, segue sem nova fidelidade. Aviso de 30 dias para encerrar.' },
-  { icone: 'circle-minus', titulo: 'Saída antecipada', texto: 'Multa de 30% das mensalidades que faltarem até completar 24 meses.' },
   { icone: 'signature', titulo: 'Assinatura eletrônica', texto: 'Contrato do plano enviado e assinado pela ZapSign.' },
-  { icone: 'zap', titulo: '1ª mensalidade na ativação', texto: 'Só começa a pagar com o sistema instalado e funcionando.' },
+  { icone: 'cable', titulo: 'Taxa de instalação', texto: `Valor de ${rotuloTaxa} do plano, pago antecipadamente.` },
+  { icone: 'zap', titulo: 'Mensalidades na ativação', texto: 'As mensalidades começam com o sistema instalado e funcionando.' },
+  { icone: 'calendar-check', titulo: 'Pagamento mensal', texto: 'Por PIX, boleto ou cartão de crédito, com cobrança automática.' },
 ];
 
-export const letraMiuda =
-  'Gravação local estimada em aproximadamente 10 dias; o período varia conforme HD, resolução, movimento e modo de gravação. ' +
-  'Acesso pelo celular depende de energia, internet e rede compatível. Manutenção cobre defeitos naturais; danos externos, mau uso, ' +
-  'surtos e intervenção de terceiros são cobrados à parte. Cabeamento além do limite do plano e infraestrutura especial são orçados ' +
-  'separadamente. Reajuste anual pelo IPCA. Os equipamentos permanecem da SC Soluções durante a locação. Vigilância humana não incluída.';
-
 export const porQueLocar: ItemIcone[] = [
-  { icone: 'sparkles', titulo: 'Sem investimento inicial', texto: 'Os equipamentos são da SC. Você paga só a mensalidade do plano.' },
+  { icone: 'sparkles', titulo: 'Sem comprar equipamentos', texto: 'Os equipamentos são da SC: você paga a instalação uma vez e depois só a mensalidade do plano.' },
   { icone: 'wrench', titulo: 'Defeito natural? A SC resolve', texto: 'Reparo ou troca por equipamento equivalente ou superior, conforme o contrato.' },
-  { icone: 'calendar-check', titulo: 'Mensalidade previsível', texto: 'Valor fixo, com reajuste uma vez por ano pelo IPCA.' },
+  { icone: 'calendar-check', titulo: 'Mensalidade previsível', texto: 'Você sabe quanto paga todo mês. Sujeita a reajustes por melhorias no sistema e na renovação.' },
 ];
 
 // Serviços que viram proposta personalizada (documento: "Exemplos de soluções personalizadas").
@@ -134,9 +142,10 @@ export const servicosProposta: ServicoProposta[] = [
     id: 'alarme',
     nome: 'Alarme',
     icone: 'bell-ring',
-    titulo: 'Alarme monitorado',
-    texto: 'Proteção conectada ao seu projeto.',
-    itens: ['Alarme integrado às câmeras', 'Comunicação de eventos', 'Projeto conforme o imóvel'],
+    // Monitorado pelo próprio cliente, no aplicativo: a SC não tem central de monitoramento.
+    titulo: 'Alarme monitorado pelo app',
+    texto: 'Você acompanha e comanda pelo celular.',
+    itens: ['Alarme integrado às câmeras', 'Avisos de eventos no aplicativo', 'Projeto conforme o imóvel'],
   },
   {
     id: 'condominio',
@@ -158,14 +167,14 @@ export const servicosProposta: ServicoProposta[] = [
 
 export const textoProposta =
   'A SC prepara proposta técnica, composição de equipamentos, mensalidade, taxa de implantação quando aplicável, ' +
-  'prazo mínimo, manutenção preventiva e contrato personalizados.';
+  'manutenção preventiva e contrato personalizados.';
 
 export const etapas: Etapa[] = [
   { icone: 'mouse-pointer-click', titulo: 'Escolha o plano', texto: 'Pela quantidade de pontos que quer acompanhar, ou montando o sistema no configurador.', meta: '1, 2, 3, 4 ou 8 câmeras' },
   { icone: 'map-pin', titulo: 'A SC confirma o local', texto: 'Pontos, viabilidade técnica e se precisa de alguma infraestrutura extra.', meta: 'Cabo dentro do limite do plano' },
   { icone: 'signature', titulo: 'Assine pelo celular', texto: 'O contrato do plano chega pela ZapSign. Sem papel, sem ir até a loja.', meta: 'Assinatura eletrônica' },
-  { icone: 'wrench', titulo: 'Instalação e app', texto: 'Instalamos, configuramos o gravador, testamos e deixamos as imagens no seu celular.', meta: '1ª mensalidade só na ativação' },
-  { icone: 'headset', titulo: 'Suporte contínuo', texto: 'Diagnóstico remoto em horário comercial e manutenção de defeitos naturais durante o contrato.', meta: 'Troca por equivalente ou superior' },
+  { icone: 'wrench', titulo: 'Instalação e app', texto: 'Instalamos, configuramos o gravador, testamos e deixamos as imagens no seu celular.', meta: 'Mensalidades a partir da ativação' },
+  { icone: 'headset', titulo: 'Suporte contínuo', texto: 'Revisão preventiva a cada 6 meses, diagnóstico remoto em horário comercial e manutenção de defeitos naturais durante o contrato.', meta: 'Troca por equivalente ou superior' },
 ];
 
 // Perguntas frequentes: texto do documento.
@@ -175,8 +184,8 @@ export const duvidas: Duvida[] = [
     resposta: 'Não. Os equipamentos são fornecidos em regime de locação e permanecem de propriedade da SC Soluções.',
   },
   {
-    pergunta: 'A instalação está incluída?',
-    resposta: 'Sim. A instalação padrão está incluída dentro do limite de cabeamento do plano. Infraestrutura especial e materiais adicionais são orçados separadamente.',
+    pergunta: 'Como funciona a instalação?',
+    resposta: `A instalação tem taxa no valor de ${rotuloTaxa} do plano, paga antecipadamente. Ela cobre a instalação padrão dentro do limite de cabeamento do plano; infraestrutura especial e materiais adicionais são orçados separadamente.`,
   },
   {
     pergunta: 'Consigo ver as câmeras pelo celular?',
@@ -188,11 +197,11 @@ export const duvidas: Duvida[] = [
   },
   {
     pergunta: 'A manutenção está incluída?',
-    resposta: 'Defeitos naturais dos equipamentos locados são cobertos. Danos externos, mau uso, vandalismo, surtos e intervenção de terceiros podem gerar cobrança.',
+    resposta: 'Sim. Há revisão preventiva a cada 6 meses, e defeitos naturais dos equipamentos locados são consertados ou trocados por equivalente ou superior.',
   },
   {
     pergunta: 'Posso cancelar?',
-    resposta: 'O prazo mínimo é de 24 meses. Durante esse período, o cancelamento antecipado gera multa de 30% das mensalidades restantes. Depois do prazo mínimo, o contrato continua por prazo indeterminado e pode ser encerrado com aviso de 30 dias.',
+    resposta: 'Sim. As condições de cancelamento estão no contrato, e a equipe da SC explica cada uma antes da assinatura.',
   },
   {
     pergunta: 'Posso adicionar câmeras premium?',
@@ -212,6 +221,15 @@ export function nomePlano(plano: Plano): string {
 
 export function textoPreco(plano: Plano): string {
   return mostrarPrecos ? `R$ ${formatarPreco(plano.preco)}/mês` : 'Sob consulta';
+}
+
+export function taxaInstalacao(plano: Plano): number {
+  return plano.preco * taxaInstalacaoMensalidades;
+}
+
+/** "R$ 99,90" (ou "1 mensalidade" quando os preços estão escondidos). */
+export function textoTaxaInstalacao(plano: Plano): string {
+  return mostrarPrecos ? `R$ ${formatarPreco(taxaInstalacao(plano))}` : rotuloTaxa;
 }
 
 export const menorPreco = Math.min(...planos.map((p) => p.preco));

@@ -19,7 +19,7 @@ describe('busca nas dúvidas', () => {
     ['quero desistir do contrato', 'Posso cancelar?'],
     ['quebrou a câmera', 'A manutenção está incluída?'],
     ['quanto tempo grava?', 'Quantos dias ficam gravados?'],
-    ['instala', 'A instalação está incluída?'],
+    ['instala', 'Como funciona a instalação?'],
     ['visão noturna', 'Posso adicionar câmeras premium?'],
     ['preciso comprar?', 'Preciso comprar os equipamentos?'],
   ])('"%s" → %s', (consulta, esperada) => {

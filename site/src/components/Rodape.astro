@@ -1,7 +1,7 @@
 ---
 import Icone from './Icone.astro';
 import Logo from './Logo.astro';
-import { empresa } from '../lib/dados';
+import { contato, empresa } from '../lib/dados';
 import { links } from '../lib/site';
 ---
 
@@ -14,6 +14,9 @@ import { links } from '../lib/site';
     </nav>
     <a class="voltar-topo" href="#inicio">Voltar ao início <Icone nome="arrow-up" tamanho={16} /></a>
   </div>
+  <p class="wrap rodape-empresa">
+    {empresa.nome} em {empresa.descricao} · CNPJ {empresa.cnpj} · {empresa.cidade} · <a href={`mailto:${contato.email}`}>{contato.email}</a>
+  </p>
   <div class="wrap rodape-base">
     <span>© {new Date().getFullYear()} {empresa.nome} · somoscella.online</span>
     <span>Segurança · Redes · Acesso · Energia</span>

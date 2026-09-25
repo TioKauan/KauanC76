@@ -12,7 +12,7 @@ import { execSync } from 'node:child_process';
 import { readFileSync, writeFileSync, existsSync, statSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { planos, contato, formatarPreco } from '../src/lib/dados.ts';
+import { planos, contato, empresa, formatarPreco } from '../src/lib/dados.ts';
 
 const aqui = path.dirname(fileURLToPath(import.meta.url));
 const raizSite = path.resolve(aqui, '..');
@@ -101,6 +101,10 @@ const rolarTudo = (pagina) => pagina.evaluate(async () => {
   const html = readFileSync(path.join(dist, 'index.html'), 'utf8');
   const textoTodo = await pagina.evaluate(() => document.body.innerText);
   conferir('Número antigo (46) 99113-8360 não aparece', !/99113.?8360|991138360/.test(html + textoTodo));
+  // Identificação da empresa (Decreto 7.962/2013, art. 2º): CNPJ, cidade e e-mail visíveis.
+  const rodape = await pagina.$eval('.rodape-empresa', (e) => e.innerText);
+  conferir('Rodapé identifica a empresa (CNPJ, cidade, e-mail)',
+    [empresa.cnpj, empresa.cidade, contato.email].every((t) => rodape.includes(t)));
 
   const precosValidos = new Set(planos.map((p) => formatarPreco(p.preco)));
   const achados = [...textoTodo.matchAll(/R\$\s?(\d{1,3},\d{2})/g)].map((m) => m[1]);
@@ -142,7 +146,7 @@ for (const largura of [360, 390, 768, 1024, 1440]) {
   if (largura === 390) {
     conferir('Zero erros no console (celular)', erros.length === 0, erros.slice(0, 2).join(' | '));
     const pequenos = await pagina.evaluate(() => {
-      const alvo = 'button, a.btn, [role="tab"], summary, .chip, label.opcao, .ese-opcao, .plano-simular, .ese-acao, .menu-botao, .rodape-nav a, .voltar-topo, .sugestao-ponto, .camera-ponto';
+      const alvo = 'button, a.btn, [role="tab"], summary, .chip, label.opcao, .ese-opcao, .plano-simular, .ese-acao, .menu-botao, .rodape-nav a, .voltar-topo, .sugestao-ponto, .camera-ponto, .rodape-empresa a, .contato-email a';
       return [...document.querySelectorAll(alvo)]
         .filter((el) => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== 'hidden' && !el.closest('[hidden]'); })
         .map((el) => { const r = el.getBoundingClientRect(); return { el: (el.className?.baseVal ?? el.className) || el.tagName, texto: el.textContent.trim().slice(0, 24), h: Math.round(r.height), w: Math.round(r.width) }; })
@@ -230,9 +234,17 @@ grupo('Tela 2 · Planos');
   const destaques = cartoes.filter((c) => c.destaque).map((c) => c.n);
   conferir('Destaque "Cobertura completa" só no plano de 4 câmeras', destaques.length === 1 && destaques[0] === 4 && cartoes.find((c) => c.n === 4).texto.includes('Cobertura completa'));
   const claro = await pagina.$eval('.tudo-claro', (e) => e.textContent);
-  const miuda = await pagina.$eval('.letra-miuda', (e) => e.textContent);
-  conferir('"Tudo claro antes de assinar": prazo, saída, ZapSign, 1ª mensalidade + letra miúda',
-    ['24 meses', '30%', 'ZapSign', 'ativação'].every((t) => claro.includes(t)) && miuda.includes('IPCA') && miuda.includes('aproximadamente 10 dias'));
+  conferir('"Simples de contratar": assinatura eletrônica, taxa de instalação, mensalidades na ativação, pagamento',
+    ['ZapSign', 'Taxa de instalação', 'ativação', 'PIX'].every((t) => claro.includes(t)));
+  // Taxa de instalação = 1 mensalidade do plano, paga antecipadamente (Kauan, 25/09/2026).
+  const taxas = cartoes.filter((c) => { const p = planos.find((x) => x.cameras === c.n); return c.texto.includes(`Instalação: R$ ${formatarPreco(p.preco)} (1 mensalidade)`); }).length;
+  const gratis = (await pagina.evaluate(() => document.body.textContent)).match(/instalação (padrão )?(está )?inclu[sí]|sem investimento inicial|sem pagar antes/i);
+  conferir('Cada plano mostra a taxa de instalação (1 mensalidade) e nada diz que a instalação é grátis', taxas === 5 && !gratis,
+    `${taxas}/5${gratis ? `; achado: "${gratis[0]}"` : ''}`);
+  // As condições contratuais ficam no contrato (25/09/2026); o site não repete prazo, multa etc.
+  const contratuais = /prazo mínimo|24 meses|multa|IPCA|valor de reposição|desistência/i;
+  const achadoContratual = (await pagina.evaluate(() => document.body.textContent)).match(contratuais);
+  conferir('Condições contratuais ficam no contrato (sem prazo mínimo, multa ou cobranças extras no site)', !achadoContratual, achadoContratual ? `achado: "${achadoContratual[0]}"` : '');
   const ctas = cartoes.filter((c) => { const t = new URL(c.cta).searchParams.get('text'); const p = planos.find((x) => x.cameras === c.n); return t.includes(`${p.cameras} ${p.cameras > 1 ? 'câmeras' : 'câmera'}`) && t.includes(formatarPreco(p.preco)); });
   conferir('"Quero este plano" leva nome e valor do plano ao WhatsApp', ctas.length === 5, `${ctas.length}/5`);
   await pagina.click('#guia-redes');

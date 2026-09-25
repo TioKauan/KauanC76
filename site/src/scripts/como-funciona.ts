@@ -1,7 +1,7 @@
 import { reduzirMovimento } from './movimento';
 import { exigir, todos } from './dom';
 import { buscarDuvidas } from '../lib/busca';
-import { duvidas, linkWhatsapp, formatarPreco, menorPreco, mostrarPrecos } from '../lib/dados';
+import { duvidas, linkWhatsapp, formatarPreco, menorPreco, mostrarPrecos, rotuloTaxa } from '../lib/dados';
 
 /** Linha do tempo que acende + busca nas dúvidas. */
 export function iniciarComoFunciona(): void {
@@ -80,7 +80,7 @@ export function iniciarComoFunciona(): void {
     if (r.tipo === 'preco') {
       perguntas.forEach((p) => { p.hidden = true; });
       const link = Object.assign(document.createElement('a'), { href: '#planos', textContent: 'Planos de locação' });
-      const extra = mostrarPrecos ? `: a partir de R$ ${formatarPreco(menorPreco)}/mês, com instalação padrão inclusa.` : '.';
+      const extra = mostrarPrecos ? `: a partir de R$ ${formatarPreco(menorPreco)}/mês, e a instalação custa ${rotuloTaxa} do plano.` : '.';
       status.replaceChildren('Os valores estão em ', link, extra);
       return;
     }

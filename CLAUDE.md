@@ -18,6 +18,13 @@ solução, não a mais simples de entender; nas conversas, explique o porquê da
 - Comunicação dos planos: "aproximadamente 10 dias" de gravação; acesso pelo celular depende de
   energia e internet; recursos premium sempre "sob orçamento"; condomínio e empresa com
   infraestrutura especial → proposta personalizada.
+- **Condições contratuais ficam no contrato** (25/09/2026): prazo mínimo, cancelamento, cobranças
+  extras e reajuste não aparecem no site; o contrato é apresentado antes da assinatura. Só mude isso
+  com pedido do Kauan; o validador confere. Rodapé: CNPJ, cidade e e-mail. Alarme é "monitorado
+  pelo app".
+- **A instalação não é grátis:** taxa = valor de 1 mensalidade do plano, paga antecipadamente
+  (`taxaInstalacaoMensalidades` em `dados.ts`). Nunca escreva "instalação inclusa" nem "sem
+  investimento inicial"; o validador falha.
 - WhatsApp do site: `(46) 99133-1306`. O número antigo `(46) 99113-8360` não pode aparecer.
 - Logo: só os arquivos oficiais (`site/public/marca/`); nunca redesenhe. O Claude não gera foto.
 - **Publicar é ação externa: só com pedido explícito do Kauan** (Nginx do VPS, guardando antes a versão no ar).

@@ -20,6 +20,7 @@ import { msgGeral } from '../lib/site';
       <dl class="contato-dados">
         <div><dt>WhatsApp</dt><dd>{contato.whatsappExibicao}</dd></div>
         <div><dt>Atendimento</dt><dd>{empresa.regiao}</dd></div>
+        <div class="contato-email"><dt>E-mail</dt><dd><a href={`mailto:${contato.email}`}>{contato.email}</a></dd></div>
       </dl>
       <p class="contato-nota">
         <Icone nome="users" tamanho={16} />

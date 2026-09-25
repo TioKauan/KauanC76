@@ -1,4 +1,4 @@
-import { planos, nomePlano, textoPreco, linkWhatsapp, mensagemPlano, condicoes, formatarPreco, menorPreco, mostrarPrecos, type Plano } from '../lib/dados';
+import { planos, nomePlano, textoPreco, linkWhatsapp, mensagemPlano, formatarPreco, menorPreco, mostrarPrecos, textoTaxaInstalacao, type Plano } from '../lib/dados';
 import type { ResumoBarra } from './configurador';
 import { exigir, todos } from './dom';
 
@@ -29,7 +29,7 @@ export function iniciarBarra(): void {
     if (secao === 'planos' && !exigir('#aba-cameras').hidden) {
       return {
         titulo: `${nomePlano(planoVisivel).replace('Plano de ', '')} · ${textoPreco(planoVisivel)}`,
-        sub: condicoes[0]?.titulo ?? '',
+        sub: `Instalação: ${textoTaxaInstalacao(planoVisivel)}`,
         link: linkWhatsapp(mensagemPlano(planoVisivel)),
         acao: 'Quero este',
       };

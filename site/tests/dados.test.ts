@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { planos, contato, planoParaCameras, formatarPreco, linkWhatsapp, mensagemPlano, nomePlano, menorPreco, duvidas, condicoes } from '../src/lib/dados';
+import { planos, contato, empresa, planoParaCameras, formatarPreco, linkWhatsapp, mensagemPlano, nomePlano, menorPreco, duvidas, condicoes, porQueLocar, servicosProposta, textoProposta, etapas, taxaInstalacao, textoTaxaInstalacao } from '../src/lib/dados';
 
 describe('planos de locação', () => {
   it('são os planos fixos de 1, 2, 3, 4 e 8 câmeras, em ordem', () => {
@@ -74,6 +74,36 @@ describe('textos e contato', () => {
       expect(msg).toContain(nomePlano(p));
       expect(msg).toContain(formatarPreco(p.preco));
     }
+  });
+
+  it('condições contratuais (prazo, multa, cobranças extras, reajuste) ficam no contrato, não no site', () => {
+    const tudo = JSON.stringify({ condicoes, duvidas, porQueLocar, servicosProposta, textoProposta });
+    expect(tudo).not.toMatch(/prazo mínimo|24 meses|multa|IPCA|valor de reposição|desistência|central de monitoramento/i);
+    expect(condicoes.map((c) => c.titulo)).toEqual(['Assinatura eletrônica', 'Taxa de instalação', 'Mensalidades na ativação', 'Pagamento mensal']);
+  });
+
+  it('taxa de instalação = 1 mensalidade do plano, e nenhum texto diz que a instalação é grátis', () => {
+    for (const p of planos) {
+      expect(taxaInstalacao(p)).toBe(p.preco);
+      expect(textoTaxaInstalacao(p)).toBe(`R$ ${formatarPreco(p.preco)}`);
+    }
+    const tudo = JSON.stringify({ condicoes, duvidas, porQueLocar, etapas });
+    expect(tudo).not.toMatch(/instalação (padrão )?(está )?inclu[sí]|sem investimento inicial|sem pagar antes/i);
+    expect(tudo).toMatch(/Valor de 1 mensalidade do plano, pago antecipadamente/);
+  });
+
+  it('identifica a empresa com CNPJ válido e e-mail', () => {
+    const n = empresa.cnpj.replace(/\D/g, '');
+    const dv = (base: string, pesos: number[]) => {
+      const r = [...base].reduce((s, d, i) => s + Number(d) * pesos[i]!, 0) % 11;
+      return r < 2 ? '0' : String(11 - r);
+    };
+    const p1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+    const d1 = dv(n.slice(0, 12), p1);
+    const d2 = dv(n.slice(0, 12) + d1, [6, ...p1]);
+    expect(n).toHaveLength(14);
+    expect(n.slice(12)).toBe(d1 + d2);
+    expect(contato.email).toMatch(/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/);
   });
 
   it('respeita as regras de comunicação do documento', () => {

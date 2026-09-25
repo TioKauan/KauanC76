@@ -63,14 +63,13 @@
 .por-que-item b { display: block; font-size: 16px; margin: 14px 0 6px; }
 .por-que-item span { font-size: 13.5px; color: #a9bacb; line-height: 1.6; }
 
-.tudo-claro { margin-top: 18px; padding: 22px 26px; display: grid; grid-template-columns: 250px repeat(4, 1fr); gap: 20px; align-items: center; background: #050c15; border: 1px dashed #2a4258; border-radius: 16px; }
+.tudo-claro { margin-top: 18px; padding: 22px 26px; display: grid; grid-template-columns: 250px repeat(4, 1fr); gap: 20px 24px; align-items: center; background: #050c15; border: 1px dashed #2a4258; border-radius: 16px; }
 .tudo-claro h3 { font-size: 18px; }
 .tudo-claro h3 small { display: block; font-size: 12.5px; color: var(--texto-3); font-weight: 500; margin-top: 6px; letter-spacing: 0; }
 .condicao { display: flex; gap: 12px; align-items: flex-start; }
 .condicao .ic { color: var(--ciano); margin-top: 2px; }
 .condicao b { display: block; font-size: 14px; }
 .condicao span { font-size: 12.5px; color: #9fb1c2; line-height: 1.5; }
-.letra-miuda { font-size: 12px; color: #8196ab; line-height: 1.7; margin-top: 16px; max-width: 1000px; }
 
 @media (max-width: 1200px) {
   .planos-grade { gap: 12px; }

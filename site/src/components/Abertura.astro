@@ -3,11 +3,10 @@
 import Icone from './Icone.astro';
 import { cenas } from '../lib/cenas';
 import { ambientes, situacoes, sistemas, estadoCena, type SistemaId } from '../lib/cenarios';
-import { formatarPreco, menorPreco, mostrarPrecos, condicoes } from '../lib/dados';
+import { formatarPreco, menorPreco, mostrarPrecos, rotuloTaxa } from '../lib/dados';
 
 const f = (n: number) => n.toFixed(2);
 const inicial = estadoCena('casa', 'normal', false);
-const prazo = condicoes[0]?.titulo.toLowerCase() ?? '';
 const precoMenor = `R$ ${formatarPreco(menorPreco)}`;
 
 // Cada ambiente: SVG gerado no build + posição dos rótulos em % do desenho (760 × 600).
@@ -36,7 +35,7 @@ const servicos = [
   { aba: null, icone: 'cctv', titulo: 'Locação de câmeras', sub: 'Planos de 1 a 8 câmeras' },
   { aba: 'redes', icone: 'network', titulo: 'Redes gerenciadas', sub: 'Wi-Fi e cabeamento' },
   { aba: 'condominio', icone: 'scan-face', titulo: 'Controle de acesso', sub: 'Facial, biometria, vídeo porteiro' },
-  { aba: 'alarme', icone: 'bell-ring', titulo: 'Alarme monitorado', sub: 'Integrado às câmeras' },
+  { aba: 'alarme', icone: 'bell-ring', titulo: 'Alarme pelo app', sub: 'Integrado às câmeras' },
   { aba: 'nobreak', icone: 'battery-charging', titulo: 'Energia e nobreak', sub: 'Continuidade dos sistemas' },
 ] as const;
 ---
@@ -74,7 +73,7 @@ const servicos = [
           <strong>
             {mostrarPrecos ? <>Locação de câmeras a partir de <em>{precoMenor}</em>/mês</> : 'Planos de locação de câmeras'}
           </strong>
-          <small>Instalação padrão inclusa · {prazo}</small>
+          <small>Instalação no valor de {rotuloTaxa} · mensalidades a partir da ativação</small>
         </span>
       </a>
     </div>

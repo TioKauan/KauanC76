@@ -14,7 +14,7 @@ const sinonimos: Record<string, string[]> = {
   instalar: ['instalacao'], instala: ['instalacao'], cabo: ['instalacao', 'cabeamento'], fio: ['instalacao', 'cabeamento'],
   noite: ['premium', 'colorida'], noturna: ['premium', 'colorida'], visao: ['premium'], audio: ['premium'], colorida: ['premium'], melhor: ['premium'], upgrade: ['premium'],
 };
-const ignorar = new Set(['a', 'o', 'e', 'de', 'da', 'do', 'das', 'dos', 'em', 'no', 'na', 'um', 'uma', 'eu', 'posso', 'pode', 'como', 'que', 'as', 'os', 'se', 'para', 'pra', 'com', 'meu', 'minha', 'tem', 'ter', 'sim', 'nao', 'qual', 'quanto', 'quantos']);
+const ignorar = new Set(['a', 'o', 'e', 'de', 'da', 'do', 'das', 'dos', 'em', 'no', 'na', 'um', 'uma', 'eu', 'voce', 'voces', 'posso', 'pode', 'como', 'que', 'as', 'os', 'se', 'para', 'pra', 'com', 'meu', 'minha', 'tem', 'ter', 'sim', 'nao', 'qual', 'quanto', 'quantos']);
 // Perguntas de preço vão para a seção de planos (não há dúvida frequente sobre valores).
 const palavrasPreco = /\b(preco|precos|valor|valores|custa|custo|mensalidade|barato|caro)\b|\bquanto (e|fica|sai|pago|pagaria|vou pagar)\b/;
 
