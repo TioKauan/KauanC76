@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>03 · Monte seu sistema</title>
+<link rel="stylesheet" href="assets/mock.css">
+<script src="assets/icons.js"></script>
+<style>
+  body { background: radial-gradient(900px 500px at 30% 20%, #0a2440aa, transparent 70%), var(--bg); }
+  .sec { padding: 56px 0 70px; position: relative; }
+  .head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 28px; }
+  h2 { font-size: 46px; line-height: 1.1; letter-spacing: -.045em; }
+  .steps { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #8ea3b6; }
+  .steps .s { display: flex; align-items: center; gap: 9px; }
+  .steps .s i, .steps .s .n { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; border: 1px solid #2c4760; font-style: normal; font-size: 12px; font-weight: 700; }
+  .steps .s.done .n { background: #0e3340; border-color: var(--cyan); color: var(--cyan); }
+  .steps .s.on { color: #fff; font-weight: 700; }
+  .steps .s.on .n { background: var(--orange); border-color: var(--orange); color: #160800; box-shadow: 0 0 0 5px #ff6a0022; }
+  .steps .bar { width: 38px; height: 1px; background: #2c4760; }
+  .steps .bar.done { background: var(--cyan); }
+
+  .grid { display: grid; grid-template-columns: 1fr 440px; gap: 20px; }
+  .canvas { position: relative; padding: 16px; }
+  .canvas-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .canvas-top .t { font-size: 13px; color: #c7d3de; display: flex; gap: 10px; align-items: center; }
+  .seg { display: flex; padding: 4px; border-radius: 9px; border: 1px solid var(--line-2); background: #06101b; }
+  .seg span { font-size: 12px; padding: 7px 13px; border-radius: 6px; color: #9fb1c2; display: inline-flex; gap: 6px; align-items: center; }
+  .seg span.on { background: #12324a; color: var(--cyan); font-weight: 700; }
+  .plan-svg { display: block; border-radius: 12px; background: #040c16; border: 1px solid #16304a; }
+  .legend { display: flex; gap: 22px; margin-top: 12px; font-size: 12px; color: #93a6b8; }
+  .legend span { display: inline-flex; gap: 8px; align-items: center; }
+  .legend i.d { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .hint { position: absolute; left: 292px; top: 346px; padding: 10px 12px; border-radius: 10px; background: #0a1a2a; border: 1px solid #2d6f84; font-size: 12px; color: #d5ecf2; box-shadow: 0 12px 30px #000a; display: flex; gap: 8px; align-items: center; }
+
+  .whatif { margin-top: 16px; border-top: 1px solid var(--line); padding-top: 16px; }
+  .whatif .wh span { font-size: 11px; letter-spacing: .16em; color: #ffad70; font-weight: 700; }
+  .wgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+  .w { border: 1px solid #22394f; border-radius: 12px; padding: 14px; background: #06101b; }
+  .w.on { border-color: #ff9a4a; background: linear-gradient(160deg, #22160d, #07111c 70%); }
+  .w b { display: flex; gap: 8px; align-items: center; font-size: 14px; }
+  .w b .ic { color: #ffb070; }
+  .w p { font-size: 12.5px; color: #a8b9c9; line-height: 1.55; margin: 8px 0 10px; }
+  .w a { font-size: 12px; color: var(--cyan); font-weight: 700; }
+  .panel { padding: 22px; display: flex; flex-direction: column; gap: 18px; }
+  .panel h3 { font-size: 22px; }
+  .panel .sub { font-size: 12px; color: var(--dim); margin-top: 4px; }
+  .pts { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .pts li { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid #1f3448; border-radius: 10px; font-size: 13px; background: #07121e; }
+  .pts li .n { width: 22px; height: 22px; border-radius: 50%; background: var(--cyan); color: #04121a; font-size: 11px; font-weight: 800; display: grid; place-items: center; }
+  .pts li small { margin-left: auto; color: #7f95a9; font-size: 12px; }
+  .pts li.add { border-style: dashed; color: #7f95a9; }
+  .pts li.add .n { background: transparent; border: 1px dashed #4a6780; color: #7f95a9; }
+
+  .rec { border: 1px solid #ff7a18; border-radius: 14px; padding: 16px 18px; background: linear-gradient(135deg, #2a1608, #0b121c 70%); }
+  .rec .k { font-size: 11px; letter-spacing: .14em; color: #ffb57a; font-weight: 700; }
+  .rec .row { display: flex; justify-content: space-between; align-items: baseline; margin-top: 6px; }
+  .rec .row b { font-size: 22px; }
+  .rec .row strong { font-size: 28px; color: #ffb070; letter-spacing: -.03em; }
+  .rec .row strong small { font-size: 13px; color: #c9a58a; font-weight: 500; }
+  .cable { margin-top: 12px; }
+  .cable .lbl { display: flex; justify-content: space-between; font-size: 12px; color: #c7d3de; margin-bottom: 6px; }
+  .cable .track { height: 8px; border-radius: 99px; background: #1b2735; overflow: hidden; }
+  .cable .fill { width: 72%; height: 100%; background: linear-gradient(90deg, var(--blue), var(--cyan)); border-radius: 99px; }
+  .cable small { display: block; font-size: 11px; color: #8a9db0; margin-top: 6px; }
+
+  .opts { display: grid; gap: 8px; }
+  .opt { display: flex; align-items: center; gap: 12px; font-size: 13px; color: #c7d3de; }
+  .opt .box { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid #4a6780; display: grid; place-items: center; }
+  .opt.on .box { background: var(--cyan); border-color: var(--cyan); color: #04121a; }
+  .opt .ic { color: #8fb3cc; }
+  .opt em { margin-left: auto; font-style: normal; font-size: 11px; color: #ffb57a; }
+
+  .wa { border-radius: 12px; background: #0b1f18; border: 1px solid #1e5a43; padding: 12px 14px; font-size: 12.5px; line-height: 1.55; color: #d6f2e6; position: relative; }
+  .wa .h { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #6fd2a4; font-weight: 700; letter-spacing: .06em; margin-bottom: 6px; }
+  .send { justify-content: center; }
+  .alt { text-align: center; font-size: 12.5px; color: var(--cyan); }
+</style>
+</head>
+<body>
+<div class="mock-label"><span>SC Soluções · Mockup 03 — Configurador “Monte seu sistema”</span><span>Exemplo ilustrativo · valores do plano reais, metragens simuladas</span></div>
+
+<div class="wrap">
+  <header class="hdr">
+    <a class="logo"><img src="assets/sc-logo-lockup.webp" alt="SC Soluções"></a>
+    <nav><a>Início</a><a>Soluções</a><a>Planos</a><a class="on">Monte seu sistema</a><a>Como funciona</a><a>Dúvidas</a></nav>
+    <a class="cta">Fale com a SC <i data-i="arrow-up-right" data-s="17"></i></a>
+  </header>
+
+  <section class="sec">
+    <div class="head">
+      <div>
+        <p class="eyebrow">Monte seu sistema</p>
+        <h2>Marque o que você quer proteger.<br><span class="grad">A SC dimensiona o resto.</span></h2>
+      </div>
+      <div class="steps">
+        <span class="s done"><span class="n">✓</span>Ambiente</span><span class="bar done"></span>
+        <span class="s on"><span class="n">2</span>Pontos</span><span class="bar"></span>
+        <span class="s"><span class="n">3</span>Recursos</span><span class="bar"></span>
+        <span class="s"><span class="n">4</span>Enviar</span>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card canvas">
+        <div class="canvas-top">
+          <span class="t"><i data-i="house" data-s="17"></i> Casa térrea · exemplo · toque onde quer ver</span>
+          <div class="seg"><span class="on"><i data-i="layers" data-s="14"></i> Planta</span><span><i data-i="move" data-s="14"></i> Vista 3D</span><span><i data-i="camera" data-s="14"></i> Enviar foto do imóvel</span></div>
+        </div>
+        <svg class="plan-svg" id="plan" width="818" height="540" viewBox="0 0 818 540"></svg>
+        <div class="legend">
+          <span><i class="d" style="background:#6de9f6"></i> Câmera escolhida</span>
+          <span><i class="d" style="border:1.5px dashed #6d8aa3"></i> Ponto sugerido</span>
+          <span><i class="d" style="background:#ff8a2b"></i> Gravador (DVR)</span>
+          <span style="margin-left:auto">Metragens ilustrativas · confirmadas na visita técnica</span>
+        </div>
+        <div class="hint"><i data-i="mouse-pointer-click" data-s="16"></i> Adicionar câmera na sala?</div>
+        <div class="whatif">
+          <div class="wh"><span>TESTE ANTES DE CONTRATAR · E SE…?</span></div>
+          <div class="wgrid">
+            <div class="w on"><b><i data-i="zap" data-s="16"></i> Faltou energia</b><p>Sem nobreak, câmeras e gravador desligam até a luz voltar. Com nobreak, seguem gravando pelo tempo da bateria.</p><a>+ Adicionar nobreak</a></div>
+            <div class="w"><b><i data-i="cloud-off" data-s="16"></i> A internet caiu</b><p>A gravação continua no gravador do imóvel. Só as imagens pelo celular param até a conexão voltar.</p><a>Nada a adicionar</a></div>
+            <div class="w"><b><i data-i="moon" data-s="16"></i> Pouca luz à noite</b><p>Com imagem colorida à noite, as cores aparecem melhor no escuro, conforme a iluminação do local.</p><a>✓ Já selecionado</a></div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="card panel">
+        <div><h3>Seu sistema</h3><div class="sub">Casa · 4 pontos marcados</div></div>
+        <ul class="pts">
+          <li><span class="n">1</span>Entrada principal<small>≈ 12 m</small></li>
+          <li><span class="n">2</span>Garagem e portão<small>≈ 19 m</small></li>
+          <li><span class="n">3</span>Fundos / quintal<small>≈ 16 m</small></li>
+          <li><span class="n">4</span>Lateral esquerda<small>≈ 11 m</small></li>
+          <li class="add"><span class="n">+</span>Adicionar ponto</li>
+        </ul>
+        <div class="rec">
+          <div class="k">PLANO RECOMENDADO</div>
+          <div class="row"><b>4 câmeras</b><strong>R$ 99,90 <small>/mês</small></strong></div>
+          <div class="cable">
+            <div class="lbl"><span>Cabo estimado</span><span><b>≈ 58 m</b> de 80 m inclusos</span></div>
+            <div class="track"><div class="fill"></div></div>
+            <small>Dentro do limite do plano: sem cobrança de cabo extra.</small>
+          </div>
+        </div>
+        <div class="opts">
+          <div class="opt on"><span class="box"><i data-i="check" data-s="13" data-w="3"></i></span><i data-i="moon" data-s="16"></i>Imagem colorida à noite<em>sob orçamento</em></div>
+          <div class="opt"><span class="box"></span><i data-i="mic" data-s="16"></i>Áudio bidirecional<em>sob orçamento</em></div>
+          <div class="opt"><span class="box"></span><i data-i="scan-eye" data-s="16"></i>Análise inteligente<em>sob orçamento</em></div>
+          <div class="opt"><span class="box"></span><i data-i="battery-charging" data-s="16"></i>Nobreak<em>sob orçamento</em></div>
+        </div>
+        <div class="wa">
+          <div class="h"><i data-i="message-circle" data-s="14"></i> PRÉVIA DA MENSAGEM</div>
+          Olá! Montei meu sistema no site: <b>casa, 4 câmeras</b> (entrada, garagem, fundos e lateral). Plano de 4 câmeras, R$ 99,90/mês. Tenho interesse em imagem colorida à noite. Podemos agendar a avaliação?
+        </div>
+        <a class="btn primary send">Enviar para a SC pelo WhatsApp <i data-i="arrow-up-right" data-s="17" data-w="2"></i></a>
+        <div class="alt">Mais de 8 câmeras ou câmera IP? Receber proposta personalizada →</div>
+      </aside>
+    </div>
+
+    <span class="pin" style="left: 640px; top: 372px;">1</span>
+    <span class="pin" style="left: 760px; top: 212px;">5</span>
+    <span class="pin" style="left: 1338px; top: 598px;">2</span>
+    <span class="pin" style="left: 1338px; top: 694px;">3</span>
+    <span class="pin" style="left: 1338px; top: 1042px;">4</span>
+    <span class="pin" style="left: 345px; top: 893px;">6</span>
+    <div class="notes-row">
+      <div class="note" data-n="1"><b>Ferramenta de projeto, versão leiga</b>Inspirada nos planejadores de câmeras e redes dos grandes fabricantes, só que simples: o visitante toca onde quer ver e o site mostra o cone de visão.</div>
+      <div class="note" data-n="2"><b>Plano calculado sozinho</b>1, 2, 3, 4 ou 8 câmeras. Passou disso ou precisa de câmera IP, o configurador vira pedido de proposta.</div>
+      <div class="note" data-n="3"><b>Cabo × limite do plano</b>Mostra se a estimativa cabe na instalação padrão (20 a 100 m). Evita surpresa na visita.</div>
+      <div class="note" data-n="4"><b>Contato que chega pronto</b>A mensagem já leva ambiente, pontos e plano. O atendimento manual fica mais rápido enquanto o robô do WhatsApp está fora.</div>
+      <div class="note" data-n="5"><b>Vista 3D e foto do imóvel</b>Próxima etapa: trocar a planta pela cena 3D da abertura, ou enviar uma foto para a SC marcar os pontos.</div>
+      <div class="note" data-n="6"><b>Teste antes de contratar</b>O “E se…?” entra no configurador e mostra o que o upgrade resolve, sem prometer o que o sistema não faz.</div>
+    </div>
+  </section>
+</div>
+
+<script>
+const svg = document.getElementById('plan');
+const P = [];
+const add = (s) => P.push(s);
+// terreno + rua
+add(`<defs>
+  <pattern id="grass" width="14" height="14" patternUnits="userSpaceOnUse"><path d="M0 14 L14 0" stroke="#0e2a2a" stroke-width="1"/></pattern>
+  <radialGradient id="cone" cx="0" cy="0" r="1"><stop offset="0" stop-color="#6de9f6" stop-opacity=".45"/><stop offset="1" stop-color="#6de9f6" stop-opacity=".03"/></radialGradient>
+  <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>`);
+add(`<rect x="0" y="0" width="818" height="540" fill="#040c16"/>`);
+add(`<rect x="24" y="22" width="770" height="440" rx="6" fill="url(#grass)" stroke="#1d3550" stroke-dasharray="6 6"/>`);
+add(`<rect x="0" y="480" width="818" height="60" fill="#0a1522"/><path d="M0 510 H818" stroke="#2b3f55" stroke-dasharray="18 14" stroke-width="2"/>`);
+add(`<text x="409" y="530" fill="#4f6a83" font-size="11" letter-spacing="4" text-anchor="middle">RUA</text>`);
+// muro frontal com portões
+add(`<path d="M24 462 H250 M300 462 H590 M750 462 H794" stroke="#4a6a88" stroke-width="5"/>`);
+add(`<path d="M250 462 H300" stroke="#6de9f6" stroke-width="3"/><path d="M590 462 H750" stroke="#6de9f6" stroke-width="3" stroke-dasharray="8 5"/>`);
+add(`<text x="275" y="452" fill="#8fd9e8" font-size="10" text-anchor="middle">portão</text><text x="670" y="452" fill="#8fd9e8" font-size="10" text-anchor="middle">portão da garagem</text>`);
+// entrada de carro
+add(`<rect x="590" y="390" width="160" height="72" fill="#0b1826"/>`);
+add(`<path d="M250 390 H300 V462 H250 Z" fill="#0b1826"/>`);
+// casa
+add(`<rect x="150" y="90" width="430" height="300" fill="#0c1a2a" stroke="#4d7fa6" stroke-width="4"/>`);
+add(`<g stroke="#2d5475" stroke-width="2"><path d="M150 230 H360 M360 90 V390 M360 250 H580 M470 90 V250 M470 250 V300 M360 300 H470"/></g>`);
+// garagem
+add(`<rect x="580" y="210" width="170" height="180" fill="#0a1624" stroke="#4d7fa6" stroke-width="4"/>`);
+// portas
+add(`<path d="M255 390 H300" stroke="#0c1a2a" stroke-width="6"/><path d="M255 390 A45 45 0 0 1 300 345" stroke="#2d5475" fill="none" stroke-dasharray="3 3"/>`);
+// móveis sutis
+add(`<g fill="none" stroke="#1d3b57" stroke-width="1.5"><rect x="180" y="280" width="120" height="40" rx="6"/><rect x="175" y="110" width="160" height="26" rx="3"/><circle cx="260" cy="180" r="24"/><rect x="380" y="110" width="70" height="90" rx="4"/><rect x="490" y="110" width="70" height="90" rx="4"/><rect x="600" y="240" width="60" height="120" rx="10"/><rect x="670" y="240" width="60" height="120" rx="10"/></g>`);
+const label = (x, y, t, c = '#6f8aa3') => add(`<text x="${x}" y="${y}" fill="${c}" font-size="12" font-weight="600" letter-spacing="1.5" text-anchor="middle">${t}</text>`);
+label(255, 215, 'COZINHA'); label(255, 372, 'SALA'); label(415, 232, 'QUARTO'); label(525, 232, 'QUARTO'); label(415, 285, 'BANHO', '#56708a'); label(665, 380, 'GARAGEM'); label(400, 55, 'QUINTAL / FUNDOS', '#4f7a73'); label(85, 250, 'LATERAL', '#4f7a73');
+// DVR
+const dvr = [340, 250];
+// câmeras escolhidas
+const cams = [
+  { n: 1, x: 250, y: 392, a: 90, cx: [[340, 250], [340, 392], [250, 392]] },
+  { n: 2, x: 752, y: 392, a: 125, cx: [[340, 250], [340, 205], [752, 205], [752, 392]] },
+  { n: 3, x: 578, y: 88, a: -125, cx: [[340, 250], [340, 88], [578, 88]] },
+  { n: 4, x: 148, y: 300, a: 160, cx: [[340, 250], [148, 250], [148, 300]] },
+];
+const cone = (x, y, a, r = 150, s = 32) => {
+  const t = a * Math.PI / 180, d = s * Math.PI / 180;
+  const x1 = x + Math.cos(t - d) * r, y1 = y + Math.sin(t - d) * r, x2 = x + Math.cos(t + d) * r, y2 = y + Math.sin(t + d) * r;
+  return `<path d="M${x} ${y} L${x1} ${y1} A${r} ${r} 0 0 1 ${x2} ${y2} Z" fill="url(#cone)"/>`;
+};
+cams.forEach((c) => add(`<g transform="translate(0,0)">${cone(c.x, c.y, c.a).replace('url(#cone)', `url(#cone${c.n})`)}</g>
+  <defs><radialGradient id="cone${c.n}" cx="${c.x}" cy="${c.y}" r="150" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#6de9f6" stop-opacity=".42"/><stop offset="1" stop-color="#6de9f6" stop-opacity=".02"/></radialGradient></defs>`));
+cams.forEach((c) => {
+  const d = c.cx.map((q, i) => (i ? 'L' : 'M') + q.join(' ')).join(' ');
+  add(`<path d="${d}" fill="none" stroke="#6de9f6" stroke-width="1.6" stroke-dasharray="5 5" opacity=".75"/>`);
+});
+cams.forEach((c) => add(`<circle cx="${c.x}" cy="${c.y}" r="20" fill="#6de9f6" opacity=".15"/><circle cx="${c.x}" cy="${c.y}" r="13" fill="#6de9f6" stroke="#fff" stroke-width="1.5" filter="url(#glow)"/><text x="${c.x}" y="${c.y + 4.5}" font-size="13" font-weight="800" fill="#04121a" text-anchor="middle">${c.n}</text>`));
+// sugeridos
+[[250, 300, 'Sala'], [765, 215, 'Lateral direita']].forEach(([x, y, t]) => add(`<circle cx="${x}" cy="${y}" r="15" fill="#07121e" stroke="#6d8aa3" stroke-width="1.5" stroke-dasharray="4 3"/><path d="M${x - 6} ${y} H${x + 6} M${x} ${y - 6} V${y + 6}" stroke="#9fb6c9" stroke-width="1.8"/>`));
+// DVR
+add(`<rect x="${dvr[0] - 16}" y="${dvr[1] - 12}" width="32" height="24" rx="5" fill="#ff8a2b" filter="url(#glow)"/><text x="${dvr[0]}" y="${dvr[1] + 4}" font-size="10" font-weight="800" fill="#1a0a00" text-anchor="middle">DVR</text>`);
+// rótulos de metragem
+[[300, 330, '≈ 12 m'], [560, 196, '≈ 19 m'], [450, 80, '≈ 16 m'], [230, 242, '≈ 11 m']].forEach(([x, y, t]) => add(`<rect x="${x - 26}" y="${y - 12}" width="52" height="20" rx="10" fill="#07121e" stroke="#2d6f84"/><text x="${x}" y="${y + 2}" font-size="11" fill="#bfeff6" text-anchor="middle" font-weight="600">${t}</text>`));
+svg.innerHTML = P.join('');
+</script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>04 · Como funciona e dúvidas</title>
+<link rel="stylesheet" href="assets/mock.css">
+<script src="assets/icons.js"></script>
+<style>
+  body { background: var(--bg); }
+  .sec { padding: 60px 0; position: relative; }
+  h2 { font-size: 46px; line-height: 1.1; letter-spacing: -.045em; }
+  .lead { color: var(--muted); font-size: 16px; line-height: 1.7; max-width: 520px; margin: 16px 0 0; }
+
+  .timeline { position: relative; margin-top: 50px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 18px; }
+  .timeline svg.cable { position: absolute; left: 0; top: 0; width: 100%; height: 60px; overflow: visible; }
+  .step { position: relative; padding-top: 78px; }
+  .step .dot { position: absolute; top: 8px; left: 0; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: #07121e; border: 1.5px solid #2b5470; color: var(--cyan); font-weight: 800; font-size: 14px; }
+  .step.done .dot { background: var(--cyan); color: #04121a; border-color: var(--cyan); box-shadow: 0 0 0 6px #6de9f61f, 0 0 24px #6de9f666; }
+  .step.now .dot { background: var(--orange); color: #160800; border-color: var(--orange); box-shadow: 0 0 0 6px #ff6a0022, 0 0 24px #ff6a0066; }
+  .step .ic.big { color: var(--cyan); margin-bottom: 12px; }
+  .step h3 { font-size: 20px; }
+  .step p { font-size: 13.5px; line-height: 1.6; color: #a3b3c3; margin: 8px 0 12px; }
+  .step .meta { display: inline-flex; gap: 7px; align-items: center; font-size: 11.5px; color: #8fd9e8; border: 1px solid #1f4658; border-radius: 6px; padding: 5px 8px; }
+
+  .two { display: grid; grid-template-columns: 1fr 520px; gap: 24px; margin-top: 70px; align-items: start; }
+  .faq h2 { font-size: 38px; }
+  .qs { margin-top: 26px; display: grid; gap: 10px; }
+  .q { border: 1px solid var(--line); border-radius: 12px; background: #07111c; }
+  .q .h { display: flex; justify-content: space-between; align-items: center; padding: 17px 20px; font-size: 15px; font-weight: 600; }
+  .q .h .ic { color: var(--cyan); }
+  .q.open { border-color: #2d6f84; background: linear-gradient(160deg, #0c2031, #07111c 70%); }
+  .q .a { padding: 0 20px 18px; font-size: 14px; line-height: 1.7; color: #b3c3d2; max-width: 680px; }
+  .search { display: flex; align-items: center; gap: 10px; margin-top: 18px; padding: 13px 16px; border: 1px solid var(--line-2); border-radius: 10px; color: #7b90a4; font-size: 14px; max-width: 520px; background: #050d17; }
+
+  .client { padding: 24px; position: relative; overflow: hidden; }
+  .client .top { display: flex; justify-content: space-between; align-items: center; }
+  .client .top span { font-size: 11px; letter-spacing: .16em; color: #ffad70; font-weight: 700; }
+  .client h3 { font-size: 24px; margin: 12px 0 4px; }
+  .client .sub { font-size: 13px; color: var(--dim); }
+  .track { margin-top: 20px; display: grid; gap: 0; }
+  .t { display: grid; grid-template-columns: 28px 1fr auto; gap: 12px; align-items: start; padding-bottom: 16px; position: relative; }
+  .t::before { content: ''; position: absolute; left: 13px; top: 26px; bottom: 0; width: 2px; background: #1f3a52; }
+  .t:last-child::before { display: none; }
+  .t.ok::before { background: var(--cyan); }
+  .t .c { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid #2b4a66; color: #7f95a9; background: #07121e; position: relative; z-index: 1; }
+  .t.ok .c { background: var(--cyan); border-color: var(--cyan); color: #04121a; }
+  .t.now .c { border-color: var(--orange); color: var(--orange); box-shadow: 0 0 0 5px #ff6a0020; }
+  .t b { font-size: 14px; display: block; }
+  .t small { font-size: 12px; color: #8ea3b6; }
+  .t em { font-style: normal; font-size: 12px; color: #9fb1c2; }
+  .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+  .actions a { display: flex; gap: 10px; align-items: center; justify-content: center; padding: 13px; border-radius: 10px; border: 1px solid #2d6f84; font-size: 13px; font-weight: 700; color: #e3f8fb; }
+  .actions a.p { background: linear-gradient(180deg, #ff7a18, var(--orange)); color: #160800; border-color: transparent; }
+  .equip { margin-top: 18px; padding: 14px; border-radius: 12px; border: 1px dashed #2a4258; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 12px; color: #a9bccd; }
+  .equip div { display: flex; gap: 8px; align-items: center; }
+  .equip .ic { color: var(--cyan); }
+  .phase { position: absolute; right: 18px; top: 18px; }
+</style>
+</head>
+<body>
+<div class="mock-label"><span>SC Soluções · Mockup 04 — Como funciona a locação, dúvidas e área do cliente</span><span>Textos baseados no documento de planos</span></div>
+
+<div class="wrap">
+  <header class="hdr">
+    <a class="logo"><img src="assets/sc-logo-lockup.webp" alt="SC Soluções"></a>
+    <nav><a>Início</a><a>Soluções</a><a>Planos</a><a>Monte seu sistema</a><a class="on">Como funciona</a><a>Dúvidas</a></nav>
+    <a class="cta">Fale com a SC <i data-i="arrow-up-right" data-s="17"></i></a>
+  </header>
+
+  <section class="sec">
+    <p class="eyebrow">Como funciona a locação</p>
+    <h2>Do primeiro contato ao<br><span class="grad">sistema funcionando.</span></h2>
+    <p class="lead">Cinco etapas, sem burocracia. O cabo de luz acompanha a rolagem e acende cada etapa quando ela aparece na tela.</p>
+
+    <div class="timeline">
+      <svg class="cable" viewBox="0 0 1312 60" preserveAspectRatio="none">
+        <defs><linearGradient id="tl" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1312" y2="0"><stop offset="0" stop-color="#6de9f6"/><stop offset=".5" stop-color="#09a0f6"/><stop offset=".6" stop-color="#ff6a00"/><stop offset=".62" stop-color="#2b4a66"/><stop offset="1" stop-color="#2b4a66"/></linearGradient></defs>
+        <path d="M23 31 H1290" stroke="url(#tl)" stroke-width="2.5"/>
+        <path d="M23 31 H790" stroke="url(#tl)" stroke-width="12" opacity=".18"/>
+      </svg>
+      <div class="step done"><span class="dot">01</span><i data-i="mouse-pointer-click" data-s="30" data-w="1.3" class="big"></i><h3>Escolha o plano</h3><p>Pela quantidade de pontos que quer acompanhar, ou montando o sistema no configurador.</p><span class="meta"><i data-i="cctv" data-s="13"></i> 1, 2, 3, 4 ou 8 câmeras</span></div>
+      <div class="step done"><span class="dot">02</span><i data-i="map-pin" data-s="30" data-w="1.3" class="big"></i><h3>A SC confirma o local</h3><p>Viabilidade técnica, posição das câmeras e se precisa de alguma infraestrutura extra.</p><span class="meta"><i data-i="ruler" data-s="13"></i> Cabo dentro do limite do plano</span></div>
+      <div class="step now"><span class="dot">03</span><i data-i="signature" data-s="30" data-w="1.3" class="big"></i><h3>Assine pelo celular</h3><p>O contrato do plano chega pela ZapSign. Sem papel, sem ir até a loja.</p><span class="meta"><i data-i="file-pen-line" data-s="13"></i> Assinatura eletrônica</span></div>
+      <div class="step"><span class="dot">04</span><i data-i="wrench" data-s="30" data-w="1.3" class="big"></i><h3>Instalação e app</h3><p>Instalamos, configuramos o gravador, testamos e deixamos as imagens no seu celular.</p><span class="meta"><i data-i="smartphone" data-s="13"></i> 1ª mensalidade só na ativação</span></div>
+      <div class="step"><span class="dot">05</span><i data-i="headset" data-s="30" data-w="1.3" class="big"></i><h3>Suporte contínuo</h3><p>Diagnóstico remoto em horário comercial e manutenção de defeitos naturais durante o contrato.</p><span class="meta"><i data-i="refresh-cw" data-s="13"></i> Troca por equivalente ou superior</span></div>
+    </div>
+
+    <div class="two">
+      <div class="faq">
+        <p class="eyebrow">Perguntas frequentes</p>
+        <h2>Antes de começar, <span class="accent">tire suas dúvidas.</span></h2>
+        <div class="search"><i data-i="message-circle" data-s="17"></i> Pergunte com suas palavras, ex.: “posso ver pelo celular?”</div>
+        <div class="qs">
+          <div class="q"><div class="h">Preciso comprar os equipamentos?<i data-i="plus" data-s="18"></i></div></div>
+          <div class="q open"><div class="h">Quantos dias ficam gravados?<i data-i="minus" data-s="18"></i></div><div class="a">A estimativa é de aproximadamente dez dias. O período varia conforme resolução, movimento, capacidade do HD e modo de gravação. Quando o HD enche, as imagens mais antigas são substituídas, então exporte as importantes antes.</div></div>
+          <div class="q"><div class="h">Consigo ver as câmeras pelo celular?<i data-i="plus" data-s="18"></i></div></div>
+          <div class="q"><div class="h">A manutenção está incluída?<i data-i="plus" data-s="18"></i></div></div>
+          <div class="q"><div class="h">Posso cancelar?<i data-i="plus" data-s="18"></i></div></div>
+          <div class="q"><div class="h">Posso adicionar recursos premium?<i data-i="plus" data-s="18"></i></div></div>
+        </div>
+      </div>
+
+      <div class="card client">
+        <span class="tag cyan phase">Fase 4 · ideia</span>
+        <div class="top"><span>ÁREA DO CLIENTE</span></div>
+        <h3>Olá! Seu sistema está a caminho.</h3>
+        <div class="sub">Plano de 4 câmeras · link pessoal enviado por WhatsApp</div>
+        <div class="track">
+          <div class="t ok"><span class="c"><i data-i="check" data-s="14" data-w="3"></i></span><div><b>Avaliação do local</b><small>Pontos e cabeamento confirmados</small></div><em>concluído</em></div>
+          <div class="t ok"><span class="c"><i data-i="check" data-s="14" data-w="3"></i></span><div><b>Contrato assinado</b><small>Pela ZapSign</small></div><em>concluído</em></div>
+          <div class="t now"><span class="c"><i data-i="calendar-check" data-s="14"></i></span><div><b>Instalação agendada</b><small>Data e janela de horário combinadas</small></div><em>próximo</em></div>
+          <div class="t"><span class="c"><i data-i="smartphone" data-s="14"></i></span><div><b>Sistema ativado</b><small>App configurado no seu celular</small></div><em></em></div>
+        </div>
+        <div class="actions">
+          <a class="p"><i data-i="headset" data-s="16"></i> Pedir suporte</a>
+          <a><i data-i="file-pen-line" data-s="16"></i> Guia de uso do app</a>
+        </div>
+        <div class="equip">
+          <div><i data-i="cctv" data-s="15"></i> 4 câmeras</div>
+          <div><i data-i="hard-drive" data-s="15"></i> Gravador 4 canais</div>
+          <div><i data-i="shield-check" data-s="15"></i> Manutenção ativa</div>
+        </div>
+      </div>
+    </div>
+
+    <span class="pin" style="left: 1040px; top: 322px;">1</span>
+    <span class="pin" style="left: 614px; top: 780px;">2</span>
+    <span class="pin" style="left: 1296px; top: 610px;">3</span>
+    <div class="notes-row">
+      <div class="note" data-n="1"><b>O cabo que acende</b>A linha da página vira a linha do tempo: cada etapa acende quando entra na tela. O mesmo fio condutor da abertura.</div>
+      <div class="note" data-n="2"><b>FAQ que entende pergunta</b>Campo de busca que acha a resposta certa no FAQ (dá até para usar IA depois). As respostas seguem as regras de comunicação do documento de planos.</div>
+      <div class="note" data-n="3"><b>Área do cliente (fase 4)</b>Um link pessoal mostra em que etapa está o pedido e dá acesso rápido a suporte e guia do app. É o padrão dos portais dos grandes fabricantes, feito para o cliente final.</div>
+    </div>
+  </section>
+</div>
+</body>
+</html>
