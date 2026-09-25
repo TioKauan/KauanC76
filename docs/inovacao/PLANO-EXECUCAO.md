@@ -46,44 +46,47 @@ os itens daquela tela estiverem ✅.
 
 ## 4. Checklist de "pronto" (mensurável)
 
+> **Situação em 25/09/2026: todos os itens ✅.** Cada item é conferido automaticamente por
+> `npm run validar` (em `site/`); o resultado detalhado fica em `RELATORIO-VALIDACAO.md`.
+
 ### Geral
-- [ ] `npm run build` termina sem erro.
-- [ ] Página inicial com peso total ≤ 500 KB (HTML + CSS + JS + imagens + fontes).
-- [ ] Zero erros no console, no computador e no celular.
-- [ ] Sem rolagem horizontal em 360, 390, 768, 1024 e 1440 px de largura.
-- [ ] Todo link interno (`#…`) leva a uma seção que existe.
-- [ ] Todo link de WhatsApp usa `wa.me/5546991331306` com mensagem preenchida; o número antigo não aparece.
-- [ ] Todo preço na página bate com `dados.js` (o validador compara).
-- [ ] Cores-base iguais às da logo: azul `#09a0f6`, ciano `#6de9f6`, laranja `#ff6a00`, fundo `#020710`.
-- [ ] Contraste do texto principal e do secundário ≥ 4,5:1 sobre o fundo.
-- [ ] No celular, botões e controles principais com área de toque ≥ 44 px.
-- [ ] Com "reduzir movimento" ligado, nenhuma animação contínua roda.
-- [ ] Todos os controles são botões ou links de verdade (funcionam no teclado, com foco visível).
+- [x] `npm run build` termina sem erro.
+- [x] Página inicial com peso total ≤ 500 KB (HTML + CSS + JS + imagens + fontes).
+- [x] Zero erros no console, no computador e no celular.
+- [x] Sem rolagem horizontal em 360, 390, 768, 1024 e 1440 px de largura.
+- [x] Todo link interno (`#…`) leva a uma seção que existe.
+- [x] Todo link de WhatsApp usa `wa.me/5546991331306` com mensagem preenchida; o número antigo não aparece.
+- [x] Todo preço na página bate com `dados.js` (o validador compara).
+- [x] Cores-base iguais às da logo: azul `#09a0f6`, ciano `#6de9f6`, laranja `#ff6a00`, fundo `#020710`.
+- [x] Contraste do texto principal e do secundário ≥ 4,5:1 sobre o fundo.
+- [x] No celular, botões e controles principais com área de toque ≥ 44 px.
+- [x] Com "reduzir movimento" ligado, nenhuma animação contínua roda.
+- [x] Todos os controles são botões ou links de verdade (funcionam no teclado, com foco visível).
 
 ### Tela 1: abertura
-- [ ] Os 4 ambientes (casa, comércio, condomínio, empresa) trocam a cena e as etiquetas.
-- [ ] Os 4 cenários do "E se…?" mudam a cena e o texto; em "Faltou energia" o nobreak pode ser ligado.
-- [ ] "A partir de R$ 49,90/mês" visível sem rolar, em 1440 px e em 390 px.
+- [x] Os 4 ambientes (casa, comércio, condomínio, empresa) trocam a cena e as etiquetas.
+- [x] Os 4 cenários do "E se…?" mudam a cena e o texto; em "Faltou energia" o nobreak pode ser ligado.
+- [x] "A partir de R$ 49,90/mês" visível sem rolar, em 1440 px e em 390 px.
 
 ### Tela 2: planos
-- [ ] 5 planos com preço, cabo incluso e uso indicado; a mini-planta mostra exatamente N câmeras.
-- [ ] Destaque do plano de 4 câmeras como "cobertura completa" (texto do documento).
-- [ ] "Tudo claro antes de assinar" com prazo, saída antecipada, ZapSign, 1ª mensalidade + letra miúda.
-- [ ] Cada "Quero este plano" abre o WhatsApp com o nome e o valor do plano na mensagem.
+- [x] 5 planos com preço, cabo incluso e uso indicado; a mini-planta mostra exatamente N câmeras.
+- [x] Destaque do plano de 4 câmeras como "cobertura completa" (texto do documento).
+- [x] "Tudo claro antes de assinar" com prazo, saída antecipada, ZapSign, 1ª mensalidade + letra miúda.
+- [x] Cada "Quero este plano" abre o WhatsApp com o nome e o valor do plano na mensagem.
 
 ### Tela 3: configurador
-- [ ] Tocar na planta adiciona câmera; tocar na câmera remove; pontos sugeridos funcionam no teclado.
-- [ ] Plano calculado: 1→1, 2→2, 3→3, 4→4, 5 a 8→8 (com aviso de proposta para 5 a 7), 9 ou mais→proposta.
-- [ ] Cabo estimado × incluso atualiza na hora e avisa quando passa do limite.
-- [ ] Condomínio vai para proposta personalizada (regra do documento).
-- [ ] A mensagem do WhatsApp leva ambiente, quantidade, pontos, plano, valor e recursos marcados.
+- [x] Tocar na planta adiciona câmera; tocar na câmera remove; pontos sugeridos funcionam no teclado.
+- [x] Plano calculado: 1→1, 2→2, 3→3, 4→4, 5 a 8→8 (com aviso de proposta para 5 a 7), 9 ou mais→proposta.
+- [x] Cabo estimado × incluso atualiza na hora e avisa quando passa do limite.
+- [x] Condomínio vai para proposta personalizada (regra do documento).
+- [x] A mensagem do WhatsApp leva ambiente, quantidade, pontos, plano, valor e recursos marcados.
 
 ### Tela 4: como funciona
-- [ ] A linha do tempo acende etapa por etapa conforme a rolagem.
-- [ ] As 7 perguntas do documento; a busca filtra (ex.: "celular" mostra "Consigo ver as câmeras pelo celular").
-- [ ] Área do cliente identificada como exemplo ("em breve").
+- [x] A linha do tempo acende etapa por etapa conforme a rolagem.
+- [x] As 7 perguntas do documento; a busca filtra (ex.: "celular" mostra "Consigo ver as câmeras pelo celular").
+- [x] Área do cliente identificada como exemplo ("em breve").
 
 ### Tela 5: celular
-- [ ] Até 800 px, planos em carrossel com encaixe (scroll-snap) e indicador que acompanha.
-- [ ] Barra fixa embaixo muda conforme a seção (plano visível / resumo do configurador / contato).
-- [ ] Menu do celular abre e fecha (também com Esc).
+- [x] Até 800 px, planos em carrossel com encaixe (scroll-snap) e indicador que acompanha.
+- [x] Barra fixa embaixo muda conforme a seção (plano visível / resumo do configurador / contato).
+- [x] Menu do celular abre e fecha (também com Esc).

@@ -35,16 +35,23 @@ export function iniciarPlanos() {
     trilho.scrollTo({ left: esquerda - (trilho.clientWidth - alvo.clientWidth) / 2, behavior: comportamento });
   };
   const marcar = (n) => pontos.forEach((p) => p.setAttribute('aria-current', String(p.dataset.irPlano === String(n))));
-  const visivel = new IntersectionObserver(
-    (entradas) => {
-      for (const e of entradas) if (e.isIntersecting) {
-        marcar(e.target.dataset.plano);
-        document.dispatchEvent(new CustomEvent('sc:plano-visivel', { detail: Number(e.target.dataset.plano) }));
-      }
-    },
-    { root: trilho, threshold: 0.6 },
-  );
-  cartoes.forEach((c) => visivel.observe(c));
+  // O plano "visível" é o mais perto do centro do carrossel.
+  let atual = 0;
+  let quadro = 0;
+  const conferirCentro = () => {
+    quadro = 0;
+    if (trilho.scrollWidth <= trilho.clientWidth) return;
+    const caixa = trilho.getBoundingClientRect();
+    const meio = caixa.left + caixa.width / 2;
+    const perto = cartoes.reduce((a, c) => { const r = c.getBoundingClientRect(); const d = Math.abs(r.left + r.width / 2 - meio); return d < a.d ? { c, d } : a; }, { c: null, d: Infinity }).c;
+    const n = Number(perto.dataset.plano);
+    if (n === atual) return;
+    atual = n;
+    marcar(n);
+    document.dispatchEvent(new CustomEvent('sc:plano-visivel', { detail: n }));
+  };
+  trilho.addEventListener('scroll', () => { if (!quadro) quadro = requestAnimationFrame(conferirCentro); }, { passive: true });
+  addEventListener('resize', () => { if (!quadro) quadro = requestAnimationFrame(conferirCentro); });
   marcar(4);
   pontos.forEach((p) =>
     p.addEventListener('click', () => {
@@ -55,6 +62,7 @@ export function iniciarPlanos() {
   if (trilho.scrollWidth > trilho.clientWidth) {
     const destaque = document.querySelector('.plano-destaque');
     if (destaque) centralizar(destaque, 'instant');
+    conferirCentro();
   }
 
   // "Ver no configurador" leva a quantidade de câmeras para a Tela 3.

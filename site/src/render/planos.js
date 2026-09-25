@@ -109,7 +109,7 @@ export function secaoPlanos() {
       <div class="planos-trilho" tabindex="-1">
         <div class="planos-grade">${planos.map(cartaoPlano).join('')}</div>
       </div>
-      <div class="planos-pontos" aria-label="Escolher plano">
+      <div class="planos-pontos" role="group" aria-label="Escolher plano">
         ${planos.map((p) => `<button type="button" data-ir-plano="${p.cameras}" aria-label="Ver ${nomePlano(p)}"></button>`).join('')}
       </div>
       <div class="cartao upgrades">

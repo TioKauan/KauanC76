@@ -18,7 +18,8 @@
 .busca:focus-within { border-color: var(--ciano); }
 .busca input { flex: 1; min-width: 0; border: 0; background: transparent; font-size: 15px; color: var(--texto); outline: none; padding: 12px 0; }
 .busca input::placeholder { color: #7489a0; }
-.busca-status { min-height: 20px; font-size: 12.5px; color: var(--texto-3); margin: 8px 0 6px; }
+.busca-status { min-height: 20px; font-size: 13px; color: var(--texto-2); margin: 8px 0 6px; }
+.busca-status a { color: var(--ciano); text-decoration: underline; text-underline-offset: 3px; }
 .perguntas { display: grid; gap: 10px; }
 .pergunta { border: 1px solid var(--linha); border-radius: 12px; background: #07111c; transition: border-color 0.25s, background-color 0.25s; }
 .pergunta[hidden] { display: none; }

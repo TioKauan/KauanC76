@@ -155,15 +155,24 @@
 }
 
 @media (max-width: 800px) {
-  .abertura { padding-top: 22px; }
-  .abertura-texto { display: flex; flex-direction: column; }
-  .abertura-texto .sobretitulo { letter-spacing: 0.14em; }
-  .preco-chamada { order: 1; }
-  .ambientes { order: 2; }
-  .abertura h1 { font-size: clamp(32px, 8.4vw, 40px); }
+  /* Celular: título → cena → ambientes → botões (como no mockup 05) */
+  .abertura { padding-top: 18px; overflow-x: clip; }
+  .abertura-grade { display: flex; flex-direction: column; align-items: stretch; gap: 0; }
+  .abertura-texto, .abertura-cena { display: contents; }
+  .abertura-texto .sobretitulo { order: 1; letter-spacing: 0.14em; margin-bottom: 12px; }
+  .abertura h1 { order: 2; }
+  .cena { order: 3; margin: 0 -14px -18px; }
+  .ambientes { order: 4; flex-wrap: nowrap; overflow-x: auto; margin: 0 -16px; padding: 4px 16px; scrollbar-width: none; }
+  .ambientes::-webkit-scrollbar { display: none; }
+  .ambientes .chip { flex-shrink: 0; }
+  .ambientes-rotulo { display: none; }
+  .abertura-acoes { order: 5; margin-top: 14px; }
+  .abertura-lead { order: 6; margin: 22px 0 0; }
+  .preco-chamada { order: 7; }
+  .ese { order: 8; margin-top: 20px; }
+  .abertura h1 { font-size: clamp(30px, 8vw, 38px); }
   .abertura-lead { font-size: 16px; margin: 16px 0 20px; }
   .abertura-acoes .btn { width: 100%; }
-  .ambientes { margin-top: 20px; }
   .preco-chamada { margin-top: 18px; padding: 14px; }
   .rotulo { padding: 5px 8px 5px 6px; gap: 6px; border-radius: 8px; }
   .rotulo b { font-size: 11px; }
@@ -175,4 +184,9 @@
   .faixa-servicos a:nth-child(-n + 2) { border-top: 0; }
   .faixa-servicos a:nth-child(odd) { border-right: 1px solid #16263a; }
   .faixa-servicos a:last-child { grid-column: 1 / -1; border-right: 0; }
+}
+
+/* Tablet em pé: a cena não precisa ocupar a largura toda */
+@media (min-width: 521px) and (max-width: 800px) {
+  .cena { width: 500px; max-width: 100%; align-self: center; margin-inline: auto; }
 }

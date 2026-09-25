@@ -1,5 +1,5 @@
 import { icone } from './icones.js';
-import { upgrades } from '../dados.js';
+import { upgrades, linkWhatsapp } from '../dados.js';
 import { ambientesConfig, plantas, sistemasCondominio, LOTE, nomeEm } from '../configurador-dados.js';
 
 const rotulo = (x, y, texto, cor = '#6f8aa3', classe = '') =>
@@ -51,6 +51,8 @@ function planta(ambiente) {
   const desenho = ambiente === 'casa' ? desenhoCasa() : desenhoComercial(ambiente);
   return `<g class="planta-desenho" data-desenho="${ambiente}"${ambiente === 'casa' ? '' : ' hidden'}>${desenho}</g>`;
 }
+
+const msgInicial = 'Olá! Estou montando meu sistema no site da SC (casa) e gostaria de ajuda para escolher os pontos.';
 
 export function secaoConfigurador() {
   return `
@@ -127,16 +129,16 @@ export function secaoConfigurador() {
           <p>Pontos sugeridos</p>
           <div data-resumo-sugestoes></div>
         </div>
-        <div class="recomendacao" data-recomendacao aria-live="polite"></div>
+        <div class="recomendacao" data-recomendacao data-tipo="vazio" aria-live="polite"><p class="rec-k">Plano recomendado</p><p class="rec-vazio">Marque pelo menos um ponto na planta ou escolha um ponto sugerido.</p></div>
         <fieldset class="resumo-recursos" data-resumo-recursos>
           <legend>Recursos opcionais <small>sob orçamento</small></legend>
           ${upgrades.map((u) => `<label class="opcao"><input type="checkbox" value="${u.id}" data-recurso /><span class="caixinha" aria-hidden="true">${icone('check', { tamanho: 13, traco: 3 })}</span>${icone(u.icone, { tamanho: 16 })}<span>${u.nome}</span></label>`).join('')}
         </fieldset>
         <div class="mensagem-previa">
           <p class="mensagem-previa-topo">${icone('message-circle', { tamanho: 14 })} Prévia da mensagem</p>
-          <p data-mensagem></p>
+          <p data-mensagem>${msgInicial}</p>
         </div>
-        <a class="btn btn-primario btn-g config-enviar" data-config-enviar href="#" target="_blank" rel="noopener">${icone('message-circle', { tamanho: 19 })} Enviar para a SC pelo WhatsApp</a>
+        <a class="btn btn-primario btn-g config-enviar" data-config-enviar href="${linkWhatsapp(msgInicial)}" target="_blank" rel="noopener">${icone('message-circle', { tamanho: 19 })} Enviar para a SC pelo WhatsApp</a>
         <p class="resumo-nota">Atendimento pela equipe da SC. A solução final é definida na visita técnica.</p>
       </aside>
     </div>

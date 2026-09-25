@@ -46,7 +46,7 @@ export function abertura() {
       <h1 id="abertura-titulo">Porque tecnologia não deve apenas estar instalada. <span class="destaque">Ela precisa funcionar.</span></h1>
       <p class="abertura-lead">Câmeras, rede, acesso e energia conectados em um só projeto. E, se preferir, com planos de locação para começar sem comprar os equipamentos.</p>
       <div class="abertura-acoes">
-        <a class="btn btn-primario btn-g" href="#planos">Ver planos de locação ${icone('arrow-right', { tamanho: 18, traco: 2 })}</a>
+        <a class="btn btn-primario btn-g" href="#planos"><span class="so-grande">Ver planos de locação</span><span class="so-celular">${mostrarPrecos ? `Ver planos a partir de R$ ${formatarPreco(menorPreco)}` : 'Ver planos de locação'}</span> ${icone('arrow-right', { tamanho: 18, traco: 2 })}</a>
         <a class="btn btn-contorno btn-g" href="#monte">${icone('mouse-pointer-click', { tamanho: 18 })} Monte seu sistema</a>
       </div>
       <div class="ambientes" role="group" aria-label="Veja no seu ambiente">

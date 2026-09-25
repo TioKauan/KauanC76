@@ -1,18 +1,19 @@
 import { reduzirMovimento } from './movimento.js';
-import { linkWhatsapp } from '../dados.js';
+import { linkWhatsapp, formatarPreco, menorPreco, mostrarPrecos } from '../dados.js';
 
 // Palavras que as pessoas usam × palavras das respostas.
 const sinonimos = {
   app: ['celular', 'aplicativo'], aplicativo: ['celular'], telefone: ['celular'], remoto: ['celular'], ver: ['celular'],
-  preco: ['mensalidade', 'plano'], valor: ['mensalidade', 'plano'], custa: ['mensalidade', 'plano'], pagar: ['mensalidade'],
   comprar: ['equipamentos', 'locacao'], dono: ['propriedade', 'equipamentos'],
   multa: ['cancelar', 'cancelamento'], sair: ['cancelar', 'cancelamento'], desistir: ['cancelar', 'cancelamento'], fidelidade: ['prazo', 'cancelar'], contrato: ['prazo', 'cancelar'],
   quebrar: ['manutencao', 'defeitos'], quebrou: ['manutencao', 'defeitos'], estragar: ['manutencao', 'defeitos'], conserto: ['manutencao'], garantia: ['manutencao', 'defeitos'],
   gravacao: ['gravados', 'dias'], grava: ['gravados', 'dias'], hd: ['gravados', 'dias'], tempo: ['dias'],
   instalar: ['instalacao'], instala: ['instalacao'], cabo: ['instalacao', 'cabeamento'], fio: ['instalacao', 'cabeamento'],
-  noite: ['premium', 'colorida'], audio: ['premium'], colorida: ['premium'], melhor: ['premium'],
+  noite: ['premium', 'colorida'], noturna: ['premium', 'colorida'], visao: ['premium'], audio: ['premium'], colorida: ['premium'], melhor: ['premium'], upgrade: ['premium'],
 };
 const ignorar = new Set(['a', 'o', 'e', 'de', 'da', 'do', 'das', 'dos', 'em', 'no', 'na', 'um', 'uma', 'eu', 'posso', 'pode', 'como', 'que', 'as', 'os', 'se', 'para', 'pra', 'com', 'meu', 'minha', 'tem', 'ter', 'sim', 'nao', 'e?', 'qual', 'quanto', 'quantos']);
+// Perguntas de preço vão para a seção de planos (não há dúvida frequente sobre valores).
+const palavrasPreco = /\b(preco|precos|valor|valores|custa|custo|mensalidade|barato|caro)\b|\bquanto (e|fica|sai|pago|pagaria|vou pagar)\b/;
 const normalizar = (t) => t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9\s]/g, ' ');
 
 /** Linha do tempo que acende com a rolagem + busca nas dúvidas. */
@@ -77,6 +78,12 @@ export function iniciarComoFunciona() {
     if (!palavras.length) {
       perguntas.forEach((p, i) => { p.hidden = false; p.open = textos[i].abertaAntes; });
       status.textContent = '';
+      vazio.hidden = true;
+      return;
+    }
+    if (palavrasPreco.test(normalizar(consulta))) {
+      perguntas.forEach((p) => { p.hidden = true; });
+      status.innerHTML = `Os valores estão em <a href="#planos">Planos de locação</a>${mostrarPrecos ? `: a partir de R$ ${formatarPreco(menorPreco)}/mês, com instalação padrão inclusa` : ''}.`;
       vazio.hidden = true;
       return;
     }

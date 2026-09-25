@@ -59,6 +59,7 @@ p { margin: 0; }
 :focus-visible { outline: 2px solid var(--ciano); outline-offset: 3px; border-radius: 6px; }
 ::selection { background: var(--ciano); color: var(--fundo); }
 .ic { flex-shrink: 0; display: inline-block; }
+.so-celular { display: none; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 .wrap { width: min(1312px, 100% - 64px); margin-inline: auto; }
@@ -181,6 +182,9 @@ html[data-movimento] [data-revelar] { transition: opacity 0.8s var(--suave), tra
   .logo img { width: 144px; left: -16px; top: -21px; }
   .fio { height: 64px; }
   body { padding-bottom: 88px; }
+  .chip { min-height: 44px; }
+  .so-grande { display: none; }
+  .so-celular { display: inline; }
   .barra-fixa { display: flex; align-items: center; gap: 12px; position: fixed; left: 10px; right: 10px; bottom: max(10px, env(safe-area-inset-bottom)); z-index: 90; padding: 10px 10px 10px 16px; border-radius: 16px; background: #0a1826f2; border: 1px solid #2d4d66; box-shadow: 0 -8px 30px #000b; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
   .barra-fixa { transition: transform 0.35s var(--suave), opacity 0.35s; }
   .barra-fixa:is([data-escondida], [data-teclado], [data-menu]) { transform: translateY(140%); opacity: 0; pointer-events: none; }

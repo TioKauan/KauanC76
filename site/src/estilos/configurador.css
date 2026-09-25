@@ -136,7 +136,7 @@
 
 @media (max-width: 800px) {
   .passos { font-size: 12px; }
-  .passos { display: grid; grid-template-columns: repeat(4, auto); justify-content: start; gap: 6px 14px; }
+  .passos { flex-wrap: wrap; gap: 8px 14px; }
   .passos li + li::before { display: none; }
   .config-planta { padding: 10px; margin-inline: -6px; }
   .planta-caixa { overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; }
@@ -150,4 +150,6 @@
   .condominio-proposta { padding: 20px; }
   .condominio-sistemas { grid-template-columns: 1fr; }
   .config-resumo { padding: 18px; }
+  .chip-p, .resumo-recursos .opcao, .ese-acao { min-height: 44px; }
+  .remover { width: 44px; height: 44px; }
 }
