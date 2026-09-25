@@ -1,5 +1,9 @@
 # Resumo da execução: do mockup ao site funcionando
 
+> **Atualização (25/09/2026):** o site foi publicado em `somoscella.online` às 06:24 e ajustado às
+> 14:59 (taxa de instalação, CNPJ, contratação simples). O que mudou está em `docs/ALTERACOES.md`;
+> o texto abaixo descreve a entrega original e continua valendo como explicação do projeto.
+
 **Situação:** as 5 telas do plano de inovação estão construídas em `site/` e passam nos
 **46 itens da checklist automática** (`RELATORIO-VALIDACAO.md`). O site **não foi publicado**:
 publicar no VPS é uma decisão do Kauan.

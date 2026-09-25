@@ -62,14 +62,28 @@ Princípios:
 | Trocar o número do WhatsApp | `src/lib/dados.ts` → `contato.whatsapp` |
 | Editar as dúvidas frequentes | `src/lib/dados.ts` → `duvidas` (e sinônimos em `src/lib/busca.ts`) |
 | Mudar pontos sugeridos do configurador | `src/lib/configurador-dados.ts` |
+| Mudar a taxa de instalação (hoje, 1 mensalidade) | `src/lib/dados.ts` → `taxaInstalacaoMensalidades` |
+| Mudar o que aparece em "Simples de contratar" | `src/lib/dados.ts` → `condicoes` |
+| Trocar CNPJ, cidade ou e-mail do rodapé | `src/lib/dados.ts` → `empresa` e `contato.email` |
 
 Depois de qualquer mudança: `npm run validar`. Os testes em `tests/dados.test.ts` conferem invariantes
-(preço e cabo crescendo com as câmeras, gravador com canais suficientes, só um destaque, número antigo ausente).
+(preço e cabo crescendo com as câmeras, gravador com canais suficientes, só um destaque, número antigo ausente,
+taxa de instalação igual a 1 mensalidade, CNPJ válido).
 
 ## Publicação
 
-Manual e **só com decisão do Kauan**: guardar a versão no ar e copiar `dist/` para
-`/etc/icontainer/apps/nginx/nginx/www/sites/somoscella.online/index` (Nginx do painel ICP no VPS).
+Manual e **só com decisão do Kauan**. O Nginx do painel ICP serve a pasta
+`/etc/icontainer/apps/nginx/nginx/www/sites/somoscella.online/index` no VPS. Passo a passo usado em 25/09/2026:
+
+1. `npm run validar` com 100% ✅ e `npx astro build`.
+2. Empacotar `dist/` **sem** `fotos/LEIA-ME.md` (nota interna, não vai para o ar).
+3. No servidor, guardar a versão no ar num `.tar.gz` antes de qualquer troca.
+4. Extrair o pacote numa pasta `index.novo-<data>` **ao lado** de `index` e trocar as duas com `mv`
+   (a troca é instantânea: o site nunca fica pela metade). Donos `root`, pastas 755, arquivos 644.
+5. Conferir de fora: HTTPS 200, `index.html` idêntico ao gerado, todos os recursos 200.
+6. Marcar o commit publicado com a tag `publicado-<data>` e enviar ao GitHub.
+
+O histórico das publicações está em `docs/ALTERACOES.md`.
 
 ## Licenças de terceiros
 
