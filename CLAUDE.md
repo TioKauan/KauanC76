@@ -25,8 +25,13 @@ solução, não a mais simples de entender; nas conversas, explique o porquê da
 - **A instalação não é grátis:** taxa = valor de 1 mensalidade do plano, paga antecipadamente
   (`taxaInstalacaoMensalidades` em `dados.ts`). Nunca escreva "instalação inclusa" nem "sem
   investimento inicial"; o validador falha.
-- WhatsApp do site: `(49) 99832-5623` (desde 27/09/2026). Os números `(46) 99113-8360` e `(46) 99133-1306`
-  foram banidos e não podem aparecer.
+- WhatsApp do site: `(49) 99832-5623` (desde 27/09/2026), atendimento humano. Os números
+  `(46) 99113-8360` e `(46) 99133-1306` não são usados no site e não podem aparecer.
+- **Chat da Sol** (assistente virtual, desde 27/09/2026): tela em `src/components/Sol.astro` +
+  `src/scripts/sol.ts`, regras em `src/lib/sol.ts` (com testes). A IA, os preços que ela fala e a
+  decisão de pedir contato ficam no n8n (fluxo "Sol no Site"); o site só desenha, e o cartão de
+  plano usa `dados.ts`. Texto do servidor nunca vira HTML (só `textContent`). Para testar a tela sem
+  o n8n: `node scripts/dev-simulado.mjs` (Sol simulada em `scripts/sol-simulado.mjs`).
 - Logo: só os arquivos oficiais (`site/public/marca/`); nunca redesenhe. O Claude não gera foto.
 - **Publicar é ação externa: só com pedido explícito do Kauan** (Nginx do VPS, guardando antes a versão no ar).
 

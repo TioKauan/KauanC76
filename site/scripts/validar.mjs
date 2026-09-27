@@ -177,8 +177,10 @@ for (const largura of [360, 390, 768, 1024, 1440]) {
     duvidas: document.querySelectorAll('[data-pergunta]').length,
     escondidos: [...document.querySelectorAll('[data-revelar]')].filter((el) => getComputedStyle(el).opacity !== '1').length,
     enviar: document.querySelector('[data-config-enviar]').href,
+    // O chat depende de JavaScript: sem ele, nem o botão da Sol aparece.
+    solEscondida: document.querySelector('[data-sol]').hidden && [...document.querySelectorAll('[data-sol-abrir]')].every((b) => b.hidden && getComputedStyle(b).display === 'none'),
   }));
-  conferir('Sem JavaScript o conteúdo aparece e os contatos funcionam', semJs.planos === 5 && semJs.duvidas === 7 && semJs.escondidos === 0 && semJs.enviar.includes('wa.me/'), JSON.stringify({ ...semJs, enviar: semJs.enviar.slice(0, 30) }));
+  conferir('Sem JavaScript o conteúdo aparece e os contatos funcionam', semJs.planos === 5 && semJs.duvidas === 7 && semJs.escondidos === 0 && semJs.enviar.includes('wa.me/') && semJs.solEscondida, JSON.stringify({ ...semJs, enviar: semJs.enviar.slice(0, 30) }));
   await contexto.close();
 }
 
@@ -387,6 +389,127 @@ grupo('Tela 5 · Celular');
   const fechado = await pagina.$eval('#menu-celular', (m) => m.hidden);
   conferir('Menu do celular abre e fecha (também com Esc)', aberto && fechado);
   await contexto.close();
+}
+
+/* ---------- 8. Sol (chat do site) ---------- */
+// O n8n não é chamado: as respostas são simuladas no próprio navegador (page.route),
+// no mesmo formato do fluxo "SomosCella - Sol no Site".
+grupo('Sol · chat do site');
+{
+  const simular = async (pagina, pedidos) => pagina.route('**/webhook/sol-site', async (rota) => {
+    const corpo = JSON.parse(rota.request().postData() || '{}');
+    pedidos.push(corpo);
+    const m = String(corpo.mensagem || '');
+    const r = corpo.tipo === 'contato'
+      ? { ok: true, contato_ok: true, resposta: 'Pronto, Ana! Enquanto a equipe não te chama, posso tirar mais alguma dúvida por aqui.', cartoes: [], opcoes: [], acoes: [] }
+      : /erro/.test(m) ? null
+      : /contato/.test(m) ? { ok: true, resposta: 'Deixe seu nome e WhatsApp aqui embaixo que a equipe te chama.', cartoes: [], opcoes: [], acoes: ['contato'] }
+      : /html/.test(m) ? { ok: true, resposta: '<img src=x onerror="window.__xss=1">Oi', cartoes: [], opcoes: [], acoes: [] }
+      : { ok: true, resposta: 'O plano de 4 câmeras sai *R$ 99,90* por mês. Em que cidade fica o imóvel?', cartoes: [{ tipo: 'plano', cameras: 4 }, { tipo: 'plano', cameras: 7 }], opcoes: ['Francisco Beltrão', 'Outra cidade'], acoes: [] };
+    if (!r) return rota.abort();
+    await rota.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(r) });
+  });
+  const falar = async (pagina, texto, esperar) => {
+    await pagina.fill('#sol-campo', texto);
+    await pagina.press('#sol-campo', 'Enter');
+    await pagina.waitForSelector(esperar, { timeout: 8000 });
+    await pagina.waitForFunction(() => !document.querySelector('[data-sol][data-esperando]'));
+    await pagina.waitForTimeout(700);
+  };
+  const pedidos = [];
+  const { pagina, contexto, erros } = await abrir(1440);
+  await simular(pagina, pedidos);
+  await pagina.waitForSelector('.sol[data-chegou] .sol-lancador', { timeout: 4000 });
+  await pagina.click('.sol-lancador');
+  await pagina.waitForSelector('.sol-painel.sol-painel-visivel');
+  const inicio = await pagina.evaluate(() => ({ saudacao: document.querySelector('.sol-msg-sol')?.textContent ?? '', chips: document.querySelectorAll('.sol-chip').length }));
+  conferir('Botão da Sol abre o chat com saudação de assistente virtual e sugestões', inicio.saudacao.includes('assistente virtual') && inicio.chips === 4, `${inicio.chips} sugestões`);
+
+  await falar(pagina, 'quanto custa 4 câmeras?', '.sol-plano');
+  const conversa = await pagina.evaluate(() => ({
+    cartoes: [...document.querySelectorAll('.sol-plano')].map((c) => c.textContent),
+    negrito: [...document.querySelectorAll('.sol-msg-sol strong')].map((s) => s.textContent),
+    chips: [...document.querySelectorAll('.sol-chip')].map((c) => c.textContent),
+    ver: document.querySelector('.sol-plano a[href="#plano-4"]') !== null,
+  }));
+  const p4 = planos.find((p) => p.cameras === 4);
+  const pedido1 = pedidos[0] ?? {};
+  conferir('Mensagem vai ao n8n com sessão (UUID) e volta com texto, cartão do plano e botões rápidos',
+    /^[0-9a-f-]{36}$/.test(pedido1.sessao ?? '') && pedido1.tipo === 'mensagem' && conversa.cartoes.length === 1
+      && conversa.negrito.includes('R$ 99,90') && conversa.chips.join('|') === 'Francisco Beltrão|Outra cidade' && conversa.ver,
+    `${conversa.cartoes.length} cartão (o de 7 câmeras, que não existe, foi descartado); botões: ${conversa.chips.join(', ')}`);
+  conferir('Cartão do plano no chat usa preço, taxa de instalação e cabo de dados.ts',
+    conversa.cartoes[0]?.includes(formatarPreco(p4.preco)) && conversa.cartoes[0]?.includes(`Instalação: R$ ${formatarPreco(p4.preco)} (1 mensalidade)`)
+      && conversa.cartoes[0]?.includes(`${p4.caboMetros} m de cabo`) && conversa.cartoes[0]?.includes('Cobertura completa'));
+
+  await falar(pagina, 'html', '.sol-msg-sol:last-of-type');
+  const xss = await pagina.evaluate(() => ({ img: document.querySelectorAll('.sol-conversa img').length, executou: Boolean(window.__xss) }));
+  conferir('Texto do servidor nunca vira HTML no chat', xss.img === 0 && !xss.executou);
+
+  await falar(pagina, 'quero contato', '.sol-contato');
+  const antes = pedidos.length;
+  await pagina.fill('.sol-contato input[name="nome"]', 'Ana Teste');
+  await pagina.fill('.sol-contato input[name="whatsapp"]', '46999999999');
+  await pagina.click('.sol-contato button[type="submit"]');
+  const erroTel = await pagina.$eval('.sol-contato-erro', (e) => (e.hidden ? '' : e.textContent));
+  await pagina.fill('.sol-contato input[name="whatsapp"]', '46991234567');
+  const mascara = await pagina.$eval('.sol-contato input[name="whatsapp"]', (e) => e.value);
+  await pagina.click('.sol-contato button[type="submit"]');
+  const erroAceite = await pagina.$eval('.sol-contato-erro', (e) => (e.hidden ? '' : e.textContent));
+  const semEnvio = pedidos.length === antes;
+  await pagina.check('.sol-contato input[name="aceite"]');
+  await pagina.click('.sol-contato button[type="submit"]');
+  await pagina.waitForSelector('.sol-contato-ok', { timeout: 8000 });
+  const contatoPedido = pedidos.at(-1) ?? {};
+  conferir('Cartão de contato valida número e autorização antes de enviar',
+    /Confira o número/.test(erroTel) && /autorização/.test(erroAceite) && semEnvio && mascara === '(46) 99123-4567',
+    `máscara ${mascara}`);
+  conferir('Contato vai com tipo "contato", número só com dígitos e autorização marcada',
+    contatoPedido.tipo === 'contato' && contatoPedido.contato?.whatsapp === '46991234567' && contatoPedido.contato?.aceite === true && contatoPedido.contato?.nome === 'Ana Teste');
+
+  await falar(pagina, 'erro', '.sol-whats');
+  const falha = await pagina.evaluate(() => ({ texto: [...document.querySelectorAll('.sol-msg-sol')].at(-1)?.textContent ?? '', whats: [...document.querySelectorAll('.sol-whats')].at(-1)?.href ?? '' }));
+  conferir('Sem conexão com a Sol: aviso e botão do WhatsApp da equipe', falha.texto.includes('Não consegui') && falha.whats.startsWith(`https://wa.me/${contato.whatsapp}?text=`));
+
+  const textoChat = await pagina.$eval('.sol-painel', (e) => e.innerText);
+  const precosValidos = new Set(planos.map((p) => formatarPreco(p.preco)));
+  const precosChat = [...textoChat.matchAll(/R\$\s?(\d{1,3},\d{2})/g)].map((m) => m[1]);
+  conferir('Todo preço no chat bate com dados.ts', precosChat.length > 0 && precosChat.every((v) => precosValidos.has(v)), `${precosChat.length} preços`);
+
+  await pagina.keyboard.press('Escape');
+  await pagina.waitForTimeout(400);
+  const fechado = await pagina.evaluate(() => ({ painel: document.querySelector('.sol-painel').hidden, foco: document.activeElement?.matches('.sol-lancador') }));
+  const mensagens = await pagina.$$eval('.sol-conversa .sol-msg', (m) => m.length);
+  await pagina.reload({ waitUntil: 'networkidle' });
+  await pagina.click('.sol-lancador');
+  await pagina.waitForSelector('.sol-painel.sol-painel-visivel');
+  const depois = await pagina.$$eval('.sol-conversa .sol-msg', (m) => m.length);
+  conferir('Esc fecha o chat (foco volta ao botão) e a conversa continua depois de recarregar', fechado.painel && fechado.foco && depois === mensagens, `${mensagens} → ${depois} mensagens`);
+  // A queda de conexão simulada acima (rota.abort) aparece no console como net::ERR_FAILED: é esperada.
+  const errosReais = erros.filter((e) => !/net::ERR_FAILED/.test(e));
+  conferir('Zero erros no console com o chat', errosReais.length === 0, errosReais.slice(0, 2).join(' | '));
+  await contexto.close();
+
+  // Celular: a Sol fica na barra fixa e o chat ocupa a tela toda.
+  const cel = await abrir(390);
+  await simular(cel.pagina, []);
+  await cel.pagina.click('.barra-sol');
+  await cel.pagina.waitForSelector('.sol-painel.sol-painel-visivel');
+  await cel.pagina.waitForTimeout(400);
+  await falar(cel.pagina, 'quanto custa 4 câmeras?', '.sol-plano');
+  const tela = await cel.pagina.evaluate(() => {
+    const r = document.querySelector('.sol-painel').getBoundingClientRect();
+    const pequenos = [...document.querySelectorAll('.sol-painel button, .sol-painel a.btn, .sol-painel .chip')]
+      .filter((el) => { const b = el.getBoundingClientRect(); return b.width > 0 && !el.closest('[hidden]'); })
+      .map((el) => { const b = el.getBoundingClientRect(); return { t: el.textContent.trim().slice(0, 20) || el.getAttribute('aria-label'), h: Math.round(b.height), w: Math.round(b.width) }; })
+      .filter((x) => x.h < 44 || x.w < 44);
+    return { cheia: Math.round(r.width) === innerWidth && Math.round(r.height) === innerHeight, sobra: document.documentElement.scrollWidth - innerWidth, barra: getComputedStyle(document.querySelector('.barra-fixa')).opacity, lancador: getComputedStyle(document.querySelector('.sol-lancador')).display, pequenos };
+  });
+  conferir('Celular: Sol na barra fixa, chat em tela cheia, sem rolagem lateral e toques ≥ 44 px',
+    tela.cheia && tela.sobra <= 0 && tela.barra === '0' && tela.lancador === 'none' && tela.pequenos.length === 0,
+    tela.pequenos.length ? tela.pequenos.map((p) => `${p.t} ${p.w}×${p.h}`).join('; ') : '');
+  conferir('Zero erros no console com o chat (celular)', cel.erros.length === 0, cel.erros.slice(0, 2).join(' | '));
+  await cel.contexto.close();
 }
 
 /* ---------- Fotos e comparação com os mockups ---------- */

@@ -1,17 +1,17 @@
 ---
 /**
- * Política de privacidade (26/09/2026).
- * Exigida pela Meta para liberar a API oficial do WhatsApp no portfólio da empresa.
- * Descreve o que acontece de fato: o site não coleta dados (sem formulário, cookie
- * ou analytics); o atendimento é pelo WhatsApp, com assistente de IA; servidor no
- * Canadá; IA com processamento na China e nos EUA. Prazos de guarda (12 meses / 5 anos)
- * e resposta em 15 dias: propostos em 26/09, dependem de o Kauan confirmar antes de publicar.
+ * Política de privacidade (26/09/2026; atualizada em 27/09/2026 com a Sol no site).
+ * Descreve o que acontece de fato: o site não usa cookie nem analytics; tem a Sol,
+ * assistente virtual com IA, que trata as mensagens e, quando a pessoa pede, nome e
+ * WhatsApp (aviso à equipe pelo Telegram); o navegador guarda a conversa (armazenamento
+ * local); a voz é reconhecida pelo próprio navegador. Servidor no Canadá; IA com
+ * processamento na China e nos EUA. Prazos de guarda: 12 meses / 5 anos; resposta em 15 dias.
  */
 import Base from '../layouts/Base.astro';
 import Logo from '../components/Logo.astro';
 import { contato, empresa } from '../lib/dados';
 
-const atualizada = '26 de setembro de 2026';
+const atualizada = '27 de setembro de 2026';
 ---
 
 <Base
@@ -33,17 +33,42 @@ const atualizada = '26 de setembro de 2026';
     <p>
       Esta política explica como a <strong>{empresa.nome} em {empresa.descricao}</strong>{' '}
       (CNPJ {empresa.cnpj}, {empresa.cidade}) trata os dados pessoais de quem visita o site{' '}
-      <strong>somoscella.online</strong>, de quem fala com a empresa pelo WhatsApp e dos clientes.
-      A {empresa.nome} é a controladora desses dados, nos termos da Lei Geral de Proteção de Dados
-      (Lei 13.709/2018).
+      <strong>somoscella.online</strong>, de quem conversa com a assistente virtual do site, de quem fala
+      com a empresa pelo WhatsApp e dos clientes. A {empresa.nome} é a controladora desses dados, nos
+      termos da Lei Geral de Proteção de Dados (Lei 13.709/2018).
     </p>
 
-    <h2>1. O site</h2>
+    <h2>1. O site e a assistente virtual</h2>
     <p>
-      O site não tem formulário, não usa cookies e não usa ferramentas de análise ou de publicidade.
-      Ele não coleta dados pessoais. Como qualquer servidor de internet, o servidor que hospeda o site
-      registra dados técnicos de acesso (endereço IP, data, hora e página pedida) para segurança e
-      funcionamento.
+      O site não usa cookies e não usa ferramentas de análise ou de publicidade. Como qualquer servidor
+      de internet, o servidor que hospeda o site registra dados técnicos de acesso (endereço IP, data,
+      hora e página pedida) para segurança e funcionamento.
+    </p>
+    <p>
+      <strong>No site há a Sol, uma assistente virtual com inteligência artificial.</strong> Conversar com
+      ela é opcional. Quando você conversa, tratamos:
+    </p>
+    <ul>
+      <li>as mensagens que você escreve ou fala;</li>
+      <li>
+        as informações que você decidir contar para o orçamento, como cidade, tipo de imóvel, quantos
+        pontos de câmera e o que motivou o contato;
+      </li>
+      <li>seu nome e seu número de WhatsApp, só se você pedir que a equipe te chame;</li>
+      <li>o endereço IP, guardado de forma cifrada, só para limitar o excesso de mensagens.</li>
+    </ul>
+    <p>
+      Usamos esses dados para responder, entender o que você precisa e, quando você pedir, para a nossa
+      equipe te chamar pelo WhatsApp. A base legal é a execução de procedimentos preliminares a um
+      contrato, a pedido de você (LGPD, art. 7º, V).
+    </p>
+    <p>
+      Para a conversa continuar se você recarregar a página, o seu navegador guarda um código da conversa
+      e as últimas mensagens (armazenamento local do navegador, não é cookie). Você apaga isso quando
+      quiser, em "Recomeçar conversa" ou limpando os dados do site no navegador. Se você usar o
+      microfone, o reconhecimento da voz é feito pelo próprio navegador (por exemplo, pelo Google no
+      Chrome ou pela Apple no Safari), conforme a política dele; nós recebemos só o texto. A leitura das
+      respostas em voz alta é feita pelo seu aparelho.
     </p>
 
     <h2>2. Atendimento pelo WhatsApp</h2>
@@ -62,7 +87,7 @@ const atualizada = '26 de setembro de 2026';
       preliminares a um contrato, a pedido de você (LGPD, art. 7º, V).
     </p>
     <p>
-      <strong>Parte do atendimento é feita por um assistente virtual com inteligência artificial.</strong>
+      <strong>Parte do atendimento pode ser feita por um assistente virtual com inteligência artificial.</strong>
       Ele responde às primeiras dúvidas e passa a conversa para uma pessoa da equipe quando necessário.
       Os áudios podem ser convertidos em texto automaticamente para que possam ser respondidos.
     </p>
@@ -86,6 +111,7 @@ const atualizada = '26 de setembro de 2026';
       <li>o WhatsApp (Meta), por onde as mensagens são trocadas;</li>
       <li>a empresa de hospedagem dos nossos servidores;</li>
       <li>os fornecedores de inteligência artificial usados no assistente virtual e na transcrição de áudio;</li>
+      <li>o Telegram, usado só internamente para avisar a nossa equipe quando você pede contato pelo site;</li>
       <li>a plataforma de assinatura eletrônica de contratos;</li>
       <li>instituições de pagamento, para a cobrança;</li>
       <li>autoridades, quando a lei ou uma ordem judicial exigir.</li>
@@ -94,15 +120,16 @@ const atualizada = '26 de setembro de 2026';
     <h2>5. Transferência para fora do Brasil</h2>
     <p>
       Nossos servidores ficam no Canadá. Os fornecedores de inteligência artificial processam dados nos
-      Estados Unidos e na China. Essas transferências são feitas para atender ao seu pedido ou executar
+      Estados Unidos e na China, e o Telegram usa servidores fora do Brasil. Essas transferências são
+      feitas para atender ao seu pedido ou executar
       o contrato (LGPD, art. 33, V), e compartilhamos apenas o necessário para isso.
     </p>
 
     <h2>6. Por quanto tempo guardamos</h2>
     <ul>
       <li>
-        <strong>Conversas de quem não fechou contrato:</strong> até 12 meses depois do último contato. Depois
-        disso, são apagadas.
+        <strong>Conversas de quem não fechou contrato</strong> (pelo site ou pelo WhatsApp): até 12 meses
+        depois do último contato. Depois disso, são apagadas.
       </li>
       <li>
         <strong>Dados de clientes:</strong> durante o contrato e por mais 5 anos depois do fim, prazo em que

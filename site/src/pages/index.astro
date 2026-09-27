@@ -8,6 +8,7 @@ import ComoFunciona from '../components/ComoFunciona.astro';
 import ContatoFinal from '../components/ContatoFinal.astro';
 import Rodape from '../components/Rodape.astro';
 import BarraFixa from '../components/BarraFixa.astro';
+import Sol from '../components/Sol.astro';
 import { formatarPreco, menorPreco, mostrarPrecos } from '../lib/dados';
 
 const aPartir = mostrarPrecos ? ` a partir de R$ ${formatarPreco(menorPreco)}/mÃªs` : '';
@@ -29,4 +30,5 @@ const aPartir = mostrarPrecos ? ` a partir de R$ ${formatarPreco(menorPreco)}/mÃ
   </main>
   <Rodape />
   <BarraFixa />
+  <Sol />
 </Base>

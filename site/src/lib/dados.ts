@@ -42,8 +42,8 @@ export const empresa = {
 };
 
 export const contato = {
-  // Número usado em todos os botões de WhatsApp (atendimento pela equipe; o robô está fora do ar).
-  // (46) 99133-1306 foi banido em 26/09/2026; o site usa o (49) 99832-5623 (Kauan, 27/09).
+  // Número usado em todos os botões de WhatsApp: atendimento humano, pela equipe.
+  // A assistente virtual (Sol) atende no chat do próprio site, não no WhatsApp.
   whatsapp: '5549998325623',
   whatsappExibicao: '(49) 99832-5623',
   email: 'somoscella@gmail.com',

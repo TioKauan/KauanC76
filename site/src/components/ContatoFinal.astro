@@ -17,6 +17,10 @@ import { msgGeral } from '../lib/site';
       <a class="btn btn-primario btn-g" href={linkWhatsapp(msgGeral)} target="_blank" rel="noopener">
         <Icone nome="message-circle" tamanho={20} /> Conversar pelo WhatsApp
       </a>
+      <!-- Aparece só com JavaScript (o chat depende dele): src/scripts/sol.ts -->
+      <button class="btn btn-contorno btn-g contato-sol" type="button" data-sol-abrir hidden>
+        <span class="sol-orbe sol-orbe-p" aria-hidden="true"></span> Tirar dúvidas agora com a Sol
+      </button>
       <dl class="contato-dados">
         <div><dt>WhatsApp</dt><dd>{contato.whatsappExibicao}</dd></div>
         <div><dt>Atendimento</dt><dd>{empresa.regiao}</dd></div>
