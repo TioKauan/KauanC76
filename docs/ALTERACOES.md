@@ -5,6 +5,36 @@ Cada publicação tem uma tag `publicado-<data>` no Git, apontando para o commit
 
 ---
 
+## 27/09/2026, 01:53 (UTC) — Política de privacidade e novo WhatsApp
+
+Tag `publicado-2026-09-27-015313`.
+
+### O que mudou para quem visita o site
+
+| Onde | Antes | Agora |
+|---|---|---|
+| Nova página | — | **`/privacidade/`**: política de privacidade em 9 seções (site, WhatsApp com assistente de IA, clientes, compartilhamento, transferência para Canadá/EUA/China, prazos de guarda, direitos da LGPD, segurança, mudanças) |
+| Rodapé | CNPJ, cidade e e-mail | + link "Política de privacidade" |
+| Todos os botões de WhatsApp (16) | (46) 99133-1306 | **(49) 99832-5623** |
+
+### Por quê
+
+- **Política de privacidade:** a Meta exige uma página de política para liberar a API oficial do
+  WhatsApp no portfólio da empresa. Antes, qualquer endereço do site devolvia a página inicial.
+  Prazos aprovados pelo Kauan em 27/09: conversas sem contrato apagadas em 12 meses; dados de
+  clientes por mais 5 anos após o contrato; pedidos respondidos em até 15 dias.
+- **WhatsApp:** o (46) 99133-1306 foi banido em 26/09/2026; os botões levariam a um número sem resposta.
+
+### Técnico
+
+- O script de interação da página inicial só roda onde existe o menu (a página de texto não quebra).
+- O validador ganhou 2 conferências (link no rodapé; `/privacidade/` sem erro e sem rolagem lateral)
+  e o servidor de teste passou a servir endereços de pasta. 51/51 ✅.
+- Versão anterior guardada no VPS em `/opt/somoscella/backups/site-no-ar-antes-20260927-015313.tar.gz`
+  e na pasta `index.antigo-20260927-015313`.
+
+---
+
 ## 25/09/2026, 14:59 — Taxa de instalação, CNPJ e contratação simples
 
 Tag `publicado-2026-09-25-145909`.

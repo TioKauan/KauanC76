@@ -1,0 +1,188 @@
+---
+/**
+ * Política de privacidade (26/09/2026).
+ * Exigida pela Meta para liberar a API oficial do WhatsApp no portfólio da empresa.
+ * Descreve o que acontece de fato: o site não coleta dados (sem formulário, cookie
+ * ou analytics); o atendimento é pelo WhatsApp, com assistente de IA; servidor no
+ * Canadá; IA com processamento na China e nos EUA. Prazos de guarda (12 meses / 5 anos)
+ * e resposta em 15 dias: propostos em 26/09, dependem de o Kauan confirmar antes de publicar.
+ */
+import Base from '../layouts/Base.astro';
+import Logo from '../components/Logo.astro';
+import { contato, empresa } from '../lib/dados';
+
+const atualizada = '26 de setembro de 2026';
+---
+
+<Base
+  titulo="Política de privacidade | SC Soluções"
+  descricao="Como a SC Soluções trata os dados de quem entra em contato e dos clientes: o que coleta, para quê, com quem compartilha, por quanto tempo guarda e como pedir acesso ou exclusão."
+  tituloSocial="Política de privacidade | SC Soluções"
+  descricaoSocial="Como a SC Soluções trata os dados pessoais de contatos e clientes."
+>
+  <header class="priv-topo">
+    <div class="wrap">
+      <a href="/" class="logo-link" aria-label="SC Soluções, página inicial"><Logo /></a>
+    </div>
+  </header>
+
+  <main id="conteudo" class="wrap priv">
+    <h1>Política de privacidade</h1>
+    <p class="priv-data">Atualizada em {atualizada}.</p>
+
+    <p>
+      Esta política explica como a <strong>{empresa.nome} em {empresa.descricao}</strong>{' '}
+      (CNPJ {empresa.cnpj}, {empresa.cidade}) trata os dados pessoais de quem visita o site{' '}
+      <strong>somoscella.online</strong>, de quem fala com a empresa pelo WhatsApp e dos clientes.
+      A {empresa.nome} é a controladora desses dados, nos termos da Lei Geral de Proteção de Dados
+      (Lei 13.709/2018).
+    </p>
+
+    <h2>1. O site</h2>
+    <p>
+      O site não tem formulário, não usa cookies e não usa ferramentas de análise ou de publicidade.
+      Ele não coleta dados pessoais. Como qualquer servidor de internet, o servidor que hospeda o site
+      registra dados técnicos de acesso (endereço IP, data, hora e página pedida) para segurança e
+      funcionamento.
+    </p>
+
+    <h2>2. Atendimento pelo WhatsApp</h2>
+    <p>Quando você fala com a {empresa.nome} pelo WhatsApp, tratamos:</p>
+    <ul>
+      <li>seu número de telefone e o nome do seu perfil;</li>
+      <li>as mensagens, áudios e arquivos que você enviar;</li>
+      <li>
+        as informações que você decidir contar para o orçamento, como cidade, tipo de imóvel,
+        quantos pontos de câmera e o que motivou o contato.
+      </li>
+    </ul>
+    <p>
+      Usamos esses dados para responder, entender o que você precisa, preparar orçamento ou proposta
+      e encaminhar o atendimento para a nossa equipe. A base legal é a execução de procedimentos
+      preliminares a um contrato, a pedido de você (LGPD, art. 7º, V).
+    </p>
+    <p>
+      <strong>Parte do atendimento é feita por um assistente virtual com inteligência artificial.</strong>
+      Ele responde às primeiras dúvidas e passa a conversa para uma pessoa da equipe quando necessário.
+      Os áudios podem ser convertidos em texto automaticamente para que possam ser respondidos.
+    </p>
+
+    <h2>3. Clientes</h2>
+    <p>
+      Para contratar, tratamos os dados de identificação e de contato do titular do contrato
+      (como nome, CPF ou CNPJ, endereço, telefone e e-mail), coletados pela plataforma de assinatura
+      eletrônica, além dos dados de cobrança e do histórico de instalação e manutenção. A base legal é
+      a execução do contrato e o cumprimento de obrigações legais e fiscais (LGPD, art. 7º, II e V).
+    </p>
+    <p>
+      <strong>Imagens das câmeras:</strong> as gravações ficam no gravador instalado no local do cliente.
+      A {empresa.nome} não acessa as imagens sem autorização do cliente, salvo quando ele pedir suporte
+      que dependa disso.
+    </p>
+
+    <h2>4. Com quem compartilhamos</h2>
+    <p>Não vendemos dados pessoais. Compartilhamos somente o necessário com quem presta serviço para nós:</p>
+    <ul>
+      <li>o WhatsApp (Meta), por onde as mensagens são trocadas;</li>
+      <li>a empresa de hospedagem dos nossos servidores;</li>
+      <li>os fornecedores de inteligência artificial usados no assistente virtual e na transcrição de áudio;</li>
+      <li>a plataforma de assinatura eletrônica de contratos;</li>
+      <li>instituições de pagamento, para a cobrança;</li>
+      <li>autoridades, quando a lei ou uma ordem judicial exigir.</li>
+    </ul>
+
+    <h2>5. Transferência para fora do Brasil</h2>
+    <p>
+      Nossos servidores ficam no Canadá. Os fornecedores de inteligência artificial processam dados nos
+      Estados Unidos e na China. Essas transferências são feitas para atender ao seu pedido ou executar
+      o contrato (LGPD, art. 33, V), e compartilhamos apenas o necessário para isso.
+    </p>
+
+    <h2>6. Por quanto tempo guardamos</h2>
+    <ul>
+      <li>
+        <strong>Conversas de quem não fechou contrato:</strong> até 12 meses depois do último contato. Depois
+        disso, são apagadas.
+      </li>
+      <li>
+        <strong>Dados de clientes:</strong> durante o contrato e por mais 5 anos depois do fim, prazo em que
+        ainda pode haver cobrança, reclamação ou fiscalização.
+      </li>
+    </ul>
+
+    <h2>7. Seus direitos</h2>
+    <p>
+      Você pode pedir, a qualquer momento: confirmação de que tratamos seus dados, acesso a eles, correção,
+      exclusão, informação sobre com quem foram compartilhados e revogação do consentimento, quando for o
+      caso (LGPD, art. 18). Também pode dizer que não quer mais ser contatado.
+    </p>
+    <p>
+      Para isso, escreva para <a href={`mailto:${contato.email}`}>{contato.email}</a>. Respondemos em até
+      15 dias. Se não ficar satisfeito, você pode procurar a Autoridade Nacional de Proteção de Dados (ANPD).
+    </p>
+
+    <h2>8. Segurança</h2>
+    <p>
+      Os dados ficam em servidores com acesso restrito e protegido por senha e chave, com cópias de
+      segurança. Nenhum sistema é totalmente imune a falhas; se houver um incidente que possa trazer risco
+      a você, comunicaremos como a lei exige.
+    </p>
+
+    <h2>9. Mudanças nesta política</h2>
+    <p>
+      Quando esta política mudar, a data no topo será atualizada. A versão válida é sempre a publicada
+      nesta página.
+    </p>
+
+    <p class="priv-voltar"><a href="/">← Voltar para o site</a></p>
+  </main>
+
+  <footer class="rodape">
+    <p class="wrap rodape-empresa">
+      {empresa.nome} em {empresa.descricao} · CNPJ {empresa.cnpj} · {empresa.cidade} ·
+      <a href={`mailto:${contato.email}`}>{contato.email}</a>
+    </p>
+  </footer>
+</Base>
+
+<style>
+  .priv-topo {
+    padding: 1.25rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .priv {
+    max-width: 46rem;
+    padding-top: 2.5rem;
+    padding-bottom: 3rem;
+    line-height: 1.65;
+  }
+  .priv h1 {
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    margin: 0 0 0.25rem;
+  }
+  .priv h2 {
+    font-size: 1.2rem;
+    margin: 2rem 0 0.5rem;
+  }
+  .priv p,
+  .priv li {
+    color: rgba(255, 255, 255, 0.82);
+  }
+  .priv ul {
+    padding-left: 1.2rem;
+  }
+  .priv li {
+    margin: 0.3rem 0;
+  }
+  .priv a {
+    color: inherit;
+    text-decoration: underline;
+  }
+  .priv-data {
+    opacity: 0.7;
+    margin-bottom: 1.5rem;
+  }
+  .priv-voltar {
+    margin-top: 2.5rem;
+  }
+</style>

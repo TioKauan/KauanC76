@@ -55,6 +55,8 @@ const tipos = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '
 const servidor = createServer((req, res) => {
   const url = decodeURIComponent(new URL(req.url, 'http://x').pathname);
   let arquivo = path.join(dist, url === '/' ? 'index.html' : url);
+  // Endereço de pasta (/privacidade/) serve o index.html dela, como o Nginx faz.
+  if (existsSync(arquivo) && statSync(arquivo).isDirectory()) arquivo = path.join(arquivo, 'index.html');
   if (!arquivo.startsWith(dist) || !existsSync(arquivo) || statSync(arquivo).isDirectory()) { res.writeHead(404); return res.end('404'); }
   res.writeHead(200, { 'content-type': tipos[path.extname(arquivo)] || 'application/octet-stream' });
   res.end(readFileSync(arquivo));
@@ -96,7 +98,7 @@ const rolarTudo = (pagina) => pagina.evaluate(async () => {
   conferir('Todo link interno leva a uma seção que existe', quebradas.length === 0, quebradas.length ? `quebrados: ${quebradas.join(', ')}` : `${new Set(ancoras).size} destinos conferidos`);
 
   const whats = await pagina.evaluate(() => [...document.querySelectorAll('a[href*="wa.me"]')].map((a) => a.href));
-  const errados = whats.filter((h) => !h.startsWith(`https://wa.me/${'5546991331306'}?text=`) || new URL(h).searchParams.get('text').length < 20);
+  const errados = whats.filter((h) => !h.startsWith(`https://wa.me/${'5549998325623'}?text=`) || new URL(h).searchParams.get('text').length < 20);
   conferir(`Todo WhatsApp usa wa.me/${contato.whatsapp} com mensagem preenchida`, whats.length > 0 && errados.length === 0, `${whats.length} links${errados.length ? `; errados: ${errados.slice(0, 3).join(' ')}` : ''}`);
   const html = readFileSync(path.join(dist, 'index.html'), 'utf8');
   const textoTodo = await pagina.evaluate(() => document.body.innerText);
@@ -181,6 +183,23 @@ for (const largura of [360, 390, 768, 1024, 1440]) {
 }
 
 /* ---------- 3. Tela 1 ---------- */
+{
+  // Política de privacidade: exigida pela Meta para a API oficial do WhatsApp.
+  const { pagina, contexto, erros } = await abrir(390);
+  const temLink = await pagina.evaluate(() => Boolean(document.querySelector('.rodape a[href="/privacidade/"]')));
+  await pagina.goto(`${endereco}privacidade/`, { waitUntil: 'networkidle' });
+  const priv = await pagina.evaluate(() => ({
+    titulo: document.querySelector('h1')?.textContent.trim(),
+    secoes: document.querySelectorAll('main h2').length,
+    sobra: document.documentElement.scrollWidth - innerWidth,
+  }));
+  conferir('Rodapé tem link para a Política de privacidade', temLink);
+  conferir('/privacidade/ abre com as 9 seções, sem erro no console e sem rolagem lateral',
+    priv.titulo === 'Política de privacidade' && priv.secoes === 9 && erros.length === 0 && priv.sobra <= 0,
+    `${priv.secoes} seções; erros: ${erros.slice(0, 1).join('') || 0}; sobra ${priv.sobra} px`);
+  await contexto.close();
+}
+
 grupo('Tela 1 · Abertura');
 {
   const { pagina, contexto } = await abrir(1440);

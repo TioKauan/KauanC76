@@ -1,7 +1,7 @@
 # Relatório de validação do site
 
-Gerado por `npm run validar` em 25/09/2026, 15:06:55.
-Resultado: **49 de 49 itens ✅** — checklist completa.
+Gerado por `npm run validar` em 26/09/2026, 22:26:17.
+Resultado: **51 de 51 itens ✅** — checklist completa.
 
 ## Geral
 
@@ -9,9 +9,9 @@ Resultado: **49 de 49 itens ✅** — checklist completa.
 |---|---|---|
 | ✅ | Tipos conferidos (astro check) e build sem erro |  |
 | ✅ | Testes unitários das regras (Vitest) passam | 69 testes |
-| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 346 KB em 5 arquivos; maiores: / 194 KB, /marca/sc-logo.webp 52 KB, /assets/index.Dgs-2cxc.css 43 KB |
+| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 346 KB em 5 arquivos; maiores: / 194 KB, /marca/sc-logo.webp 52 KB, /assets/Logo.Dgs-2cxc.css 43 KB |
 | ✅ | Todo link interno leva a uma seção que existe | 6 destinos conferidos |
-| ✅ | Todo WhatsApp usa wa.me/5546991331306 com mensagem preenchida | 16 links |
+| ✅ | Todo WhatsApp usa wa.me/5549998325623 com mensagem preenchida | 16 links |
 | ✅ | Número antigo (46) 99113-8360 não aparece |  |
 | ✅ | Rodapé identifica a empresa (CNPJ, cidade, e-mail) |  |
 | ✅ | Todo preço na página bate com dados.ts | 11 preços encontrados |
@@ -30,7 +30,9 @@ Resultado: **49 de 49 itens ✅** — checklist completa.
 | ✅ | Sem rolagem horizontal em 1440 px |  |
 | ✅ | "Reduzir movimento": nenhuma animação contínua roda | 0 animações contínuas |
 | ✅ | "Reduzir movimento": todo conteúdo aparece sem animação | 0 blocos escondidos |
-| ✅ | Sem JavaScript o conteúdo aparece e os contatos funcionam | {"planos":5,"duvidas":7,"escondidos":0,"enviar":"https://wa.me/5546991331306?te"} |
+| ✅ | Sem JavaScript o conteúdo aparece e os contatos funcionam | {"planos":5,"duvidas":7,"escondidos":0,"enviar":"https://wa.me/5549998325623?te"} |
+| ✅ | Rodapé tem link para a Política de privacidade |  |
+| ✅ | /privacidade/ abre com as 9 seções, sem erro no console e sem rolagem lateral | 9 seções; erros: 0; sobra 0 px |
 
 ## Tela 1 · Abertura
 

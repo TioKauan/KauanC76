@@ -25,7 +25,8 @@ solução, não a mais simples de entender; nas conversas, explique o porquê da
 - **A instalação não é grátis:** taxa = valor de 1 mensalidade do plano, paga antecipadamente
   (`taxaInstalacaoMensalidades` em `dados.ts`). Nunca escreva "instalação inclusa" nem "sem
   investimento inicial"; o validador falha.
-- WhatsApp do site: `(46) 99133-1306`. O número antigo `(46) 99113-8360` não pode aparecer.
+- WhatsApp do site: `(49) 99832-5623` (desde 27/09/2026). Os números `(46) 99113-8360` e `(46) 99133-1306`
+  foram banidos e não podem aparecer.
 - Logo: só os arquivos oficiais (`site/public/marca/`); nunca redesenhe. O Claude não gera foto.
 - **Publicar é ação externa: só com pedido explícito do Kauan** (Nginx do VPS, guardando antes a versão no ar).
 
