@@ -5,6 +5,37 @@ Cada publicação tem uma tag `publicado-<data>` no Git, apontando para o commit
 
 ---
 
+## 28/09/2026, 01:06 (UTC) — Chat da Sol, a assistente virtual
+
+Tag `publicado-2026-09-28-010649` (código do commit `5a0f605`).
+
+### O que mudou para quem visita o site
+
+| Onde | Antes | Agora |
+|---|---|---|
+| Canto da tela (computador) e barra de baixo (celular) | — | Botão **"Fale com a Sol"**, que abre o chat com a assistente virtual |
+| Chat | — | Cartão do plano com mensalidade, taxa de instalação e cabo (os mesmos valores da página), botões de resposta rápida, cartão para pedir que a equipe chame (nome, WhatsApp e autorização) e botão do WhatsApp da equipe |
+| Voz | — | Ditar a mensagem, ouvir as respostas e conversar só por voz, pelo próprio navegador (sem microfone no Firefox) |
+| "Fale com a SC" e busca de dúvidas sem resultado | Só WhatsApp | + "Tirar dúvidas agora com a Sol" e "Perguntar para a Sol" |
+| `/privacidade/` | "O site não coleta dados" | Seção 1 descreve a assistente virtual, o que ela trata e a conversa guardada no navegador; Telegram no compartilhamento; prazo de 12 meses vale para conversas do site |
+
+### Por quê
+
+- O atendimento automático passou a ser feito no próprio site, com respostas na hora e os
+  planos aparecendo na tela. O WhatsApp da equipe continua para atendimento humano.
+
+### Técnico
+
+- A IA, os preços que ela fala e a decisão de oferecer o contato ficam no servidor (n8n); o
+  site só desenha a resposta. Texto do servidor nunca vira HTML.
+- Testes: 86 (17 novos das regras do chat). Validador: 63/63, com 12 conferências do chat
+  (respostas simuladas no navegador).
+- Publicado no domínio, no `www` e no endereço provisório (este estava com a versão de 25/09).
+- Versão anterior guardada no VPS em `/opt/somoscella/backups/site-no-ar-antes-20260928-010649-*.tar.gz`
+  e nas pastas `index.antigo-20260928-010649`.
+
+---
+
 ## 27/09/2026, 01:53 (UTC) — Política de privacidade e novo WhatsApp
 
 Tag `publicado-2026-09-27-015313`.
