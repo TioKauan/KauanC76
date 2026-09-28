@@ -168,31 +168,25 @@
 
 .sol-whats { align-self: flex-start; }
 
-/* Cartão que já existia e desceu até a mensagem nova: um brilho para o olho achar */
-.sol-realce { animation: sol-realce 1.2s var(--suave); }
-@keyframes sol-realce { 0% { box-shadow: 0 0 0 0 #ff8a2b00; transform: translateY(10px); } 30% { box-shadow: 0 0 0 3px #ff8a2baa, 0 0 30px -4px #ff6a00aa; transform: none; } 100% { box-shadow: 0 0 0 0 #ff8a2b00; } }
-
-/* Cartão de contato */
-.sol-contato { align-self: stretch; display: grid; gap: 8px; padding: 16px; border-radius: 16px; border: 1px solid #9a4a1a; background: radial-gradient(300px 160px at 100% 0%, #ff6a0018, transparent 70%), #0b1521; }
-.sol-contato-titulo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; }
-.sol-contato-sub { font-size: 13px; color: var(--texto-2); line-height: 1.5; margin-bottom: 4px; }
-.sol-campo-rotulo { font-size: 12px; font-weight: 700; color: #c9d6e2; letter-spacing: 0.02em; }
-.sol-contato input[type='text'], .sol-contato input[type='tel'] { width: 100%; min-height: 46px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--linha-2); background: #050d18; font-size: 16px; }
-.sol-contato input:focus { outline: none; border-color: var(--ciano); box-shadow: 0 0 0 3px #6de9f626; }
-.sol-aceite { display: flex; gap: 10px; align-items: flex-start; font-size: 12.5px; color: #b8c6d4; line-height: 1.5; cursor: pointer; margin-top: 4px; }
-.sol-aceite input { width: 20px; height: 20px; margin: 1px 0 0; accent-color: var(--laranja); flex-shrink: 0; }
-.sol-aceite a { color: var(--ciano); text-decoration: underline; text-underline-offset: 2px; }
-.sol-contato-erro { font-size: 13px; color: #ffb4a0; }
-.sol-contato .btn { width: 100%; margin-top: 4px; }
-.sol-contato .btn:disabled { opacity: 0.7; cursor: progress; transform: none; }
-.sol-contato-ok { border-color: #1f6b48; background: #06160f; }
-.sol-contato-ok .sol-contato-titulo .ic { color: var(--verde); }
+/* "Quero contratar": a equipe foi avisada */
+.sol-avisado { align-self: stretch; display: grid; gap: 4px; padding: 14px 16px; border-radius: 16px; border: 1px solid #1f6b48; background: #06160f; }
+.sol-avisado-titulo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; }
+.sol-avisado-titulo .ic { color: var(--verde); }
+.sol-avisado-sub { font-size: 13px; color: var(--texto-2); line-height: 1.5; }
 
 /* Respostas rápidas */
 .sol-rapidas { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 16px; }
 .sol-rapidas:not(:empty) { padding-bottom: 10px; }
 .sol-chip { min-height: 44px; font-size: 13.5px; }
 .sol-chip:hover { border-color: var(--ciano); color: #fff; }
+/* Durante o roteiro: a equipe no WhatsApp, em contorno ciano (a regra dos botões de WhatsApp do site) */
+.sol-chip-whats { border-color: #2d6f84; color: var(--ciano); }
+.sol-chip-whats:hover { color: #fff; }
+
+/* Autorização, junto da pergunta do WhatsApp */
+.sol-aviso { margin: 0 16px 8px; font-size: 12px; line-height: 1.5; color: var(--texto-2); }
+.sol-aviso[hidden] { display: none; }
+.sol-aviso a { color: var(--ciano); text-decoration: underline; text-underline-offset: 2px; }
 
 /* Envio */
 .sol-envio { display: flex; align-items: flex-end; gap: 6px; margin: 0 12px; padding: 6px 6px 6px 14px; border-radius: 16px; border: 1px solid var(--linha-2); background: #06101b; transition: border-color 0.2s, box-shadow 0.2s; }
@@ -213,6 +207,7 @@
   .barra-sol { display: grid; place-items: center; width: 44px; height: 44px; margin-left: -6px; border-radius: 50%; flex-shrink: 0; }
   .barra-sol .sol-orbe-p { --t: 32px; }
   .barra-sol .sol-orbe { animation: sol-respira 3.2s ease-in-out infinite; }
+  .barra-fixa[data-modo='contato'] .barra-texto { cursor: pointer; }
   .sol-painel { inset: 0; right: 0; bottom: 0; width: 100%; height: 100dvh; border-radius: 0; border: 0; padding-bottom: env(safe-area-inset-bottom); transform-origin: bottom center; }
   .sol-topo { padding-top: max(12px, env(safe-area-inset-top)); }
   .sol-msg { max-width: 90%; }

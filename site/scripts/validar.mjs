@@ -100,6 +100,10 @@ const rolarTudo = (pagina) => pagina.evaluate(async () => {
   const whats = await pagina.evaluate(() => [...document.querySelectorAll('a[href*="wa.me"]')].map((a) => a.href));
   const errados = whats.filter((h) => !h.startsWith(`https://wa.me/${'5549998325623'}?text=`) || new URL(h).searchParams.get('text').length < 20);
   conferir(`Todo WhatsApp usa wa.me/${contato.whatsapp} com mensagem preenchida`, whats.length > 0 && errados.length === 0, `${whats.length} links${errados.length ? `; errados: ${errados.slice(0, 3).join(' ')}` : ''}`);
+  // Regra de 28/09/2026: o visitante sabe pelo desenho se vai para a equipe (WhatsApp) ou para a Sol (orbe).
+  const semIcone = await pagina.evaluate(() => [...document.querySelectorAll('a[href*="wa.me"]')]
+    .filter((a) => !a.querySelector('use[href="#ic-whatsapp"]')).map((a) => a.textContent.trim().slice(0, 30)));
+  conferir('Todo botão de WhatsApp mostra o ícone do WhatsApp', whats.length > 0 && semIcone.length === 0, semIcone.join(' | '));
   const html = readFileSync(path.join(dist, 'index.html'), 'utf8');
   const textoTodo = await pagina.evaluate(() => document.body.innerText);
   conferir('Número antigo (46) 99113-8360 não aparece', !/99113.?8360|991138360/.test(html + textoTodo));
@@ -393,38 +397,120 @@ grupo('Tela 5 · Celular');
 
 /* ---------- 8. Sol (chat do site) ---------- */
 // O n8n não é chamado: as respostas são simuladas no próprio navegador (page.route),
-// no mesmo formato do fluxo "SomosCella - Sol no Site".
+// no mesmo formato do fluxo "SomosCella - Sol no Site". Desde 28/09/2026 a Sol é um
+// agente de captura de lead: o site pergunta nome, WhatsApp, cidade e o que a pessoa
+// procura (sem IA), manda o lead e só então a conversa com a Sol começa.
 grupo('Sol · chat do site');
 {
   const simular = async (pagina, pedidos) => pagina.route('**/webhook/sol-site', async (rota) => {
     const corpo = JSON.parse(rota.request().postData() || '{}');
     pedidos.push(corpo);
     const m = String(corpo.mensagem || '');
-    const r = corpo.tipo === 'contato'
-      ? { ok: true, contato_ok: true, resposta: 'Pronto, Ana! Enquanto a equipe não te chama, posso tirar mais alguma dúvida por aqui.', cartoes: [], opcoes: [], acoes: [] }
-      : /erro/.test(m) ? null
-      : corpo.plano ? { ok: true, resposta: 'A equipe te chama no WhatsApp para combinar a vistoria.', cartoes: [], opcoes: [], acoes: ['contato'] }
-      : /contato|de novo/.test(m) ? { ok: true, resposta: 'Deixe seu nome e WhatsApp aqui embaixo que a equipe te chama.', cartoes: [], opcoes: [], acoes: ['contato'] }
-      : /html/.test(m) ? { ok: true, resposta: '<img src=x onerror="window.__xss=1">Oi', cartoes: [], opcoes: [], acoes: [] }
-      : { ok: true, resposta: 'O plano de 4 câmeras sai *R$ 99,90* por mês. Em que cidade fica o imóvel?', cartoes: [{ tipo: 'plano', cameras: 4 }, { tipo: 'plano', cameras: 7 }], opcoes: ['Francisco Beltrão', 'Outra cidade'], acoes: [] };
+    const conversa = (resposta, extra = {}) => ({ ok: true, modo: 'conversa', resposta, cartoes: [], opcoes: [], acoes: [], ...extra });
+    let status = 200;
+    let r;
+    if (corpo.tipo === 'lead') r = { ok: true, status: 200, lead_ok: true };
+    else if (/erro/.test(m)) r = null;
+    else if (/sumiu/.test(m)) { status = 403; r = { ok: false, status: 403, motivo: 'sem_lead', resposta: 'Para conversar comigo, preciso antes do seu nome e WhatsApp.', cartoes: [], opcoes: [], acoes: ['whatsapp'] }; }
+    else if (corpo.plano) r = conversa('Combinado, Ana! A equipe vai te chamar no WhatsApp para combinar a vistoria.', { modo: 'contratar' });
+    else if (/html/.test(m)) r = conversa('<img src=x onerror="window.__xss=1">Oi');
+    else if (/^Procuro/.test(m)) r = conversa('Ana, é para casa ou para comércio?', { opcoes: ['Casa', 'Comércio'] });
+    else r = conversa('O plano de 4 câmeras sai *R$ 99,90* por mês.', { cartoes: [{ tipo: 'plano', cameras: 4 }, { tipo: 'plano', cameras: 7 }], opcoes: ['Quero este plano', 'Tenho uma dúvida'] });
     if (!r) return rota.abort();
-    await rota.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(r) });
+    await rota.fulfill({ status, contentType: 'application/json', body: JSON.stringify(r) });
   });
-  const falar = async (pagina, texto, esperar) => {
-    await pagina.fill('#sol-campo', texto);
-    await pagina.press('#sol-campo', 'Enter');
-    await pagina.waitForSelector(esperar, { timeout: 8000 });
+  const esperarSol = async (pagina) => {
     await pagina.waitForFunction(() => !document.querySelector('[data-sol][data-esperando]'));
     await pagina.waitForTimeout(700);
   };
+  const falar = async (pagina, texto, esperar) => {
+    await pagina.fill('#sol-campo', texto);
+    await pagina.press('#sol-campo', 'Enter');
+    if (esperar) await pagina.waitForSelector(esperar, { timeout: 8000 });
+    await esperarSol(pagina);
+  };
+  const tocar = async (pagina, texto) => {
+    await pagina.click(`.sol-rapidas .sol-chip:text-is("${texto}")`);
+    await esperarSol(pagina);
+  };
+  const tela = (pagina) => pagina.evaluate(() => {
+    const falas = [...document.querySelectorAll('.sol-msg-sol:not(.sol-digitando) .sol-msg-corpo')].map((m) => m.textContent);
+    const minhas = [...document.querySelectorAll('.sol-msg-eu .sol-msg-corpo')].map((m) => m.textContent);
+    const campo = document.querySelector('#sol-campo');
+    const aviso = document.querySelector('[data-sol-aviso]');
+    const escape = document.querySelector('.sol-rapidas .sol-chip-whats');
+    return {
+      ultimaSol: falas.at(-1) ?? '',
+      falas: falas.length,
+      minhas,
+      chips: [...document.querySelectorAll('.sol-rapidas button.sol-chip')].map((c) => c.textContent),
+      escape: escape ? { texto: escape.textContent.trim(), href: escape.href, icone: Boolean(escape.querySelector('use[href="#ic-whatsapp"]')) } : null,
+      aviso: aviso.hidden ? '' : aviso.textContent.replace(/\s+/g, ' ').trim(),
+      avisoLink: aviso.querySelector('a')?.getAttribute('href') ?? '',
+      teclado: campo.inputMode,
+      dica: campo.placeholder,
+      rotulo: document.querySelector('[data-sol-rotulo]').textContent,
+    };
+  });
+  /** O roteiro inteiro, do jeito mais curto: nome, WhatsApp, cidade (botão) e o que procura (botão). */
+  const capturar = async (pagina) => {
+    await falar(pagina, 'Ana Paula');
+    await falar(pagina, '46991234567');
+    await tocar(pagina, 'Francisco Beltrão');
+    await tocar(pagina, 'Câmeras');
+  };
+
   const pedidos = [];
   const { pagina, contexto, erros } = await abrir(1440);
   await simular(pagina, pedidos);
   await pagina.waitForSelector('.sol[data-chegou] .sol-lancador', { timeout: 4000 });
   await pagina.click('.sol-lancador');
   await pagina.waitForSelector('.sol-painel.sol-painel-visivel');
-  const inicio = await pagina.evaluate(() => ({ saudacao: document.querySelector('.sol-msg-sol')?.textContent ?? '', chips: document.querySelectorAll('.sol-chip').length }));
-  conferir('Botão da Sol abre o chat com saudação de assistente virtual e sugestões', inicio.saudacao.includes('assistente virtual') && inicio.chips === 4, `${inicio.chips} sugestões`);
+  await pagina.waitForTimeout(500);
+  const t0 = await tela(pagina);
+  conferir('Chat abre com a Sol pedindo o nome e o WhatsApp da equipe à mão (nada vai ao servidor ainda)',
+    t0.ultimaSol.includes('assistente virtual') && t0.ultimaSol.endsWith('como posso te chamar?') && t0.chips.length === 0
+      && t0.escape?.texto === 'Prefiro falar no WhatsApp' && t0.escape.icone && t0.escape.href.startsWith(`https://wa.me/${contato.whatsapp}?text=`)
+      && t0.dica === 'Seu nome' && pedidos.length === 0,
+    JSON.stringify({ escape: t0.escape?.texto, dica: t0.dica, pedidos: pedidos.length }));
+
+  await falar(pagina, 'Ana Paula');
+  const t1 = await tela(pagina);
+  conferir('Depois do nome, pede o WhatsApp com teclado numérico e o aviso de autorização com a política',
+    t1.ultimaSol.startsWith('Prazer, Ana!') && /WhatsApp com DDD/.test(t1.ultimaSol) && t1.teclado === 'numeric'
+      && /autoriza a SC Soluções a te chamar no WhatsApp/.test(t1.aviso) && t1.avisoLink === '/privacidade/' && t1.escape !== null,
+    JSON.stringify({ teclado: t1.teclado, aviso: t1.aviso.slice(0, 40) }));
+
+  await falar(pagina, '46999999999');
+  const erroTel = (await tela(pagina)).ultimaSol;
+  await pagina.fill('#sol-campo', '46991234567');
+  const mascara = await pagina.$eval('#sol-campo', (e) => e.value);
+  await pagina.press('#sol-campo', 'Enter');
+  await esperarSol(pagina);
+  const t2 = await tela(pagina);
+  conferir('WhatsApp é conferido antes de seguir, ganha a máscara e nada vai ao servidor',
+    /Confira o número/.test(erroTel) && mascara === '(46) 99123-4567' && t2.minhas.at(-1) === '(46) 99123-4567' && pedidos.length === 0,
+    `máscara ${mascara}`);
+  conferir('Cidade com um toque (a da loja) e o aviso some',
+    t2.ultimaSol === 'E qual é a sua cidade?' && t2.chips.join('|') === 'Francisco Beltrão' && t2.aviso === '' && t2.teclado === 'text');
+
+  await tocar(pagina, 'Francisco Beltrão');
+  const t3 = await tela(pagina);
+  conferir('O que a pessoa procura: 5 botões e o WhatsApp da equipe',
+    t3.ultimaSol === 'O que você está procurando?' && t3.chips.join('|') === 'Câmeras|Alarme|Controle de acesso|Redes e Wi-Fi|Outro' && t3.escape !== null,
+    t3.chips.join(', '));
+
+  await tocar(pagina, 'Câmeras');
+  await pagina.waitForFunction(() => [...document.querySelectorAll('.sol-msg-sol .sol-msg-corpo')].some((m) => m.textContent.includes('casa ou para comércio')), null, { timeout: 8000 });
+  await esperarSol(pagina);
+  const t4 = await tela(pagina);
+  const [lead, primeira] = pedidos;
+  conferir('Roteiro completo vai como lead (dados só com dígitos e autorização) e a Sol entra com o que a pessoa procura',
+    pedidos.length === 2 && lead.tipo === 'lead' && /^[0-9a-f-]{36}$/.test(lead.sessao ?? '')
+      && JSON.stringify(lead.lead) === JSON.stringify({ nome: 'Ana Paula', whatsapp: '46991234567', cidade: 'Francisco Beltrão', interesse: 'Câmeras', aceite: true })
+      && primeira.tipo === 'mensagem' && primeira.sessao === lead.sessao && primeira.mensagem === 'Procuro câmeras'
+      && !t4.minhas.includes('Procuro câmeras') && t4.chips.join('|') === 'Casa|Comércio' && t4.escape === null && t4.dica === 'Escreva sua mensagem…',
+    JSON.stringify(pedidos.map((p) => p.tipo)));
 
   await falar(pagina, 'quanto custa 4 câmeras?', '.sol-plano');
   const conversa = await pagina.evaluate(() => ({
@@ -434,60 +520,30 @@ grupo('Sol · chat do site');
     ver: document.querySelector('.sol-plano a[href="#plano-4"]') !== null,
   }));
   const p4 = planos.find((p) => p.cameras === 4);
-  const pedido1 = pedidos[0] ?? {};
-  conferir('Mensagem vai ao n8n com sessão (UUID) e volta com texto, cartão do plano e botões rápidos',
-    /^[0-9a-f-]{36}$/.test(pedido1.sessao ?? '') && pedido1.tipo === 'mensagem' && conversa.cartoes.length === 1
-      && conversa.negrito.includes('R$ 99,90') && conversa.chips.join('|') === 'Francisco Beltrão|Outra cidade' && conversa.ver,
+  conferir('Mensagem vai ao n8n com a sessão e volta com texto, cartão do plano e botões rápidos',
+    pedidos.at(-1)?.tipo === 'mensagem' && conversa.cartoes.length === 1 && conversa.negrito.includes('R$ 99,90')
+      && conversa.chips.join('|') === 'Quero este plano|Tenho uma dúvida' && conversa.ver,
     `${conversa.cartoes.length} cartão (o de 7 câmeras, que não existe, foi descartado); botões: ${conversa.chips.join(', ')}`);
   conferir('Cartão do plano no chat usa preço, taxa de instalação e cabo de dados.ts',
     conversa.cartoes[0]?.includes(formatarPreco(p4.preco)) && conversa.cartoes[0]?.includes(`Instalação: R$ ${formatarPreco(p4.preco)} (1 mensalidade)`)
       && conversa.cartoes[0]?.includes(`${p4.caboMetros} m de cabo`) && conversa.cartoes[0]?.includes('Cobertura completa'));
 
-  await falar(pagina, 'html', '.sol-msg-sol:last-of-type');
+  // O botão rápido "Quero este plano" vai com o plano do último cartão.
+  await tocar(pagina, 'Quero este plano');
+  await pagina.waitForSelector('.sol-avisado', { timeout: 8000 });
+  const escolha = pedidos.at(-1) ?? {};
+  const avisado = await pagina.$eval('.sol-avisado', (e) => e.textContent);
+  conferir('"Quero este plano" vai com o plano do cartão e o chat mostra que a equipe foi avisada, com o número',
+    escolha.plano === 4 && escolha.mensagem === 'Quero este plano' && avisado.includes('Pedido enviado à equipe') && avisado.includes('(46) 99123-4567'),
+    JSON.stringify({ plano: escolha.plano, mensagem: escolha.mensagem }));
+  await pagina.click('.sol-plano [data-sol-quero="4"]');
+  await esperarSol(pagina);
+  const doCartao = pedidos.at(-1) ?? {};
+  conferir('O botão do cartão também manda o plano', doCartao.plano === 4 && doCartao.mensagem === 'Quero o plano de 4 câmeras.');
+
+  await falar(pagina, 'html');
   const xss = await pagina.evaluate(() => ({ img: document.querySelectorAll('.sol-conversa img').length, executou: Boolean(window.__xss) }));
   conferir('Texto do servidor nunca vira HTML no chat', xss.img === 0 && !xss.executou);
-
-  await falar(pagina, 'quero contato', '.sol-contato');
-  await pagina.fill('.sol-contato input[name="nome"]', 'Ana Teste');
-  // Teste do Kauan (28/09): a Sol ofereceu o contato de novo e o cartão ficou perdido lá em cima.
-  await falar(pagina, 'pode mandar de novo', '.sol-contato');
-  const desceu = await pagina.evaluate(() => {
-    const itens = [...document.querySelectorAll('.sol-conversa > *')];
-    return { cartoes: document.querySelectorAll('.sol-contato').length, ultimo: itens.at(-1)?.matches('.sol-contato'), nome: document.querySelector('.sol-contato input[name="nome"]').value };
-  });
-  conferir('Oferta de contato repetida traz o cartão para baixo, sem duplicar e sem perder o que foi digitado',
-    desceu.cartoes === 1 && desceu.ultimo && desceu.nome === 'Ana Teste', JSON.stringify(desceu));
-  // "Quero este plano": a escolha vai junto (mensagem e contato) e o cartão pede o contato daquele plano.
-  await pagina.click('.sol-plano [data-sol-quero="4"]');
-  await pagina.waitForFunction(() => !document.querySelector('[data-sol][data-esperando]'));
-  await pagina.waitForTimeout(700);
-  const escolha = pedidos.at(-1) ?? {};
-  const cartaoPlanoEscolhido = await pagina.evaluate(() => ({
-    titulo: document.querySelector('.sol-contato [data-sol-contato-titulo]')?.textContent,
-    ultimo: [...document.querySelectorAll('.sol-conversa > *')].at(-1)?.matches('.sol-contato'),
-  }));
-  conferir('"Quero este plano" manda o plano junto e o cartão pede o contato daquele plano',
-    escolha.plano === 4 && escolha.mensagem === 'Quero o plano de 4 câmeras.' && cartaoPlanoEscolhido.titulo === 'Quer o plano de 4 câmeras?' && cartaoPlanoEscolhido.ultimo,
-    JSON.stringify({ plano: escolha.plano, ...cartaoPlanoEscolhido }));
-  const antes = pedidos.length;
-  await pagina.fill('.sol-contato input[name="whatsapp"]', '46999999999');
-  await pagina.click('.sol-contato button[type="submit"]');
-  const erroTel = await pagina.$eval('.sol-contato-erro', (e) => (e.hidden ? '' : e.textContent));
-  await pagina.fill('.sol-contato input[name="whatsapp"]', '46991234567');
-  const mascara = await pagina.$eval('.sol-contato input[name="whatsapp"]', (e) => e.value);
-  await pagina.click('.sol-contato button[type="submit"]');
-  const erroAceite = await pagina.$eval('.sol-contato-erro', (e) => (e.hidden ? '' : e.textContent));
-  const semEnvio = pedidos.length === antes;
-  await pagina.check('.sol-contato input[name="aceite"]');
-  await pagina.click('.sol-contato button[type="submit"]');
-  await pagina.waitForSelector('.sol-contato-ok', { timeout: 8000 });
-  const contatoPedido = pedidos.at(-1) ?? {};
-  conferir('Cartão de contato valida número e autorização antes de enviar',
-    /Confira o número/.test(erroTel) && /autorização/.test(erroAceite) && semEnvio && mascara === '(46) 99123-4567',
-    `máscara ${mascara}`);
-  conferir('Contato vai com tipo "contato", número só com dígitos, autorização marcada e o plano escolhido',
-    contatoPedido.tipo === 'contato' && contatoPedido.contato?.whatsapp === '46991234567' && contatoPedido.contato?.aceite === true
-      && contatoPedido.contato?.nome === 'Ana Teste' && contatoPedido.contato?.plano === 4);
 
   await falar(pagina, 'erro', '.sol-whats');
   const falha = await pagina.evaluate(() => ({ texto: [...document.querySelectorAll('.sol-msg-sol')].at(-1)?.textContent ?? '', whats: [...document.querySelectorAll('.sol-whats')].at(-1)?.href ?? '' }));
@@ -506,11 +562,54 @@ grupo('Sol · chat do site');
   await pagina.click('.sol-lancador');
   await pagina.waitForSelector('.sol-painel.sol-painel-visivel');
   const depois = await pagina.$$eval('.sol-conversa .sol-msg', (m) => m.length);
-  conferir('Esc fecha o chat (foco volta ao botão) e a conversa continua depois de recarregar', fechado.painel && fechado.foco && depois === mensagens, `${mensagens} → ${depois} mensagens`);
-  // A queda de conexão simulada acima (rota.abort) aparece no console como net::ERR_FAILED: é esperada.
-  const errosReais = erros.filter((e) => !/net::ERR_FAILED/.test(e));
+  const tRecarga = await tela(pagina);
+  const avisadosDepois = await pagina.$$eval('.sol-avisado', (a) => a.length);
+  conferir('Esc fecha o chat (foco volta ao botão) e a conversa continua depois de recarregar, sem repetir o roteiro',
+    fechado.painel && fechado.foco && depois === mensagens && tRecarga.escape === null && tRecarga.dica === 'Escreva sua mensagem…' && avisadosDepois === 2,
+    `${mensagens} → ${depois} mensagens`);
+
+  // O servidor não conhece mais o lead desta conversa (403 sem_lead): recomeça pelo roteiro.
+  await falar(pagina, 'sumiu?');
+  await pagina.waitForTimeout(300);
+  const tReset = await tela(pagina);
+  conferir('Servidor sem o lead desta conversa: o chat recomeça pelo roteiro',
+    tReset.falas === 1 && tReset.minhas.length === 0 && tReset.ultimaSol.endsWith('como posso te chamar?') && tReset.escape !== null,
+    JSON.stringify({ falas: tReset.falas, minhas: tReset.minhas.length }));
+
+  // Recarregar no meio do roteiro volta na mesma pergunta.
+  await falar(pagina, 'Bia');
+  await pagina.reload({ waitUntil: 'networkidle' });
+  await pagina.click('.sol-lancador');
+  await pagina.waitForSelector('.sol-painel.sol-painel-visivel');
+  await pagina.waitForTimeout(300);
+  const tMeio = await tela(pagina);
+  conferir('Recarregar no meio do roteiro volta na mesma pergunta',
+    tMeio.ultimaSol.startsWith('Prazer, Bia!') && tMeio.teclado === 'numeric' && tMeio.aviso !== '' && tMeio.escape !== null);
+  // A queda de conexão (rota.abort) e o 403 simulados acima aparecem no console do navegador: são esperados.
+  const errosReais = erros.filter((e) => !/net::ERR_FAILED|status of 403/.test(e));
   conferir('Zero erros no console com o chat', errosReais.length === 0, errosReais.slice(0, 2).join(' | '));
   await contexto.close();
+
+  // Pergunta feita na caixa de dúvidas antes do roteiro: não se perde, vira a primeira mensagem.
+  {
+    const pedidosDuvida = [];
+    const { pagina: p, contexto: c } = await abrir(1440);
+    await simular(p, pedidosDuvida);
+    await p.fill('[data-busca]', 'xyzabc qwerty?');
+    await p.waitForSelector('[data-sem-resultado]:not([hidden]) [data-sol-pergunta]');
+    await p.click('[data-sol-pergunta]');
+    await p.waitForSelector('.sol-painel.sol-painel-visivel');
+    await esperarSol(p);
+    const tDuvida = await tela(p);
+    await capturar(p);
+    await p.waitForFunction(() => [...document.querySelectorAll('.sol-msg-sol .sol-msg-corpo')].length >= 6, null, { timeout: 8000 });
+    await esperarSol(p);
+    conferir('Pergunta da caixa de dúvidas antes do roteiro fica guardada e vira a primeira mensagem para a Sol',
+      tDuvida.minhas[0] === 'xyzabc qwerty?' && tDuvida.ultimaSol === 'Já te respondo! Antes, como posso te chamar?'
+        && pedidosDuvida[0]?.tipo === 'lead' && pedidosDuvida[1]?.mensagem === 'xyzabc qwerty?',
+      JSON.stringify(pedidosDuvida.map((x) => x.mensagem ?? x.tipo)));
+    await c.close();
+  }
 
   // Celular: a Sol fica na barra fixa e o chat ocupa a tela toda.
   const cel = await abrir(390);
@@ -518,18 +617,34 @@ grupo('Sol · chat do site');
   await cel.pagina.click('.barra-sol');
   await cel.pagina.waitForSelector('.sol-painel.sol-painel-visivel');
   await cel.pagina.waitForTimeout(400);
+  const pequenos = () => cel.pagina.evaluate(() => [...document.querySelectorAll('.sol-painel button, .sol-painel a.btn, .sol-painel .chip')]
+    .filter((el) => { const b = el.getBoundingClientRect(); return b.width > 0 && !el.closest('[hidden]'); })
+    .map((el) => { const b = el.getBoundingClientRect(); return { t: el.textContent.trim().slice(0, 20) || el.getAttribute('aria-label'), h: Math.round(b.height), w: Math.round(b.width) }; })
+    .filter((x) => x.h < 44 || x.w < 44));
+  await falar(cel.pagina, 'Ana Paula');
+  await falar(cel.pagina, '46991234567');
+  // Os botões rápidos encolhem a conversa: a última mensagem tem de continuar à vista.
+  const noFim = () => cel.pagina.waitForFunction(() => {
+    const c = document.querySelector('.sol-conversa');
+    return c.scrollHeight - c.clientHeight - c.scrollTop < 2;
+  }, null, { timeout: 3000 }).then(() => true, () => false);
+  await tocar(cel.pagina, 'Francisco Beltrão');
+  const pequenosRoteiro = await pequenos();
+  const vistaRoteiro = await noFim();
+  await tocar(cel.pagina, 'Câmeras');
   await falar(cel.pagina, 'quanto custa 4 câmeras?', '.sol-plano');
-  const tela = await cel.pagina.evaluate(() => {
+  const vistaConversa = await noFim();
+  const telaCel = await cel.pagina.evaluate(() => {
     const r = document.querySelector('.sol-painel').getBoundingClientRect();
-    const pequenos = [...document.querySelectorAll('.sol-painel button, .sol-painel a.btn, .sol-painel .chip')]
-      .filter((el) => { const b = el.getBoundingClientRect(); return b.width > 0 && !el.closest('[hidden]'); })
-      .map((el) => { const b = el.getBoundingClientRect(); return { t: el.textContent.trim().slice(0, 20) || el.getAttribute('aria-label'), h: Math.round(b.height), w: Math.round(b.width) }; })
-      .filter((x) => x.h < 44 || x.w < 44);
-    return { cheia: Math.round(r.width) === innerWidth && Math.round(r.height) === innerHeight, sobra: document.documentElement.scrollWidth - innerWidth, barra: getComputedStyle(document.querySelector('.barra-fixa')).opacity, lancador: getComputedStyle(document.querySelector('.sol-lancador')).display, pequenos };
+    return { cheia: Math.round(r.width) === innerWidth && Math.round(r.height) === innerHeight, sobra: document.documentElement.scrollWidth - innerWidth, barra: getComputedStyle(document.querySelector('.barra-fixa')).opacity, lancador: getComputedStyle(document.querySelector('.sol-lancador')).display };
   });
-  conferir('Celular: Sol na barra fixa, chat em tela cheia, sem rolagem lateral e toques ≥ 44 px',
-    tela.cheia && tela.sobra <= 0 && tela.barra === '0' && tela.lancador === 'none' && tela.pequenos.length === 0,
-    tela.pequenos.length ? tela.pequenos.map((p) => `${p.t} ${p.w}×${p.h}`).join('; ') : '');
+  const pequenosConversa = await pequenos();
+  const todosPequenos = [...pequenosRoteiro, ...pequenosConversa];
+  conferir('Celular: Sol na barra fixa, chat em tela cheia, sem rolagem lateral e toques ≥ 44 px (roteiro e conversa)',
+    telaCel.cheia && telaCel.sobra <= 0 && telaCel.barra === '0' && telaCel.lancador === 'none' && todosPequenos.length === 0,
+    todosPequenos.length ? todosPequenos.map((p) => `${p.t} ${p.w}×${p.h}`).join('; ') : '');
+  conferir('Celular: a última mensagem fica à vista com os botões rápidos na tela (roteiro e conversa)', vistaRoteiro && vistaConversa,
+    JSON.stringify({ vistaRoteiro, vistaConversa }));
   conferir('Zero erros no console com o chat (celular)', cel.erros.length === 0, cel.erros.slice(0, 2).join(' | '));
   await cel.contexto.close();
 }

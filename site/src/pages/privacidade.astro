@@ -1,12 +1,12 @@
 ---
 /**
  * Política de privacidade (26/09/2026; atualizada em 27/09/2026 com a Sol no site e em
- * 28/09/2026, quando a voz saiu do chat).
+ * 28/09/2026, quando a voz saiu do chat e a Sol passou a pedir os dados no começo).
  * Descreve o que acontece de fato: o site não usa cookie nem analytics; tem a Sol,
- * assistente virtual com IA, que trata as mensagens e, quando a pessoa pede, nome e
- * WhatsApp (aviso à equipe pelo Telegram); o navegador guarda a conversa (armazenamento
- * local). Servidor no Canadá; IA com processamento na China e nos EUA. Prazos de guarda:
- * 12 meses / 5 anos; resposta em 15 dias.
+ * assistente virtual com IA, que pede nome, WhatsApp, cidade e o que a pessoa procura
+ * antes da conversa (aviso à equipe pelo Telegram) e trata as mensagens; o navegador
+ * guarda a conversa (armazenamento local). Servidor no Canadá; IA com processamento na
+ * China e nos EUA. Prazos de guarda: 12 meses / 5 anos; resposta em 15 dias.
  */
 import Base from '../layouts/Base.astro';
 import Logo from '../components/Logo.astro';
@@ -47,26 +47,29 @@ const atualizada = '28 de setembro de 2026';
     </p>
     <p>
       <strong>No site há a Sol, uma assistente virtual com inteligência artificial.</strong> Conversar com
-      ela é opcional. Quando você conversa, tratamos:
+      ela é opcional. Antes da conversa, ela pede seu nome, seu número de WhatsApp, sua cidade e o que você
+      procura, e a nossa equipe recebe esses dados na hora. Se preferir não informar, você fala direto com
+      a equipe pelo WhatsApp. Quando você conversa com a Sol, tratamos:
     </p>
     <ul>
-      <li>as mensagens que você escreve ou fala;</li>
+      <li>seu nome, seu número de WhatsApp, sua cidade e o que você procura;</li>
+      <li>as mensagens que você escreve;</li>
       <li>
-        as informações que você decidir contar para o orçamento, como cidade, tipo de imóvel, quantos
-        pontos de câmera e o que motivou o contato;
+        as informações que você decidir contar para o orçamento, como tipo de imóvel, quantos pontos de
+        câmera e o que motivou o contato;
       </li>
-      <li>seu nome e seu número de WhatsApp, só se você pedir que a equipe te chame;</li>
       <li>o endereço IP, guardado de forma cifrada, só para limitar o excesso de mensagens.</li>
     </ul>
     <p>
-      Usamos esses dados para responder, entender o que você precisa e, quando você pedir, para a nossa
-      equipe te chamar pelo WhatsApp. A base legal é a execução de procedimentos preliminares a um
-      contrato, a pedido de você (LGPD, art. 7º, V).
+      Usamos esses dados para responder, entender o que você precisa e para a nossa equipe te chamar pelo
+      WhatsApp sobre esse atendimento, o que você autoriza ao enviar o número. A base legal é a execução de
+      procedimentos preliminares a um contrato, a pedido de você (LGPD, art. 7º, V).
     </p>
     <p>
-      Para a conversa continuar se você recarregar a página, o seu navegador guarda um código da conversa
-      e as últimas mensagens (armazenamento local do navegador, não é cookie). Você apaga isso quando
-      quiser, em "Recomeçar conversa" ou limpando os dados do site no navegador.
+      Para a conversa continuar se você recarregar a página, o seu navegador guarda um código da conversa,
+      os dados que você informou no começo e as últimas mensagens (armazenamento local do navegador, não é
+      cookie). Você apaga isso quando quiser, em "Recomeçar conversa" ou limpando os dados do site no
+      navegador.
     </p>
 
     <h2>2. Atendimento pelo WhatsApp</h2>
@@ -109,7 +112,7 @@ const atualizada = '28 de setembro de 2026';
       <li>o WhatsApp (Meta), por onde as mensagens são trocadas;</li>
       <li>a empresa de hospedagem dos nossos servidores;</li>
       <li>os fornecedores de inteligência artificial usados no assistente virtual e na transcrição de áudio;</li>
-      <li>o Telegram, usado só internamente para avisar a nossa equipe quando você pede contato pelo site;</li>
+      <li>o Telegram, usado só internamente para avisar a nossa equipe quando você deixa seu contato no chat do site;</li>
       <li>a plataforma de assinatura eletrônica de contratos;</li>
       <li>instituições de pagamento, para a cobrança;</li>
       <li>autoridades, quando a lei ou uma ordem judicial exigir.</li>

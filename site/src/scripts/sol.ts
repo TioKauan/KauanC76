@@ -1,25 +1,29 @@
 import { mostrarPrecos, formatarPreco, nomePlano, textoTaxaInstalacao, rotuloTaxa } from '../lib/dados';
 import { icone } from '../lib/icones';
+import { iconeWhatsapp } from '../lib/marcas';
 import {
-  LIMITE_MENSAGEM, MAX_HISTORICO, TEMPO_LIMITE_MS, saudacao, sugestoesIniciais, linkWhatsappChat,
-  lerResposta, planoDoCartao, trechos, mascaraWhatsapp, validarWhatsapp, validarNome,
-  acharTelefone, lerEstado, estadoNovo,
+  LIMITE_MENSAGEM, MAX_HISTORICO, TEMPO_LIMITE_MS, CAMPO, INTERESSES, CIDADE_SUGERIDA,
+  saudacao, linkWhatsappChat, pergunta, retomar, responderEtapa, primeiraMensagem,
+  lerResposta, lerRespostaLead, planoDoCartao, trechos, mascaraWhatsapp, lerEstado, estadoNovo,
   type EstadoSol, type RespostaSol, type Acao,
 } from '../lib/sol';
 import { exigir, todos } from './dom';
 import { reduzirMovimento } from './movimento';
 
 /**
- * Chat da Sol: abre o painel, conversa com o n8n e desenha cartões de plano,
- * botões rápidos, o cartão de contato e o botão do WhatsApp da equipe.
+ * Chat da Sol: abre o painel, faz o roteiro de captura, conversa com o n8n e
+ * desenha cartões de plano, botões rápidos e o botão do WhatsApp da equipe.
  * As regras ficam em src/lib/sol.ts.
  *
- * 28/09/2026 (teste do Kauan): a voz saiu; o cartão de contato desce até a
- * mensagem nova quando a Sol oferece o contato de novo (antes ficava perdido
- * lá em cima); "Quero este plano" manda o plano junto, e ele vai no contato.
+ * 28/09/2026: a Sol virou agente de captura de lead. O roteiro (nome,
+ * WhatsApp, cidade e o que a pessoa procura) é fixo e roda aqui, sem IA; a
+ * equipe recebe o contato assim que ele termina, e só então a Sol (IA) entra.
+ * "Prefiro falar no WhatsApp" fica à mão durante todo o roteiro.
  */
 
-const CHAVE = 'sc-sol';
+const CHAVE = 'sc-sol-2';
+/** Conversa da versão anterior (cartão de contato no fim): não serve para o roteiro. */
+const CHAVE_ANTIGA = 'sc-sol';
 
 export function iniciarSol(): void {
   const achado = document.querySelector<HTMLElement>('[data-sol]');
@@ -30,8 +34,10 @@ export function iniciarSol(): void {
   const painel = exigir('[data-sol-painel]', raiz);
   const conversa = exigir('[data-sol-conversa]', raiz);
   const rapidas = exigir('[data-sol-rapidas]', raiz);
+  const aviso = exigir('[data-sol-aviso]', raiz);
   const form = exigir<HTMLFormElement>('[data-sol-form]', raiz);
   const campo = exigir<HTMLTextAreaElement>('[data-sol-campo]', raiz);
+  const rotuloCampo = exigir('[data-sol-rotulo]', raiz);
   const btnEnviar = exigir<HTMLButtonElement>('[data-sol-enviar]', raiz);
   const toque = () => window.matchMedia('(pointer: coarse)').matches;
   const celular = () => window.matchMedia('(max-width: 800px)').matches;
@@ -40,11 +46,12 @@ export function iniciarSol(): void {
   let aberto = false;
   let desenhado = false;
   let esperando = false;
-  let contatoNaTela: HTMLFormElement | null = null;
-  let contador = 0;
+  /** Último cartão de plano mostrado: o botão rápido "Quero este plano" vai com ele. */
+  let ultimoPlano: number | null = null;
 
   /* ---------- guardar a conversa no navegador ---------- */
   function carregar(): EstadoSol {
+    try { localStorage.removeItem(CHAVE_ANTIGA); } catch { /* navegador sem armazenamento */ }
     try { return lerEstado(localStorage.getItem(CHAVE)); } catch { return estadoNovo(); }
   }
   function salvar(): void {
@@ -73,6 +80,7 @@ export function iniciarSol(): void {
   function rolarFim(): void {
     conversa.scrollTo({ top: conversa.scrollHeight, behavior: reduzirMovimento() ? 'auto' : 'smooth' });
   }
+  const pausa = (ms: number) => new Promise<void>((pronto) => window.setTimeout(pronto, ms));
   function balao(de: 'sol' | 'eu', texto: string, animar: boolean): HTMLElement {
     const b = el('div', `sol-msg sol-msg-${de}${animar ? ' sol-entra' : ''}`);
     b.append(el('span', 'sr', de === 'sol' ? 'Sol disse: ' : 'Você disse: '));
@@ -112,12 +120,11 @@ export function iniciarSol(): void {
     rolarFim();
     return () => b.remove();
   }
-  /** Leva um elemento que já existe para o fim da conversa, com um brilho para o olho achar. */
-  function trazerParaBaixo(e: HTMLElement): void {
-    conversa.append(e);
-    e.classList.remove('sol-realce');
-    void e.offsetWidth; // reinicia a animação
-    e.classList.add('sol-realce');
+  /** Balão da pessoa, guardado no histórico. */
+  function registrar(texto: string): void {
+    balao('eu', texto, true);
+    estado.historico.push({ de: 'eu', texto });
+    salvar();
   }
 
   /* ---------- cartões ---------- */
@@ -152,11 +159,7 @@ export function iniciarSol(): void {
     const quero = el('button', 'btn btn-primario btn-p', 'Quero este plano');
     quero.type = 'button';
     quero.dataset.solQuero = String(p.cameras);
-    quero.addEventListener('click', () => {
-      estado.plano = p.cameras;
-      salvar();
-      void enviar(`Quero o ${nomePlano(p).toLowerCase()}.`, p.cameras);
-    });
+    quero.addEventListener('click', () => void enviar(`Quero o ${nomePlano(p).toLowerCase()}.`, p.cameras));
     const ver = el('a', 'sol-link', 'Ver na página');
     ver.href = `#plano-${p.cameras}`;
     ver.addEventListener('click', (e) => { e.preventDefault(); verNaPagina(p.cameras); });
@@ -173,105 +176,131 @@ export function iniciarSol(): void {
     alvo.classList.add('plano-realce');
     window.setTimeout(() => alvo.classList.remove('plano-realce'), 2600);
   }
-  function botaoWhatsapp(): HTMLElement {
-    const a = el('a', 'btn btn-contorno btn-p sol-whats sol-surge', 'Falar com a equipe no WhatsApp');
+  function linkWhatsapp(classe: string, texto: string, tamanhoIcone: number): HTMLAnchorElement {
+    const a = el('a', classe, texto);
     a.href = linkWhatsappChat();
     a.target = '_blank';
     a.rel = 'noopener';
-    comIcone(a, 'message-circle', 16);
+    a.insertAdjacentHTML('afterbegin', iconeWhatsapp(tamanhoIcone));
     return a;
   }
-  function tituloContato(): string {
-    const p = estado.plano ? planoDoCartao(estado.plano) : undefined;
-    return p ? `Quer o ${nomePlano(p).toLowerCase()}?` : 'Quer que a equipe te chame?';
+  const botaoWhatsapp = (animar = true) =>
+    linkWhatsapp(`btn btn-contorno btn-p sol-whats${animar ? ' sol-surge' : ''}`, 'Falar com a equipe no WhatsApp', 17);
+  /** "Quero contratar": confirma que a equipe foi avisada e em qual número ela vai chamar. */
+  function cartaoAvisado(animar = true): HTMLElement {
+    const c = el('div', `sol-avisado${animar ? ' sol-surge' : ''}`);
+    const t = el('p', 'sol-avisado-titulo', 'Pedido enviado à equipe');
+    comIcone(t, 'circle-check', 18);
+    c.append(t, el('p', 'sol-avisado-sub', `Vão te chamar no WhatsApp ${mascaraWhatsapp(estado.captura.whatsapp)}.`));
+    return c;
   }
-  function cartaoContato(telefone?: string | null): HTMLFormElement {
-    const n = ++contador;
-    const f = el('form', 'sol-contato sol-surge');
-    f.noValidate = true;
-    const titulo = el('p', 'sol-contato-titulo', tituloContato());
-    titulo.dataset.solContatoTitulo = '';
-    f.append(titulo);
-    f.append(el('p', 'sol-contato-sub', 'Deixe seu nome e WhatsApp: a equipe da SC chama você para combinar a vistoria e o orçamento.'));
-    const campoNome = el('input');
-    Object.assign(campoNome, { id: `sol-nome-${n}`, name: 'nome', autocomplete: 'given-name', maxLength: 80, required: true, type: 'text' });
-    const campoWhats = el('input');
-    Object.assign(campoWhats, { id: `sol-whats-${n}`, name: 'whatsapp', type: 'tel', inputMode: 'numeric', autocomplete: 'tel-national', placeholder: '(46) 99123-4567', required: true });
-    if (telefone) campoWhats.value = mascaraWhatsapp(telefone);
-    campoWhats.addEventListener('input', () => { campoWhats.value = mascaraWhatsapp(campoWhats.value); });
-    const rotulo = (para: HTMLInputElement, texto: string) => { const l = el('label', 'sol-campo-rotulo', texto); l.htmlFor = para.id; return l; };
-    const aceite = el('input');
-    Object.assign(aceite, { id: `sol-aceite-${n}`, type: 'checkbox', name: 'aceite', required: true });
-    const linhaAceite = el('label', 'sol-aceite');
-    linhaAceite.htmlFor = aceite.id;
-    const priv = el('a', '', 'Política de privacidade');
-    priv.href = '/privacidade/';
-    priv.target = '_blank';
-    priv.rel = 'noopener';
-    linhaAceite.append(aceite, el('span', '', 'Autorizo a SC Soluções a me chamar no WhatsApp sobre este atendimento. '), priv);
-    const erro = el('p', 'sol-contato-erro');
-    erro.setAttribute('role', 'alert');
-    erro.hidden = true;
-    const enviarBtn = el('button', 'btn btn-primario', 'Pedir para a equipe me chamar');
-    enviarBtn.type = 'submit';
-    f.append(rotulo(campoNome, 'Nome'), campoNome, rotulo(campoWhats, 'WhatsApp com DDD'), campoWhats, linhaAceite, erro, enviarBtn);
-
-    const falhar = (texto: string, foco?: HTMLElement) => { erro.textContent = texto; erro.hidden = false; foco?.focus(); };
-    f.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const nome = validarNome(campoNome.value);
-      if (!nome) return falhar('Me diga seu nome, por favor.', campoNome);
-      const w = validarWhatsapp(campoWhats.value);
-      if (!w.ok) return falhar(w.erro ?? 'Confira o número.', campoWhats);
-      if (!aceite.checked) return falhar('Para a equipe te chamar, marque a autorização.', aceite);
-      erro.hidden = true;
-      enviarBtn.disabled = true;
-      enviarBtn.textContent = 'Enviando…';
-      const contatoCorpo = { nome, whatsapp: w.digitos, aceite: true, ...(estado.plano ? { plano: estado.plano } : {}) };
-      const r = await postar({ tipo: 'contato', sessao: estado.sessao, contato: contatoCorpo });
-      if (!r.ok) {
-        enviarBtn.disabled = false;
-        enviarBtn.textContent = 'Pedir para a equipe me chamar';
-        return falhar(r.resposta || 'Não consegui enviar agora. Tente de novo ou fale pelo WhatsApp.');
-      }
-      estado.contatoOk = true;
-      const feito = el('div', 'sol-contato sol-contato-ok sol-surge');
-      const t = el('p', 'sol-contato-titulo', 'Recebido!');
-      comIcone(t, 'circle-check', 18);
-      feito.append(t, el('p', 'sol-contato-sub', `A equipe vai te chamar no WhatsApp ${mascaraWhatsapp(w.digitos)}.`));
-      f.replaceWith(feito);
-      contatoNaTela = null;
-      await mostrarResposta({ ...r, cartoes: [], opcoes: [], acoes: [] });
-    });
-    contatoNaTela = f;
-    return f;
-  }
-  /** Mostra o cartão de contato no fim da conversa: cria, ou traz o que já existe (com o que já foi digitado). */
-  function mostrarContato(telefone?: string | null): void {
-    if (estado.contatoOk) return;
-    if (contatoNaTela?.isConnected) {
-      const titulo = contatoNaTela.querySelector<HTMLElement>('[data-sol-contato-titulo]');
-      if (titulo) titulo.textContent = tituloContato();
-      const whats = contatoNaTela.querySelector<HTMLInputElement>('input[name="whatsapp"]');
-      if (telefone && whats && !whats.value) whats.value = mascaraWhatsapp(telefone);
-      trazerParaBaixo(contatoNaTela);
-    } else {
-      conversa.append(cartaoContato(telefone));
-    }
-  }
-  function mostrarRapidas(lista: string[]): void {
+  function mostrarRapidas(lista: readonly string[]): void {
     rapidas.replaceChildren();
     lista.forEach((texto, i) => {
       const b = el('button', 'chip sol-chip sol-surge', texto);
       b.type = 'button';
       b.style.setProperty('--atraso', `${i * 60}ms`);
-      b.addEventListener('click', () => void enviar(texto));
+      b.addEventListener('click', () => {
+        const plano = ultimoPlano && /^quero (este|esse) plano$/i.test(texto) ? ultimoPlano : undefined;
+        void enviar(texto, plano);
+      });
       rapidas.append(b);
     });
+    // Durante o roteiro, quem não quer deixar os dados vai direto para a equipe.
+    if (!estado.leadOk) {
+      const w = linkWhatsapp('chip sol-chip sol-chip-whats sol-surge', 'Prefiro falar no WhatsApp', 16);
+      w.style.setProperty('--atraso', `${lista.length * 60}ms`);
+      rapidas.append(w);
+    }
+    rolarFim(); // os botões encolhem a conversa: a última mensagem continua à vista
+  }
+
+  /* ---------- roteiro de captura ---------- */
+  /** Ajusta o campo de texto e os botões rápidos para a etapa atual. */
+  function prepararEtapa(): void {
+    const etapa = estado.captura.etapa;
+    const c = CAMPO[etapa];
+    campo.placeholder = c.dica;
+    campo.inputMode = c.numerico ? 'numeric' : 'text';
+    campo.setAttribute('autocomplete', c.autocompletar);
+    campo.maxLength = c.maximo;
+    rotuloCampo.textContent = c.rotulo;
+    aviso.hidden = etapa !== 'whatsapp';
+    if (etapa === 'interesse') mostrarRapidas(INTERESSES);
+    else if (etapa === 'cidade') mostrarRapidas([CIDADE_SUGERIDA]);
+    else if (etapa !== 'pronto') mostrarRapidas([]);
+    else rolarFim();
+  }
+
+  /** Fala da Sol no roteiro (sem IA), com uma pausa curta de "escrevendo". */
+  async function falarSol(texto: string, acoes: Acao[] = []): Promise<void> {
+    ocupar(true);
+    const tirar = digitando();
+    await pausa(reduzirMovimento() ? 0 : 450);
+    tirar();
+    ocupar(false);
+    const b = balao('sol', texto, true);
+    estado.historico.push({ de: 'sol', texto, ...(acoes.length ? { acoes } : {}) });
+    salvar();
+    await revelar(b, texto);
+    if (acoes.includes('whatsapp')) conversa.append(botaoWhatsapp());
+    rolarFim();
+  }
+
+  /** Uma resposta do roteiro. Com o roteiro completo, o lead vai para a equipe. */
+  async function capturar(texto: string): Promise<void> {
+    const r = responderEtapa(estado.captura, texto);
+    rapidas.replaceChildren();
+    registrar(r.ok ? r.mostrar : texto);
+    if (!r.ok) {
+      await falarSol(r.erro);
+      prepararEtapa();
+      return;
+    }
+    estado.captura = r.captura;
+    salvar();
+    if (r.captura.interesse) {
+      await enviarLead();
+      return;
+    }
+    await falarSol(pergunta(r.captura.etapa, r.captura.nome));
+    prepararEtapa();
+  }
+
+  async function enviarLead(): Promise<void> {
+    const c = estado.captura;
+    ocupar(true);
+    let tirar = digitando();
+    const { dado } = await postar({
+      tipo: 'lead',
+      sessao: estado.sessao,
+      lead: { nome: c.nome, whatsapp: c.whatsapp, cidade: c.cidade, interesse: c.interesse, aceite: true },
+    });
+    const lead = lerRespostaLead(dado);
+    if (!lead.ok) {
+      tirar();
+      ocupar(false);
+      estado.captura = { ...c, interesse: '', etapa: 'interesse' };
+      salvar();
+      await falarSol(lead.erro || 'Não consegui registrar agora. Tente de novo em instantes ou fale com a equipe no WhatsApp.', ['whatsapp']);
+      prepararEtapa();
+      return;
+    }
+    // Lead gravado e equipe avisada: agora a conversa é com a Sol (IA).
+    const primeira = estado.pendente || primeiraMensagem(c.interesse);
+    estado = { ...estado, captura: { ...c, etapa: 'pronto' }, leadOk: true, pendente: '' };
+    salvar();
+    prepararEtapa();
+    tirar();
+    tirar = digitando();
+    const r = await pedirSol(primeira);
+    tirar();
+    ocupar(false);
+    await mostrarResposta(r);
   }
 
   /* ---------- conversa com o n8n ---------- */
-  async function postar(corpo: Record<string, unknown>): Promise<RespostaSol> {
+  async function postar(corpo: Record<string, unknown>): Promise<{ status: number; dado: unknown }> {
     const controle = new AbortController();
     const relogio = window.setTimeout(() => controle.abort(), TEMPO_LIMITE_MS);
     try {
@@ -281,49 +310,61 @@ export function iniciarSol(): void {
         body: JSON.stringify(corpo),
         signal: controle.signal,
       });
-      const dado: unknown = await resp.json().catch(() => null);
-      return lerResposta(dado);
+      return { status: resp.status, dado: await resp.json().catch(() => null) };
     } catch {
-      return { ok: false, resposta: '', cartoes: [], opcoes: [], acoes: ['whatsapp'], contatoOk: false };
+      return { status: 0, dado: null };
     } finally {
       window.clearTimeout(relogio);
     }
+  }
+  async function pedirSol(texto: string, plano?: number): Promise<RespostaSol> {
+    const { status, dado } = await postar({ tipo: 'mensagem', sessao: estado.sessao, mensagem: texto, ...(plano ? { plano } : {}) });
+    return lerResposta(dado, status);
   }
 
   async function enviar(bruto: string, plano?: number): Promise<void> {
     const texto = bruto.replace(/\s+/g, ' ').trim().slice(0, LIMITE_MENSAGEM);
     if (!texto || esperando) return;
+    if (!estado.leadOk) {
+      await capturar(texto);
+      return;
+    }
     rapidas.replaceChildren();
-    balao('eu', texto, true);
-    estado.historico.push({ de: 'eu', texto });
-    salvar();
-    const telefone = estado.contatoOk ? null : acharTelefone(texto);
-    esperando = true;
-    atualizarEnvio();
+    registrar(texto);
+    ocupar(true);
     const tirar = digitando();
-    const r = await postar({ tipo: 'mensagem', sessao: estado.sessao, mensagem: texto, ...(plano ? { plano } : {}) });
+    const r = await pedirSol(texto, plano);
     tirar();
-    esperando = false;
-    atualizarEnvio();
-    await mostrarResposta(r, telefone);
+    ocupar(false);
+    // O servidor não conhece mais esta conversa: recomeça pelo roteiro.
+    if (r.semLead) {
+      recomecar();
+      return;
+    }
+    await mostrarResposta(r);
   }
 
-  async function mostrarResposta(r: RespostaSol, telefone: string | null = null): Promise<void> {
+  async function mostrarResposta(r: RespostaSol): Promise<void> {
     const texto = r.resposta || 'Não consegui responder agora. Tente de novo em instantes ou fale com a equipe no WhatsApp.';
     const acoes: Acao[] = r.resposta ? [...r.acoes] : ['whatsapp'];
-    if (r.contatoOk) estado.contatoOk = true;
-    if (telefone && !acoes.includes('contato')) acoes.push('contato');
     const b = balao('sol', texto, true);
-    estado.historico.push({ de: 'sol', texto, cartoes: r.cartoes, acoes });
+    estado.historico.push({ de: 'sol', texto, cartoes: r.cartoes, acoes, ...(r.contratar ? { avisado: true } : {}) });
     salvar();
     await revelar(b, texto);
-    for (const n of r.cartoes) { const c = cartaoPlano(n); if (c) conversa.append(c); }
+    for (const n of r.cartoes) {
+      const c = cartaoPlano(n);
+      if (c) { conversa.append(c); ultimoPlano = n; }
+    }
     if (acoes.includes('whatsapp')) conversa.append(botaoWhatsapp());
-    if (acoes.includes('contato')) mostrarContato(telefone);
+    if (r.contratar) conversa.append(cartaoAvisado());
     rolarFim();
     mostrarRapidas(r.opcoes);
   }
 
+  function ocupar(sim: boolean): void {
+    esperando = sim;
+    atualizarEnvio();
+  }
   function atualizarEnvio(): void {
     btnEnviar.disabled = esperando || !campo.value.trim();
     raiz.toggleAttribute('data-esperando', esperando);
@@ -332,20 +373,21 @@ export function iniciarSol(): void {
   /* ---------- abrir, fechar e desenhar ---------- */
   function desenhar(): void {
     conversa.replaceChildren();
-    contatoNaTela = null;
-    // A saudação abre toda conversa (não fica guardada: é sempre a mesma).
+    ultimoPlano = null;
+    // A saudação abre toda conversa (não fica guardada: é sempre a mesma) e já pede o nome.
     balao('sol', saudacao, !estado.historico.length);
-    if (!estado.historico.length) {
-      mostrarRapidas(sugestoesIniciais);
-    } else {
-      estado.historico.forEach((item, i) => {
-        balao(item.de, item.texto, false);
-        for (const n of item.cartoes ?? []) { const c = cartaoPlano(n); if (c) { c.classList.remove('sol-surge'); conversa.append(c); } }
-        if (item.acoes?.includes('whatsapp')) conversa.append(botaoWhatsapp());
-        if (i === estado.historico.length - 1 && item.acoes?.includes('contato') && !estado.contatoOk) conversa.append(cartaoContato());
-      });
-      rolarFim();
+    for (const item of estado.historico) {
+      balao(item.de, item.texto, false);
+      for (const n of item.cartoes ?? []) {
+        const c = cartaoPlano(n);
+        if (c) { c.classList.remove('sol-surge'); conversa.append(c); ultimoPlano = n; }
+      }
+      if (item.acoes?.includes('whatsapp')) conversa.append(botaoWhatsapp(false));
+      if (item.avisado) conversa.append(cartaoAvisado(false));
     }
+    rapidas.replaceChildren();
+    prepararEtapa();
+    rolarFim();
     desenhado = true;
   }
 
@@ -380,7 +422,6 @@ export function iniciarSol(): void {
   function recomecar(): void {
     estado = estadoNovo();
     salvar();
-    rapidas.replaceChildren();
     desenhar();
     campo.focus({ preventScroll: true });
   }
@@ -391,18 +432,36 @@ export function iniciarSol(): void {
     atualizarEnvio();
   }
 
+  /** Pergunta vinda da página (caixa de dúvidas). Antes do fim do roteiro, fica guardada. */
+  async function perguntarDaPagina(texto: string): Promise<void> {
+    if (estado.leadOk) {
+      await enviar(texto);
+      return;
+    }
+    if (esperando) return;
+    estado.pendente = texto.slice(0, LIMITE_MENSAGEM);
+    rapidas.replaceChildren();
+    registrar(estado.pendente);
+    await falarSol(retomar(estado.captura.etapa));
+    prepararEtapa();
+  }
+
   /* ---------- ligações ---------- */
   lancador.addEventListener('click', () => (aberto ? fechar() : abrir()));
   exigir('[data-sol-fechar]', raiz).addEventListener('click', fechar);
   exigir('[data-sol-recomecar]', raiz).addEventListener('click', recomecar);
   form.addEventListener('submit', (e) => {
     e.preventDefault();
+    if (esperando) return;
     const texto = campo.value;
     campo.value = '';
     ajustarCampo();
     void enviar(texto);
   });
-  campo.addEventListener('input', ajustarCampo);
+  campo.addEventListener('input', () => {
+    if (estado.captura.etapa === 'whatsapp') campo.value = mascaraWhatsapp(campo.value);
+    ajustarCampo();
+  });
   campo.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); form.requestSubmit(); }
   });
@@ -412,15 +471,17 @@ export function iniciarSol(): void {
     fechar();
   });
 
-  // Botões "fale com a Sol" espalhados pela página (escondidos sem JavaScript).
+  // Botões "fale com a Sol" espalhados pela página (escondidos sem JavaScript)
+  // e o texto da barra fixa do celular (evento de src/scripts/barra.ts).
+  document.addEventListener('sc:abrir-sol', abrir);
   for (const gatilho of todos<HTMLElement>('[data-sol-abrir]')) {
     gatilho.hidden = false;
     gatilho.addEventListener('click', () => {
       abrir();
-      const pergunta = gatilho.hasAttribute('data-sol-pergunta')
+      const texto = gatilho.hasAttribute('data-sol-pergunta')
         ? document.querySelector<HTMLInputElement>('[data-busca]')?.value.trim()
         : '';
-      if (pergunta) void enviar(pergunta);
+      if (texto) void perguntarDaPagina(texto);
     });
   }
 

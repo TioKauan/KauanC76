@@ -8,6 +8,7 @@ import '../styles/configurador.css';
 import '../styles/como-funciona.css';
 import '../styles/sol.css';
 import { empresa } from '../lib/dados';
+import { simboloWhatsapp } from '../lib/marcas';
 
 interface Props {
   titulo: string;
@@ -42,6 +43,7 @@ const imagemSocial = new URL('/marca/og-imagem.png', empresa.site).href;
     <link rel="sitemap" href="/sitemap-index.xml" />
   </head>
   <body>
+    <Fragment set:html={simboloWhatsapp()} />
     <slot />
     <script>
       import '../scripts/main';

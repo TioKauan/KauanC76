@@ -1,5 +1,6 @@
 ---
 import Icone from './Icone.astro';
+import IconeWhatsapp from './IconeWhatsapp.astro';
 import { contato, empresa, linkWhatsapp } from '../lib/dados';
 import { msgGeral } from '../lib/site';
 ---
@@ -15,7 +16,7 @@ import { msgGeral } from '../lib/site';
     </div>
     <div class="contato-acoes">
       <a class="btn btn-primario btn-g" href={linkWhatsapp(msgGeral)} target="_blank" rel="noopener">
-        <Icone nome="message-circle" tamanho={20} /> Conversar pelo WhatsApp
+        <IconeWhatsapp tamanho={20} /> Conversar pelo WhatsApp
       </a>
       <!-- Aparece só com JavaScript (o chat depende dele): src/scripts/sol.ts -->
       <button class="btn btn-contorno btn-g contato-sol" type="button" data-sol-abrir hidden>

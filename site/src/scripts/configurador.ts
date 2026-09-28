@@ -202,7 +202,7 @@ export function iniciarConfigurador(): void {
       titulo: condominio ? 'Condomínio Evoluído' : rec.plano ? `${plural(rec.plano.cameras, 'câmera', 'câmeras')} · ${mostrarPrecos ? `R$ ${formatarPreco(rec.plano.preco)}/mês` : 'sob consulta'}` : n ? `${n} câmeras · proposta` : 'Monte seu sistema',
       sub: condominio ? 'Proposta personalizada' : n ? `${plural(n, 'ponto', 'pontos')} · cabo ≈ ${total} m` : 'Toque na planta para marcar',
       link: linkWhatsapp(texto),
-      acao: 'Enviar',
+      acao: 'Enviar o sistema pelo WhatsApp',
     };
     document.dispatchEvent(new CustomEvent<ResumoBarra>('sc:resumo-config', { detail: resumoBarra }));
   };

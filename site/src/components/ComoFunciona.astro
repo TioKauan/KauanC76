@@ -1,6 +1,7 @@
 ---
 /** Tela 4: linha do tempo, dúvidas com busca e área do cliente (exemplo). Interação em src/scripts/como-funciona.ts. */
 import Icone from './Icone.astro';
+import IconeWhatsapp from './IconeWhatsapp.astro';
 import { etapas, duvidas, linkWhatsapp } from '../lib/dados';
 
 // A dúvida mais comum começa aberta (mesma do mockup).
@@ -61,7 +62,7 @@ const acompanhamento = [
         <div class="sem-resultado" data-sem-resultado hidden>
           <p>Não achamos essa dúvida por aqui. Pergunte direto para a equipe da SC:</p>
           <a class="btn btn-contorno btn-p" data-pergunta-whatsapp href={linkWhatsapp('Olá! Tenho uma dúvida sobre os planos de locação.')} target="_blank" rel="noopener">
-            <Icone nome="message-circle" tamanho={16} /> Perguntar pelo WhatsApp
+            <IconeWhatsapp tamanho={16} /> Perguntar pelo WhatsApp
           </a>
           <button class="btn btn-contorno btn-p" type="button" data-sol-abrir data-sol-pergunta hidden>
             <span class="sol-orbe sol-orbe-p" aria-hidden="true"></span> Perguntar para a Sol
@@ -94,7 +95,7 @@ const acompanhamento = [
           </div>
         </div>
         <a class="btn btn-contorno cliente-cta" href={linkWhatsapp('Olá! Já sou cliente da SC e preciso de suporte.')} target="_blank" rel="noopener">
-          <Icone nome="headset" tamanho={17} /> Já é cliente? Peça suporte
+          <IconeWhatsapp tamanho={17} /> Já é cliente? Peça suporte
         </a>
       </div>
     </div>

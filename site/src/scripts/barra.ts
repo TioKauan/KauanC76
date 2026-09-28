@@ -15,14 +15,16 @@ export function iniciarBarra(): void {
   const link = exigir<HTMLAnchorElement>('[data-barra-link]', barra);
   const acao = exigir('[data-barra-acao]', barra);
 
+  // À esquerda fica a Sol (o orbe e, na seção de contato, o texto); o botão da direita é o WhatsApp.
+  const temSol = document.querySelector('[data-sol]') !== null;
   const padrao: ResumoBarra = {
-    titulo: 'Fale com a SC',
+    titulo: temSol ? 'Fale com a Sol' : 'Fale com a SC',
     sub: mostrarPrecos ? `A partir de R$ ${formatarPreco(menorPreco)}/mês` : 'Planos de locação de câmeras',
     link: link.href,
-    acao: 'Conversar',
+    acao: 'Falar com a equipe no WhatsApp',
   };
   let planoVisivel: Plano = planos.find((p) => p.destaque) ?? planos[0]!;
-  let resumoConfig: ResumoBarra = { titulo: 'Monte seu sistema', sub: 'Toque na planta para marcar', link: padrao.link, acao: 'Enviar' };
+  let resumoConfig: ResumoBarra = { titulo: 'Monte seu sistema', sub: 'Toque na planta para marcar', link: padrao.link, acao: 'Enviar o sistema pelo WhatsApp' };
   let secao = 'inicio';
 
   const conteudo = (): ResumoBarra => {
@@ -31,7 +33,7 @@ export function iniciarBarra(): void {
         titulo: `${nomePlano(planoVisivel).replace('Plano de ', '')} · ${textoPreco(planoVisivel)}`,
         sub: `Instalação: ${textoTaxaInstalacao(planoVisivel)}`,
         link: linkWhatsapp(mensagemPlano(planoVisivel)),
-        acao: 'Quero este',
+        acao: `Quero o ${nomePlano(planoVisivel).toLowerCase()} pelo WhatsApp`,
       };
     }
     return secao === 'monte' ? resumoConfig : padrao;
@@ -69,9 +71,10 @@ export function iniciarBarra(): void {
   });
   todos('.guias [role="tab"]').forEach((g) => g.addEventListener('click', () => requestAnimationFrame(pintar)));
 
-  // No configurador, tocar no texto leva ao resumo completo.
+  // Tocar no texto: no configurador leva ao resumo completo; na seção de contato abre a Sol.
   exigir('.barra-texto', barra).addEventListener('click', () => {
     if (secao === 'monte') document.querySelector('.config-resumo')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    else if (barra.dataset.modo === 'contato' && temSol) document.dispatchEvent(new CustomEvent('sc:abrir-sol'));
   });
 
   // Teclado virtual aberto: esconde a barra para não cobrir o campo.

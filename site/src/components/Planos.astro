@@ -1,6 +1,7 @@
 ---
 /** Tela 2: planos de locação. Abas e carrossel em src/scripts/planos.ts. */
 import Icone from './Icone.astro';
+import IconeWhatsapp from './IconeWhatsapp.astro';
 import MiniPlanta from './MiniPlanta.astro';
 import {
   planos, upgrades, condicoes, porQueLocar, servicosProposta, textoProposta,
@@ -58,7 +59,7 @@ const cameras = (n: number) => `${n} ${n > 1 ? 'câmeras' : 'câmera'}`;
                   <li><Icone nome="check" tamanho={16} traco={2.2} />Revisão semestral e manutenção</li>
                 </ul>
                 <a class:list={['btn plano-cta', p.destaque ? 'btn-primario' : 'btn-contorno']} href={linkWhatsapp(mensagemPlano(p))} target="_blank" rel="noopener" data-plano-cta={p.cameras}>
-                  Quero este plano <Icone nome="arrow-up-right" tamanho={16} traco={2} /><span class="sr"> ({nomePlano(p)}, abre o WhatsApp)</span>
+                  <IconeWhatsapp tamanho={17} /> Quero este plano<span class="sr"> ({nomePlano(p)}, abre o WhatsApp)</span>
                 </a>
                 <a class="plano-simular" href="#monte" data-configurar={p.cameras}>Ver no configurador <Icone nome="arrow-right" tamanho={14} /></a>
               </article>
@@ -88,7 +89,7 @@ const cameras = (n: number) => `${n} ${n > 1 ? 'câmeras' : 'câmera'}`;
           <div class="servico-acao">
             <p>{textoProposta}</p>
             <a class="btn btn-primario" href={linkWhatsapp(`Olá! Gostaria de uma proposta de ${s.titulo.toLowerCase()} para o meu ambiente.`)} target="_blank" rel="noopener">
-              Pedir proposta pelo WhatsApp <Icone nome="arrow-up-right" tamanho={16} traco={2} />
+              <IconeWhatsapp tamanho={17} /> Pedir proposta pelo WhatsApp
             </a>
             {s.id === 'condominio' && (
               <a class="btn btn-contorno" href="#monte" data-configurar-ambiente="condominio">Montar a proposta no configurador</a>

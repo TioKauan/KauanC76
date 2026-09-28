@@ -1,6 +1,7 @@
 ---
 /** Tela 3: configurador "Monte seu sistema". Interação em src/scripts/configurador.ts; regras em src/lib/configurador-logica.ts. */
 import Icone from './Icone.astro';
+import IconeWhatsapp from './IconeWhatsapp.astro';
 import { upgrades, linkWhatsapp } from '../lib/dados';
 import { ambientesConfig, sistemasCondominio } from '../lib/configurador-dados';
 import { desenhoPlanta } from '../lib/plantas-svg';
@@ -135,7 +136,7 @@ const msgInicial = mensagemInicial('casa');
           <p data-mensagem>{msgInicial}</p>
         </div>
         <a class="btn btn-primario btn-g config-enviar" data-config-enviar href={linkWhatsapp(msgInicial)} target="_blank" rel="noopener">
-          <Icone nome="message-circle" tamanho={19} /> Enviar para a SC pelo WhatsApp
+          <IconeWhatsapp tamanho={19} /> Enviar para a SC pelo WhatsApp
         </a>
         <p class="resumo-nota">Atendimento pela equipe da SC. A solução final é definida na visita técnica.</p>
       </aside>

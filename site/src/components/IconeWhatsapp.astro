@@ -1,0 +1,11 @@
+---
+/** Ícone do WhatsApp nos botões que abrem o WhatsApp (regra em src/lib/marcas.ts). */
+import { iconeWhatsapp } from '../lib/marcas';
+
+interface Props {
+  tamanho?: number;
+}
+const { tamanho = 18 } = Astro.props;
+---
+
+<Fragment set:html={iconeWhatsapp(tamanho)} />

@@ -1,7 +1,8 @@
 ---
 /**
- * Chat da Sol, a assistente virtual (27/09/2026; sem voz desde 28/09). A
- * interação fica em src/scripts/sol.ts e as regras em src/lib/sol.ts.
+ * Chat da Sol, a assistente virtual (27/09/2026; sem voz e com o roteiro de
+ * captura no começo desde 28/09). A interação fica em src/scripts/sol.ts e as
+ * regras em src/lib/sol.ts.
  * Começa escondido: sem JavaScript o chat não funciona, então nem aparece
  * (os botões de WhatsApp da página continuam atendendo).
  */
@@ -34,8 +35,14 @@ const url = import.meta.env.PUBLIC_SOL_URL || SOL_URL;
 
     <div class="sol-rapidas" data-sol-rapidas></div>
 
+    <!-- Aparece na pergunta do WhatsApp: mandar o número é a autorização para a equipe chamar. -->
+    <p class="sol-aviso" data-sol-aviso hidden>
+      Ao enviar, você autoriza a SC Soluções a te chamar no WhatsApp sobre este atendimento.
+      <a href="/privacidade/" target="_blank" rel="noopener">Política de privacidade</a>
+    </p>
+
     <form class="sol-envio" data-sol-form>
-      <label class="sr" for="sol-campo">Sua mensagem para a Sol</label>
+      <label class="sr" for="sol-campo" data-sol-rotulo>Sua mensagem para a Sol</label>
       <textarea id="sol-campo" rows="1" maxlength="600" placeholder="Escreva sua mensagem…" enterkeyhint="send" data-sol-campo></textarea>
       <button class="sol-enviar" type="submit" aria-label="Enviar mensagem" data-sol-enviar>
         <Icone nome="send" tamanho={19} traco={2} />

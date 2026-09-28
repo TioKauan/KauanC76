@@ -1,17 +1,18 @@
 # Relatório de validação do site
 
-Gerado por `npm run validar` em 27/09/2026, 22:47:31.
-Resultado: **65 de 65 itens ✅** — checklist completa.
+Gerado por `npm run validar` em 28/09/2026, 08:22:49.
+Resultado: **73 de 73 itens ✅** — checklist completa.
 
 ## Geral
 
 | | Item | Detalhe |
 |---|---|---|
 | ✅ | Tipos conferidos (astro check) e build sem erro |  |
-| ✅ | Testes unitários das regras (Vitest) passam | 84 testes |
-| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 384 KB em 5 arquivos; maiores: / 196 KB, /assets/Base.astro_astro_type_script_index_0_lang.DiwOVqRB.js 57 KB, /assets/Logo.DbP6pUO3.css 54 KB |
+| ✅ | Testes unitários das regras (Vitest) passam | 95 testes |
+| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 386 KB em 5 arquivos; maiores: / 196 KB, /assets/Base.astro_astro_type_script_index_0_lang.DBmTO9ab.js 60 KB, /assets/Logo.DaDd0VEE.css 53 KB |
 | ✅ | Todo link interno leva a uma seção que existe | 6 destinos conferidos |
 | ✅ | Todo WhatsApp usa wa.me/5549998325623 com mensagem preenchida | 16 links |
+| ✅ | Todo botão de WhatsApp mostra o ícone do WhatsApp |  |
 | ✅ | Número antigo (46) 99113-8360 não aparece |  |
 | ✅ | Rodapé identifica a empresa (CNPJ, cidade, e-mail) |  |
 | ✅ | Todo preço na página bate com dados.ts | 11 preços encontrados |
@@ -42,7 +43,7 @@ Resultado: **65 de 65 itens ✅** — checklist completa.
 | ✅ | Os 4 cenários do "E se…?" mudam a cena e o texto |  |
 | ✅ | Em "Faltou energia" o nobreak pode ser ligado | off → reserva |
 | ✅ | "A partir de R$ 49,90/mês" visível sem rolar em 1440 px | fim do bloco em 838 de 900 px |
-| ✅ | "A partir de R$ 49,90/mês" visível sem rolar em 390 px | fim do bloco em 683 de 768 px |
+| ✅ | "A partir de R$ 49,90/mês" visível sem rolar em 390 px | fim do bloco em 683 de 764 px |
 
 ## Tela 2 · Planos
 
@@ -88,17 +89,24 @@ Resultado: **65 de 65 itens ✅** — checklist completa.
 
 | | Item | Detalhe |
 |---|---|---|
-| ✅ | Botão da Sol abre o chat com saudação de assistente virtual e sugestões | 4 sugestões |
-| ✅ | Mensagem vai ao n8n com sessão (UUID) e volta com texto, cartão do plano e botões rápidos | 1 cartão (o de 7 câmeras, que não existe, foi descartado); botões: Francisco Beltrão, Outra cidade |
+| ✅ | Chat abre com a Sol pedindo o nome e o WhatsApp da equipe à mão (nada vai ao servidor ainda) | {"escape":"Prefiro falar no WhatsApp","dica":"Seu nome","pedidos":0} |
+| ✅ | Depois do nome, pede o WhatsApp com teclado numérico e o aviso de autorização com a política | {"teclado":"numeric","aviso":"Ao enviar, você autoriza a SC Soluções a"} |
+| ✅ | WhatsApp é conferido antes de seguir, ganha a máscara e nada vai ao servidor | máscara (46) 99123-4567 |
+| ✅ | Cidade com um toque (a da loja) e o aviso some |  |
+| ✅ | O que a pessoa procura: 5 botões e o WhatsApp da equipe | Câmeras, Alarme, Controle de acesso, Redes e Wi-Fi, Outro |
+| ✅ | Roteiro completo vai como lead (dados só com dígitos e autorização) e a Sol entra com o que a pessoa procura | ["lead","mensagem"] |
+| ✅ | Mensagem vai ao n8n com a sessão e volta com texto, cartão do plano e botões rápidos | 1 cartão (o de 7 câmeras, que não existe, foi descartado); botões: Quero este plano, Tenho uma dúvida |
 | ✅ | Cartão do plano no chat usa preço, taxa de instalação e cabo de dados.ts |  |
+| ✅ | "Quero este plano" vai com o plano do cartão e o chat mostra que a equipe foi avisada, com o número | {"plano":4,"mensagem":"Quero este plano"} |
+| ✅ | O botão do cartão também manda o plano |  |
 | ✅ | Texto do servidor nunca vira HTML no chat |  |
-| ✅ | Oferta de contato repetida traz o cartão para baixo, sem duplicar e sem perder o que foi digitado | {"cartoes":1,"ultimo":true,"nome":"Ana Teste"} |
-| ✅ | "Quero este plano" manda o plano junto e o cartão pede o contato daquele plano | {"plano":4,"titulo":"Quer o plano de 4 câmeras?","ultimo":true} |
-| ✅ | Cartão de contato valida número e autorização antes de enviar | máscara (46) 99123-4567 |
-| ✅ | Contato vai com tipo "contato", número só com dígitos, autorização marcada e o plano escolhido |  |
 | ✅ | Sem conexão com a Sol: aviso e botão do WhatsApp da equipe |  |
 | ✅ | Todo preço no chat bate com dados.ts | 3 preços |
-| ✅ | Esc fecha o chat (foco volta ao botão) e a conversa continua depois de recarregar | 14 → 14 mensagens |
+| ✅ | Esc fecha o chat (foco volta ao botão) e a conversa continua depois de recarregar, sem repetir o roteiro | 21 → 21 mensagens |
+| ✅ | Servidor sem o lead desta conversa: o chat recomeça pelo roteiro | {"falas":1,"minhas":0} |
+| ✅ | Recarregar no meio do roteiro volta na mesma pergunta |  |
 | ✅ | Zero erros no console com o chat |  |
-| ✅ | Celular: Sol na barra fixa, chat em tela cheia, sem rolagem lateral e toques ≥ 44 px |  |
+| ✅ | Pergunta da caixa de dúvidas antes do roteiro fica guardada e vira a primeira mensagem para a Sol | ["lead","xyzabc qwerty?"] |
+| ✅ | Celular: Sol na barra fixa, chat em tela cheia, sem rolagem lateral e toques ≥ 44 px (roteiro e conversa) |  |
+| ✅ | Celular: a última mensagem fica à vista com os botões rápidos na tela (roteiro e conversa) | {"vistaRoteiro":true,"vistaConversa":true} |
 | ✅ | Zero erros no console com o chat (celular) |  |

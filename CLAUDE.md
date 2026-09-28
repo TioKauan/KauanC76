@@ -27,11 +27,16 @@ solução, não a mais simples de entender; nas conversas, explique o porquê da
   investimento inicial"; o validador falha.
 - WhatsApp do site: `(49) 99832-5623` (desde 27/09/2026), atendimento humano. Os números
   `(46) 99113-8360` e `(46) 99133-1306` não são usados no site e não podem aparecer.
-- **Chat da Sol** (assistente virtual, desde 27/09/2026): tela em `src/components/Sol.astro` +
-  `src/scripts/sol.ts`, regras em `src/lib/sol.ts` (com testes). A IA, os preços que ela fala e a
-  decisão de pedir contato ficam no n8n (fluxo "Sol no Site"); o site só desenha, e o cartão de
-  plano usa `dados.ts`. Texto do servidor nunca vira HTML (só `textContent`). Para testar a tela sem
-  o n8n: `node scripts/dev-simulado.mjs` (Sol simulada em `scripts/sol-simulado.mjs`).
+- **Chat da Sol** (assistente virtual desde 27/09/2026; agente de captura de lead desde 28/09): tela
+  em `src/components/Sol.astro` + `src/scripts/sol.ts`, regras em `src/lib/sol.ts` (com testes).
+  Antes da IA, o próprio site pergunta nome, WhatsApp, cidade e o que a pessoa procura (roteiro fixo,
+  sem IA) e manda o lead; "Prefiro falar no WhatsApp" fica visível durante o roteiro. A IA, os preços
+  que ela fala e os avisos à equipe ficam no n8n (fluxo "Sol no Site"); o site só desenha, e o cartão
+  de plano usa `dados.ts`. Texto do servidor nunca vira HTML (só `textContent`). Para testar a tela
+  sem o n8n: `node scripts/dev-simulado.mjs` (Sol simulada em `scripts/sol-simulado.mjs`).
+- **Botões:** todo botão que abre o WhatsApp mostra o ícone do WhatsApp (`IconeWhatsapp.astro` ou
+  `iconeWhatsapp()` de `src/lib/marcas.ts`), em contorno ciano, nunca verde; tudo o que abre a Sol
+  mostra o orbe laranja. O validador confere o ícone.
 - Logo: só os arquivos oficiais (`site/public/marca/`); nunca redesenhe. O Claude não gera foto.
 - **Publicar é ação externa: só com pedido explícito do Kauan** (Nginx do VPS, guardando antes a versão no ar).
 
