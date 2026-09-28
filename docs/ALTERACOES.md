@@ -5,6 +5,29 @@ Cada publicação tem uma tag `publicado-<data>` no Git, apontando para o commit
 
 ---
 
+## 28/09/2026, 01:48 (UTC) — Chat da Sol: ajustes depois do primeiro teste
+
+Tag `publicado-2026-09-28-014847` (código do commit `0b7da09`).
+
+### O que mudou para quem visita o site
+
+| Onde | Antes | Agora |
+|---|---|---|
+| Chat | Botões de voz (ditar, ouvir, conversa por voz) | Sem voz |
+| Cartão de contato | Quando a Sol oferecia o contato de novo, o cartão ficava lá em cima | Desce até a mensagem nova, com o que já foi digitado |
+| "Quero este plano" | Só mandava a mensagem | O cartão pede o contato daquele plano, e o plano vai junto no pedido |
+| Botões de resposta rápida | Até 4 | Até 5 (os cinco planos cabem numa pergunta) |
+| `/privacidade/` | Trecho sobre microfone e voz | Sem esse trecho |
+
+### Técnico
+
+- Testes: 84. Validador: 65/65, com 2 conferências novas (cartão que desce; plano escolhido).
+- Publicado no domínio, no `www` e no endereço provisório. Versão anterior em
+  `/opt/somoscella/backups/site-no-ar-antes-20260928-014847-*.tar.gz` e nas pastas
+  `index.antigo-20260928-014847`.
+
+---
+
 ## 28/09/2026, 01:06 (UTC) — Chat da Sol, a assistente virtual
 
 Tag `publicado-2026-09-28-010649` (código do commit `5a0f605`).
