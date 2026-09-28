@@ -7,6 +7,7 @@ import {
   lerResposta, lerRespostaLead, planoDoCartao, trechos, mascaraWhatsapp, lerEstado, estadoNovo,
   type EstadoSol, type RespostaSol, type Acao,
 } from '../lib/sol';
+import { CHAVE_ORIGEM, lerOrigem, escolherOrigem, lerOrigemGuardada, origemParaEnvio, type Origem } from '../lib/origem';
 import { exigir, todos } from './dom';
 import { reduzirMovimento } from './movimento';
 
@@ -43,6 +44,7 @@ export function iniciarSol(): void {
   const celular = () => window.matchMedia('(max-width: 800px)').matches;
 
   let estado: EstadoSol = carregar();
+  const origem: Origem = guardarOrigem();
   let aberto = false;
   let desenhado = false;
   let esperando = false;
@@ -58,6 +60,16 @@ export function iniciarSol(): void {
     try {
       localStorage.setItem(CHAVE, JSON.stringify({ ...estado, historico: estado.historico.slice(-MAX_HISTORICO) }));
     } catch { /* navegador sem armazenamento: a conversa só não sobrevive ao recarregar */ }
+  }
+  /** De onde a pessoa veio (anúncio, Instagram, busca...): vai junto com o lead. Ver src/lib/origem.ts. */
+  function guardarOrigem(): Origem {
+    const agora = new Date();
+    const nova = lerOrigem(window.location.href, document.referrer, agora, window.location.hostname);
+    let guardada: Origem | null = null;
+    try { guardada = lerOrigemGuardada(localStorage.getItem(CHAVE_ORIGEM)); } catch { /* sem armazenamento */ }
+    const vale = escolherOrigem(nova, guardada, agora);
+    try { localStorage.setItem(CHAVE_ORIGEM, JSON.stringify(vale)); } catch { /* sem armazenamento: vale só nesta página */ }
+    return vale;
   }
 
   /* ---------- pequenos construtores de tela ---------- */
@@ -274,7 +286,7 @@ export function iniciarSol(): void {
     const { dado } = await postar({
       tipo: 'lead',
       sessao: estado.sessao,
-      lead: { nome: c.nome, whatsapp: c.whatsapp, cidade: c.cidade, interesse: c.interesse, aceite: true },
+      lead: { nome: c.nome, whatsapp: c.whatsapp, cidade: c.cidade, interesse: c.interesse, aceite: true, origem: origemParaEnvio(origem) },
     });
     const lead = lerRespostaLead(dado);
     if (!lead.ok) {

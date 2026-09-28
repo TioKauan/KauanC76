@@ -1,6 +1,6 @@
 # Relatório de validação do site
 
-Gerado por `npm run validar` em 28/09/2026, 08:22:49.
+Gerado por `npm run validar` em 28/09/2026, 20:19:33.
 Resultado: **73 de 73 itens ✅** — checklist completa.
 
 ## Geral
@@ -8,8 +8,8 @@ Resultado: **73 de 73 itens ✅** — checklist completa.
 | | Item | Detalhe |
 |---|---|---|
 | ✅ | Tipos conferidos (astro check) e build sem erro |  |
-| ✅ | Testes unitários das regras (Vitest) passam | 95 testes |
-| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 386 KB em 5 arquivos; maiores: / 196 KB, /assets/Base.astro_astro_type_script_index_0_lang.DBmTO9ab.js 60 KB, /assets/Logo.DaDd0VEE.css 53 KB |
+| ✅ | Testes unitários das regras (Vitest) passam | 109 testes |
+| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 389 KB em 5 arquivos; maiores: / 196 KB, /assets/Base.astro_astro_type_script_index_0_lang.COKubkRs.js 63 KB, /assets/Logo.DaDd0VEE.css 53 KB |
 | ✅ | Todo link interno leva a uma seção que existe | 6 destinos conferidos |
 | ✅ | Todo WhatsApp usa wa.me/5549998325623 com mensagem preenchida | 16 links |
 | ✅ | Todo botão de WhatsApp mostra o ícone do WhatsApp |  |
@@ -94,7 +94,7 @@ Resultado: **73 de 73 itens ✅** — checklist completa.
 | ✅ | WhatsApp é conferido antes de seguir, ganha a máscara e nada vai ao servidor | máscara (46) 99123-4567 |
 | ✅ | Cidade com um toque (a da loja) e o aviso some |  |
 | ✅ | O que a pessoa procura: 5 botões e o WhatsApp da equipe | Câmeras, Alarme, Controle de acesso, Redes e Wi-Fi, Outro |
-| ✅ | Roteiro completo vai como lead (dados só com dígitos e autorização) e a Sol entra com o que a pessoa procura | ["lead","mensagem"] |
+| ✅ | Roteiro completo vai como lead (dados só com dígitos e autorização, e a origem da visita) e a Sol entra com o que a pessoa procura | ["lead","mensagem"] |
 | ✅ | Mensagem vai ao n8n com a sessão e volta com texto, cartão do plano e botões rápidos | 1 cartão (o de 7 câmeras, que não existe, foi descartado); botões: Quero este plano, Tenho uma dúvida |
 | ✅ | Cartão do plano no chat usa preço, taxa de instalação e cabo de dados.ts |  |
 | ✅ | "Quero este plano" vai com o plano do cartão e o chat mostra que a equipe foi avisada, com o número | {"plano":4,"mensagem":"Quero este plano"} |

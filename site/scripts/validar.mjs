@@ -505,9 +505,12 @@ grupo('Sol · chat do site');
   await esperarSol(pagina);
   const t4 = await tela(pagina);
   const [lead, primeira] = pedidos;
-  conferir('Roteiro completo vai como lead (dados só com dígitos e autorização) e a Sol entra com o que a pessoa procura',
+  // A origem da visita vai junto (src/lib/origem.ts); aqui a página abriu direto, sem utm.
+  const { origem, ...dadosLead } = lead?.lead ?? {};
+  conferir('Roteiro completo vai como lead (dados só com dígitos e autorização, e a origem da visita) e a Sol entra com o que a pessoa procura',
     pedidos.length === 2 && lead.tipo === 'lead' && /^[0-9a-f-]{36}$/.test(lead.sessao ?? '')
-      && JSON.stringify(lead.lead) === JSON.stringify({ nome: 'Ana Paula', whatsapp: '46991234567', cidade: 'Francisco Beltrão', interesse: 'Câmeras', aceite: true })
+      && JSON.stringify(dadosLead) === JSON.stringify({ nome: 'Ana Paula', whatsapp: '46991234567', cidade: 'Francisco Beltrão', interesse: 'Câmeras', aceite: true })
+      && origem?.canal === 'direto' && origem?.pagina === '/' && !Number.isNaN(Date.parse(origem?.em ?? ''))
       && primeira.tipo === 'mensagem' && primeira.sessao === lead.sessao && primeira.mensagem === 'Procuro câmeras'
       && !t4.minhas.includes('Procuro câmeras') && t4.chips.join('|') === 'Casa|Comércio' && t4.escape === null && t4.dica === 'Escreva sua mensagem…',
     JSON.stringify(pedidos.map((p) => p.tipo)));

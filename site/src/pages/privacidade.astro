@@ -1,11 +1,13 @@
 ---
 /**
  * Política de privacidade (26/09/2026; atualizada em 27/09/2026 com a Sol no site e em
- * 28/09/2026, quando a voz saiu do chat e a Sol passou a pedir os dados no começo).
+ * 28/09/2026, quando a voz saiu do chat e a Sol passou a pedir os dados no começo e,
+ * no mesmo dia, quando a origem da visita passou a ir junto com o lead).
  * Descreve o que acontece de fato: o site não usa cookie nem analytics; tem a Sol,
  * assistente virtual com IA, que pede nome, WhatsApp, cidade e o que a pessoa procura
  * antes da conversa (aviso à equipe pelo Telegram) e trata as mensagens; o navegador
- * guarda a conversa (armazenamento local). Servidor no Canadá; IA com processamento na
+ * guarda a conversa e a origem da visita, 30 dias (armazenamento local; a origem só
+ * sai junto com o lead, ver src/lib/origem.ts). Servidor no Canadá; IA com processamento na
  * China e nos EUA. Prazos de guarda: 12 meses / 5 anos; resposta em 15 dias.
  */
 import Base from '../layouts/Base.astro';
@@ -58,7 +60,11 @@ const atualizada = '28 de setembro de 2026';
         as informações que você decidir contar para o orçamento, como tipo de imóvel, quantos pontos de
         câmera e o que motivou o contato;
       </li>
-      <li>o endereço IP, guardado de forma cifrada, só para limitar o excesso de mensagens.</li>
+      <li>o endereço IP, guardado de forma cifrada, só para limitar o excesso de mensagens;</li>
+      <li>
+        por onde você chegou ao site, quando houver (por exemplo, "anúncio no Google" ou "Instagram"),
+        como explicado abaixo.
+      </li>
     </ul>
     <p>
       Usamos esses dados para responder, entender o que você precisa e para a nossa equipe te chamar pelo
@@ -70,6 +76,13 @@ const atualizada = '28 de setembro de 2026';
       os dados que você informou no começo e as últimas mensagens (armazenamento local do navegador, não é
       cookie). Você apaga isso quando quiser, em "Recomeçar conversa" ou limpando os dados do site no
       navegador.
+    </p>
+    <p>
+      <strong>De onde você veio.</strong> Se você chegou por um anúncio ou por um link nosso (do Google, do
+      Instagram ou do Facebook, por exemplo), o seu navegador guarda por até 30 dias de onde veio: o site
+      anterior, o nome da campanha e o código de clique que o anúncio coloca no endereço. Isso só chega até
+      nós se você deixar seu contato com a Sol, junto com ele, e serve apenas para sabermos quais anúncios e
+      publicações trazem contatos. Não usamos isso para acompanhar você em outros sites.
     </p>
 
     <h2>2. Atendimento pelo WhatsApp</h2>

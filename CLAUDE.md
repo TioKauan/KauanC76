@@ -34,6 +34,10 @@ solução, não a mais simples de entender; nas conversas, explique o porquê da
   que ela fala e os avisos à equipe ficam no n8n (fluxo "Sol no Site"); o site só desenha, e o cartão
   de plano usa `dados.ts`. Texto do servidor nunca vira HTML (só `textContent`). Para testar a tela
   sem o n8n: `node scripts/dev-simulado.mjs` (Sol simulada em `scripts/sol-simulado.mjs`).
+- **Origem do lead** (28/09/2026): `src/lib/origem.ts` guarda no navegador por onde a pessoa chegou
+  (utm, gclid, fbclid, site anterior; 30 dias) e o lead do chat leva isso junto (`leads.origem` no
+  banco). Sem cookie, pixel ou ferramenta de análise: a política de privacidade diz isso e só pode
+  mudar junto com ela. Links etiquetados em `C:\SomosCella\Projetos\marketing-ia\README.md`.
 - **Botões:** todo botão que abre o WhatsApp mostra o ícone do WhatsApp (`IconeWhatsapp.astro` ou
   `iconeWhatsapp()` de `src/lib/marcas.ts`), em contorno ciano, nunca verde; tudo o que abre a Sol
   mostra o orbe laranja. O validador confere o ícone.
