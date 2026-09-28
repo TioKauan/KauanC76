@@ -5,6 +5,36 @@ Cada publicação tem uma tag `publicado-<data>` no Git, apontando para o commit
 
 ---
 
+## 28/09/2026, 22:39 (UTC) — Chat da Sol: o contato vem no começo
+
+Tag `publicado-2026-09-28-223904` (código do commit `e574228`).
+
+### O que mudou para quem visita o site
+
+| Onde | Antes | Agora |
+|---|---|---|
+| Começo do chat | A Sol conversava direto e oferecia um cartão de contato no fim | O chat pergunta nome, WhatsApp, cidade e o que a pessoa procura (botões para a cidade e para o interesse), com o aviso de autorização junto da pergunta do WhatsApp; a equipe recebe o contato na hora e só então a Sol conversa |
+| Durante as perguntas do começo | — | Botão "Prefiro falar no WhatsApp", sempre visível |
+| "Quero este plano" | Abria o cartão de contato | Avisa a equipe e mostra "Pedido enviado à equipe" com o número da pessoa |
+| Cartão de contato no fim | Existia | Saiu |
+| "Perguntar para a Sol" na caixa de dúvidas | A pergunta ia direto | Antes das perguntas do começo, a pergunta fica guardada e vira a primeira mensagem para a Sol |
+| Botões de WhatsApp | Nem todos tinham o ícone | Todos com o ícone do WhatsApp, em contorno ciano; na barra do celular a Sol (orbe) e o WhatsApp da equipe (ícone) ficam separados |
+| `/privacidade/` | Nome e WhatsApp "só se você pedir que a equipe te chame" | A seção 1 descreve os dados pedidos no começo do chat |
+
+### Por quê
+
+- A equipe passa a receber o contato de quem procurou a SC mesmo que a conversa pare no meio.
+
+### Técnico
+
+- Testes: 95. Validador: 73/73, com as conferências do roteiro (recusas, retomada depois de
+  recarregar, rolagem até a última mensagem).
+- Publicado no domínio, no `www` e no endereço provisório. Versão anterior em
+  `/opt/somoscella/backups/site-no-ar-antes-20260928-223904-*.tar.gz` e nas pastas
+  `index.antigo-20260928-223904`.
+
+---
+
 ## 28/09/2026, 01:48 (UTC) — Chat da Sol: ajustes depois do primeiro teste
 
 Tag `publicado-2026-09-28-014847` (código do commit `0b7da09`).
