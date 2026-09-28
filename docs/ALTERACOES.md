@@ -5,6 +5,39 @@ Cada publicação tem uma tag `publicado-<data>` no Git, apontando para o commit
 
 ---
 
+## 28/09/2026, 23:35 (UTC) — O lead do chat passa a dizer de onde a pessoa veio
+
+Tag `publicado-2026-09-28-233530` (código do commit `1981dfa`).
+
+### O que mudou para quem visita o site
+
+| Onde | Antes | Agora |
+|---|---|---|
+| Chat da Sol | O contato chegava à equipe sem a origem | O contato leva junto por onde a pessoa chegou (anúncio no Google, anúncio na Meta, Instagram, Facebook, busca, outro site ou acesso direto), com o nome da campanha quando o link tiver etiqueta |
+| `/privacidade/` | — | Seção 1 explica o que é guardado sobre a origem, por quanto tempo (30 dias, no navegador) e que só chega à SC junto com o contato |
+
+Nada muda na tela. O site continua sem cookie e sem ferramenta de análise ou publicidade.
+
+### Por quê
+
+- Plano de marketing de 28/09/2026 (R$ 100/mês): para o relatório semanal dizer quanto custou
+  cada contato por canal, o lead precisa saber de onde veio. Sem isso, dá para ver o gasto, mas
+  não quem virou cliente.
+
+### Técnico
+
+- `src/lib/origem.ts` (regra sem DOM, 14 testes em `tests/origem.test.ts`): lê `utm_*`, `gclid`
+  (ou `gbraid`/`wbraid`), `fbclid` e o site anterior; vale o último canal que não seja acesso
+  direto, por 30 dias (`localStorage`, chave `sc-origem`).
+- O lead do chat (`tipo: lead`) leva `lead.origem`; o n8n limpa, o banco grava em `leads.origem`
+  e o aviso do Telegram mostra "Veio de: ...".
+- Testes: 109. Validador: 73/73. Teste de ponta a ponta no servidor: tudo passou.
+- Publicado no domínio, no `www` e no endereço provisório. Versão anterior em
+  `/opt/somoscella/backups/site-no-ar-antes-20260928-233530-*.tar.gz` e nas pastas
+  `index.antigo-20260928-233530`.
+
+---
+
 ## 28/09/2026, 22:39 (UTC) — Chat da Sol: o contato vem no começo
 
 Tag `publicado-2026-09-28-223904` (código do commit `e574228`).
