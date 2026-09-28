@@ -2,7 +2,7 @@ import { mostrarPrecos, formatarPreco, nomePlano, textoTaxaInstalacao, rotuloTax
 import { icone } from '../lib/icones';
 import {
   LIMITE_MENSAGEM, MAX_HISTORICO, TEMPO_LIMITE_MS, saudacao, sugestoesIniciais, linkWhatsappChat,
-  lerResposta, planoDoCartao, trechos, frasesParaFala, mascaraWhatsapp, validarWhatsapp, validarNome,
+  lerResposta, planoDoCartao, trechos, mascaraWhatsapp, validarWhatsapp, validarNome,
   acharTelefone, lerEstado, estadoNovo,
   type EstadoSol, type RespostaSol, type Acao,
 } from '../lib/sol';
@@ -10,42 +10,16 @@ import { exigir, todos } from './dom';
 import { reduzirMovimento } from './movimento';
 
 /**
- * Chat da Sol: abre o painel, conversa com o n8n, desenha cartões de plano,
- * botões rápidos e o cartão de contato, e cuida da voz (ditar, ouvir as
- * respostas e a conversa só por voz). As regras ficam em src/lib/sol.ts.
+ * Chat da Sol: abre o painel, conversa com o n8n e desenha cartões de plano,
+ * botões rápidos, o cartão de contato e o botão do WhatsApp da equipe.
+ * As regras ficam em src/lib/sol.ts.
  *
- * A voz usa só o navegador: o reconhecimento do Chrome/Edge/Safari e a voz
- * do sistema. Sem custo, sem enviar áudio para o nosso servidor. Navegador
- * sem reconhecimento (Firefox) não mostra o microfone.
+ * 28/09/2026 (teste do Kauan): a voz saiu; o cartão de contato desce até a
+ * mensagem nova quando a Sol oferece o contato de novo (antes ficava perdido
+ * lá em cima); "Quero este plano" manda o plano junto, e ele vai no contato.
  */
 
 const CHAVE = 'sc-sol';
-
-// A Web Speech API não está nos tipos do TypeScript (e no Safari tem prefixo).
-interface ResultadoFala { readonly isFinal: boolean; readonly [indice: number]: { readonly transcript: string } }
-interface EventoFala { readonly resultIndex: number; readonly results: ArrayLike<ResultadoFala> }
-interface Reconhecedor {
-  lang: string;
-  interimResults: boolean;
-  continuous: boolean;
-  maxAlternatives: number;
-  onresult: ((e: EventoFala) => void) | null;
-  onerror: ((e: { error: string }) => void) | null;
-  onend: (() => void) | null;
-  start(): void;
-  stop(): void;
-  abort(): void;
-}
-type NovoReconhecedor = new () => Reconhecedor;
-type EstadoVoz = 'ouvindo' | 'pensando' | 'falando' | 'pausado';
-
-const ROTULO_VOZ: Record<EstadoVoz, string> = {
-  ouvindo: 'Ouvindo… pode falar',
-  pensando: 'Pensando…',
-  falando: 'Falando… toque para interromper',
-  pausado: 'Toque no círculo para falar',
-};
-const VOZES_PREFERIDAS = ['francisca', 'thalita', 'google português', 'luciana', 'vitória', 'vitoria', 'maria', 'leticia', 'heloisa'];
 
 export function iniciarSol(): void {
   const achado = document.querySelector<HTMLElement>('[data-sol]');
@@ -59,32 +33,15 @@ export function iniciarSol(): void {
   const form = exigir<HTMLFormElement>('[data-sol-form]', raiz);
   const campo = exigir<HTMLTextAreaElement>('[data-sol-campo]', raiz);
   const btnEnviar = exigir<HTMLButtonElement>('[data-sol-enviar]', raiz);
-  const btnMic = exigir<HTMLButtonElement>('[data-sol-mic]', raiz);
-  const btnLer = exigir<HTMLButtonElement>('[data-sol-ler]', raiz);
-  const btnConversaVoz = exigir<HTMLButtonElement>('[data-sol-conversa-voz]', raiz);
-  const telaVoz = exigir('[data-sol-voz]', raiz);
-  const vozEstado = exigir('[data-sol-voz-estado]', raiz);
-  const vozTexto = exigir('[data-sol-voz-texto]', raiz);
-  const vozCartao = exigir('[data-sol-voz-cartao]', raiz);
-  const vozOrbe = exigir<HTMLButtonElement>('[data-sol-voz-orbe]', raiz);
-
-  const janela = window as unknown as { SpeechRecognition?: NovoReconhecedor; webkitSpeechRecognition?: NovoReconhecedor };
-  const Reconhecer = janela.SpeechRecognition ?? janela.webkitSpeechRecognition;
-  const temFala = 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
-  const celular = () => window.matchMedia('(max-width: 800px)').matches;
   const toque = () => window.matchMedia('(pointer: coarse)').matches;
+  const celular = () => window.matchMedia('(max-width: 800px)').matches;
 
   let estado: EstadoSol = carregar();
   let aberto = false;
   let desenhado = false;
   let esperando = false;
-  let contatoNaTela: HTMLElement | null = null;
+  let contatoNaTela: HTMLFormElement | null = null;
   let contador = 0;
-  let ditando: Reconhecedor | null = null;
-  let modoVoz = false;
-  let reconhecedorVoz: Reconhecedor | null = null;
-  let silencios = 0;
-  let vozEscolhida: SpeechSynthesisVoice | null | undefined;
 
   /* ---------- guardar a conversa no navegador ---------- */
   function carregar(): EstadoSol {
@@ -155,12 +112,19 @@ export function iniciarSol(): void {
     rolarFim();
     return () => b.remove();
   }
+  /** Leva um elemento que já existe para o fim da conversa, com um brilho para o olho achar. */
+  function trazerParaBaixo(e: HTMLElement): void {
+    conversa.append(e);
+    e.classList.remove('sol-realce');
+    void e.offsetWidth; // reinicia a animação
+    e.classList.add('sol-realce');
+  }
 
   /* ---------- cartões ---------- */
-  function cartaoPlano(cameras: number, compacto = false): HTMLElement | null {
+  function cartaoPlano(cameras: number): HTMLElement | null {
     const p = planoDoCartao(cameras);
     if (!p) return null;
-    const c = el('article', `sol-plano${p.destaque ? ' sol-plano-destaque' : ''}${compacto ? ' sol-plano-compacto' : ''} sol-surge`);
+    const c = el('article', `sol-plano${p.destaque ? ' sol-plano-destaque' : ''} sol-surge`);
     c.setAttribute('aria-label', nomePlano(p));
     if (p.destaque) {
       const selo = el('span', 'selo selo-laranja sol-plano-selo', p.destaque);
@@ -173,29 +137,31 @@ export function iniciarSol(): void {
     if (mostrarPrecos) preco.append(el('small', '', 'R$'), el('strong', '', formatarPreco(p.preco)), el('em', '', '/mês'));
     else preco.append(el('strong', '', 'Sob consulta'));
     topo.append(titulo, preco);
-    c.append(topo);
-    if (!compacto) c.append(el('p', 'sol-plano-uso', p.uso));
+    c.append(topo, el('p', 'sol-plano-uso', p.uso));
     const cabo = el('p', 'sol-plano-cabo', `Instalação: ${textoTaxaInstalacao(p)}${mostrarPrecos ? ` (${rotuloTaxa})` : ''} · até ${p.caboMetros} m de cabo`);
     comIcone(cabo, 'cable', 14);
     c.append(cabo);
-    if (!compacto) {
-      const lista = el('ul', 'sol-plano-lista');
-      for (const item of [`${p.cameras} ${p.cameras > 1 ? 'câmeras' : 'câmera'} 2 MP ou superior`, 'Gravação local ≈ 10 dias', `${p.gravador} e imagens no celular`, 'Revisão semestral e manutenção']) {
-        const li = el('li', '', item);
-        comIcone(li, 'check', 14);
-        lista.append(li);
-      }
-      c.append(lista);
-      const acoes = el('div', 'sol-plano-acoes');
-      const quero = el('button', 'btn btn-primario btn-p', 'Quero este plano');
-      quero.type = 'button';
-      quero.addEventListener('click', () => void enviar(`Quero o ${nomePlano(p).toLowerCase()}.`));
-      const ver = el('a', 'sol-link', 'Ver na página');
-      ver.href = `#plano-${p.cameras}`;
-      ver.addEventListener('click', (e) => { e.preventDefault(); verNaPagina(p.cameras); });
-      acoes.append(quero, ver);
-      c.append(acoes);
+    const lista = el('ul', 'sol-plano-lista');
+    for (const item of [`${p.cameras} ${p.cameras > 1 ? 'câmeras' : 'câmera'} 2 MP ou superior`, 'Gravação local ≈ 10 dias', `${p.gravador} e imagens no celular`, 'Revisão semestral e manutenção']) {
+      const li = el('li', '', item);
+      comIcone(li, 'check', 14);
+      lista.append(li);
     }
+    c.append(lista);
+    const acoes = el('div', 'sol-plano-acoes');
+    const quero = el('button', 'btn btn-primario btn-p', 'Quero este plano');
+    quero.type = 'button';
+    quero.dataset.solQuero = String(p.cameras);
+    quero.addEventListener('click', () => {
+      estado.plano = p.cameras;
+      salvar();
+      void enviar(`Quero o ${nomePlano(p).toLowerCase()}.`, p.cameras);
+    });
+    const ver = el('a', 'sol-link', 'Ver na página');
+    ver.href = `#plano-${p.cameras}`;
+    ver.addEventListener('click', (e) => { e.preventDefault(); verNaPagina(p.cameras); });
+    acoes.append(quero, ver);
+    c.append(acoes);
     return c;
   }
   function verNaPagina(cameras: number): void {
@@ -215,12 +181,18 @@ export function iniciarSol(): void {
     comIcone(a, 'message-circle', 16);
     return a;
   }
-  function cartaoContato(telefone?: string | null): HTMLElement {
+  function tituloContato(): string {
+    const p = estado.plano ? planoDoCartao(estado.plano) : undefined;
+    return p ? `Quer o ${nomePlano(p).toLowerCase()}?` : 'Quer que a equipe te chame?';
+  }
+  function cartaoContato(telefone?: string | null): HTMLFormElement {
     const n = ++contador;
     const f = el('form', 'sol-contato sol-surge');
     f.noValidate = true;
-    f.append(el('p', 'sol-contato-titulo', 'Quer que a equipe te chame?'));
-    f.append(el('p', 'sol-contato-sub', 'Deixe seu nome e WhatsApp: a equipe da SC chama você com o orçamento.'));
+    const titulo = el('p', 'sol-contato-titulo', tituloContato());
+    titulo.dataset.solContatoTitulo = '';
+    f.append(titulo);
+    f.append(el('p', 'sol-contato-sub', 'Deixe seu nome e WhatsApp: a equipe da SC chama você para combinar a vistoria e o orçamento.'));
     const campoNome = el('input');
     Object.assign(campoNome, { id: `sol-nome-${n}`, name: 'nome', autocomplete: 'given-name', maxLength: 80, required: true, type: 'text' });
     const campoWhats = el('input');
@@ -255,7 +227,8 @@ export function iniciarSol(): void {
       erro.hidden = true;
       enviarBtn.disabled = true;
       enviarBtn.textContent = 'Enviando…';
-      const r = await postar({ tipo: 'contato', sessao: estado.sessao, contato: { nome, whatsapp: w.digitos, aceite: true } });
+      const contatoCorpo = { nome, whatsapp: w.digitos, aceite: true, ...(estado.plano ? { plano: estado.plano } : {}) };
+      const r = await postar({ tipo: 'contato', sessao: estado.sessao, contato: contatoCorpo });
       if (!r.ok) {
         enviarBtn.disabled = false;
         enviarBtn.textContent = 'Pedir para a equipe me chamar';
@@ -272,6 +245,19 @@ export function iniciarSol(): void {
     });
     contatoNaTela = f;
     return f;
+  }
+  /** Mostra o cartão de contato no fim da conversa: cria, ou traz o que já existe (com o que já foi digitado). */
+  function mostrarContato(telefone?: string | null): void {
+    if (estado.contatoOk) return;
+    if (contatoNaTela?.isConnected) {
+      const titulo = contatoNaTela.querySelector<HTMLElement>('[data-sol-contato-titulo]');
+      if (titulo) titulo.textContent = tituloContato();
+      const whats = contatoNaTela.querySelector<HTMLInputElement>('input[name="whatsapp"]');
+      if (telefone && whats && !whats.value) whats.value = mascaraWhatsapp(telefone);
+      trazerParaBaixo(contatoNaTela);
+    } else {
+      conversa.append(cartaoContato(telefone));
+    }
   }
   function mostrarRapidas(lista: string[]): void {
     rapidas.replaceChildren();
@@ -304,7 +290,7 @@ export function iniciarSol(): void {
     }
   }
 
-  async function enviar(bruto: string, { voz = false } = {}): Promise<void> {
+  async function enviar(bruto: string, plano?: number): Promise<void> {
     const texto = bruto.replace(/\s+/g, ' ').trim().slice(0, LIMITE_MENSAGEM);
     if (!texto || esperando) return;
     rapidas.replaceChildren();
@@ -315,7 +301,7 @@ export function iniciarSol(): void {
     esperando = true;
     atualizarEnvio();
     const tirar = digitando();
-    const r = await postar({ tipo: 'mensagem', sessao: estado.sessao, mensagem: texto, voz });
+    const r = await postar({ tipo: 'mensagem', sessao: estado.sessao, mensagem: texto, ...(plano ? { plano } : {}) });
     tirar();
     esperando = false;
     atualizarEnvio();
@@ -330,18 +316,10 @@ export function iniciarSol(): void {
     const b = balao('sol', texto, true);
     estado.historico.push({ de: 'sol', texto, cartoes: r.cartoes, acoes });
     salvar();
-    if (modoVoz) {
-      vozTexto.textContent = texto.replace(/\*/g, '');
-      vozCartao.replaceChildren(...r.cartoes.map((n) => cartaoPlano(n, true)).filter((c): c is HTMLElement => !!c));
-    }
-    const fala = estado.voz || modoVoz;
-    if (fala) falar(texto, () => { if (modoVoz) ouvirVoz(); });
-    else if (modoVoz) ouvirVoz();
-    if (modoVoz) mudarVoz(fala && temFala ? 'falando' : 'ouvindo');
     await revelar(b, texto);
     for (const n of r.cartoes) { const c = cartaoPlano(n); if (c) conversa.append(c); }
     if (acoes.includes('whatsapp')) conversa.append(botaoWhatsapp());
-    if (acoes.includes('contato') && !estado.contatoOk && !contatoNaTela?.isConnected) conversa.append(cartaoContato(telefone));
+    if (acoes.includes('contato')) mostrarContato(telefone);
     rolarFim();
     mostrarRapidas(r.opcoes);
   }
@@ -389,9 +367,6 @@ export function iniciarSol(): void {
 
   function fechar(): void {
     if (!aberto) return;
-    sairVoz();
-    pararDitado();
-    if (temFala) speechSynthesis.cancel();
     aberto = false;
     const tinhaFoco = painel.contains(document.activeElement);
     painel.classList.remove('sol-painel-visivel');
@@ -403,168 +378,13 @@ export function iniciarSol(): void {
   }
 
   function recomecar(): void {
-    sairVoz();
-    if (temFala) speechSynthesis.cancel();
-    estado = { ...estadoNovo(), voz: estado.voz };
+    estado = estadoNovo();
     salvar();
     rapidas.replaceChildren();
     desenhar();
     campo.focus({ preventScroll: true });
   }
 
-  /* ---------- voz: ouvir as respostas ---------- */
-  function vozBrasileira(): SpeechSynthesisVoice | null {
-    if (vozEscolhida !== undefined) return vozEscolhida;
-    const br = speechSynthesis.getVoices().filter((v) => v.lang.replace('_', '-').toLowerCase().startsWith('pt-br'));
-    if (!br.length) return null; // ainda carregando: tenta de novo na próxima fala
-    vozEscolhida = VOZES_PREFERIDAS.map((nome) => br.find((v) => v.name.toLowerCase().includes(nome))).find(Boolean) ?? br[0] ?? null;
-    return vozEscolhida;
-  }
-  function falar(texto: string, aoFim?: () => void): void {
-    if (!temFala) { aoFim?.(); return; }
-    speechSynthesis.cancel();
-    const frases = frasesParaFala(texto);
-    if (!frases.length) { aoFim?.(); return; }
-    const voz = vozBrasileira();
-    let terminou = false;
-    const fim = () => { if (!terminou) { terminou = true; aoFim?.(); } };
-    frases.forEach((frase, i) => {
-      const u = new SpeechSynthesisUtterance(frase);
-      u.lang = 'pt-BR';
-      if (voz) u.voice = voz;
-      u.rate = 1.05;
-      u.pitch = 1.05;
-      if (i === frases.length - 1) { u.onend = fim; u.onerror = fim; }
-      speechSynthesis.speak(u);
-    });
-  }
-  function pintarLer(): void {
-    btnLer.setAttribute('aria-pressed', String(estado.voz));
-    btnLer.setAttribute('aria-label', estado.voz ? 'Parar de ler as respostas em voz alta' : 'Ler as respostas em voz alta');
-  }
-
-  /* ---------- voz: ditar uma mensagem ---------- */
-  function avisoMicrofone(erro: string): void {
-    if (erro === 'not-allowed' || erro === 'service-not-allowed') {
-      balao('sol', 'Para falar comigo, permita o uso do microfone no navegador. Se preferir, é só escrever.', true);
-    } else if (erro === 'network') {
-      balao('sol', 'O reconhecimento de voz do navegador precisa de internet. Tente de novo ou escreva sua mensagem.', true);
-    }
-  }
-  function pararDitado(): void {
-    ditando?.abort();
-    ditando = null;
-    btnMic.removeAttribute('data-ouvindo');
-  }
-  function ditar(): void {
-    if (!Reconhecer) return;
-    if (ditando) { ditando.stop(); return; }
-    if (temFala) speechSynthesis.cancel();
-    const r = new Reconhecer();
-    r.lang = 'pt-BR';
-    r.interimResults = true;
-    r.continuous = false;
-    r.maxAlternatives = 1;
-    let final = '';
-    r.onresult = (e) => {
-      let parcial = '';
-      for (let i = e.resultIndex; i < e.results.length; i++) {
-        const res = e.results[i];
-        if (!res) continue;
-        if (res.isFinal) final += res[0]?.transcript ?? '';
-        else parcial += res[0]?.transcript ?? '';
-      }
-      campo.value = (final + parcial).trim();
-      atualizarEnvio();
-    };
-    r.onerror = (e) => avisoMicrofone(e.error);
-    r.onend = () => {
-      ditando = null;
-      btnMic.removeAttribute('data-ouvindo');
-      const texto = final.trim();
-      if (texto) { campo.value = ''; ajustarCampo(); void enviar(texto, { voz: true }); }
-    };
-    ditando = r;
-    btnMic.setAttribute('data-ouvindo', '');
-    try { r.start(); } catch { pararDitado(); }
-  }
-
-  /* ---------- voz: conversa só por voz ---------- */
-  function mudarVoz(e: EstadoVoz): void {
-    telaVoz.dataset.estado = e;
-    vozEstado.textContent = ROTULO_VOZ[e];
-  }
-  function ouvirVoz(): void {
-    if (!modoVoz || !Reconhecer) return;
-    reconhecedorVoz?.abort();
-    mudarVoz('ouvindo');
-    const r = new Reconhecer();
-    r.lang = 'pt-BR';
-    r.interimResults = true;
-    r.continuous = false;
-    r.maxAlternatives = 1;
-    let final = '';
-    r.onresult = (e) => {
-      let parcial = '';
-      for (let i = e.resultIndex; i < e.results.length; i++) {
-        const res = e.results[i];
-        if (!res) continue;
-        if (res.isFinal) final += res[0]?.transcript ?? '';
-        else parcial += res[0]?.transcript ?? '';
-      }
-      vozTexto.textContent = (final + parcial).trim();
-      vozCartao.replaceChildren();
-    };
-    r.onerror = (e) => {
-      if (e.error === 'not-allowed' || e.error === 'service-not-allowed' || e.error === 'network') {
-        sairVoz();
-        avisoMicrofone(e.error);
-      }
-    };
-    r.onend = () => {
-      if (reconhecedorVoz !== r) return;
-      reconhecedorVoz = null;
-      if (!modoVoz) return;
-      const texto = final.trim();
-      if (texto) {
-        silencios = 0;
-        mudarVoz('pensando');
-        void enviar(texto, { voz: true });
-      } else if (++silencios >= 2) {
-        mudarVoz('pausado');
-      } else {
-        ouvirVoz();
-      }
-    };
-    reconhecedorVoz = r;
-    try { r.start(); } catch { mudarVoz('pausado'); }
-  }
-  function entrarVoz(): void {
-    if (!Reconhecer || modoVoz) return;
-    pararDitado();
-    modoVoz = true;
-    silencios = 0;
-    telaVoz.hidden = false;
-    raiz.toggleAttribute('data-voz', true);
-    vozTexto.textContent = 'Pode falar: eu escuto e respondo em voz alta.';
-    vozCartao.replaceChildren();
-    // iOS só libera a voz depois de um toque: uma fala vazia agora destrava as próximas.
-    if (temFala) { speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(' ')); }
-    ouvirVoz();
-  }
-  function sairVoz(): void {
-    if (!modoVoz) return;
-    modoVoz = false;
-    const r = reconhecedorVoz;
-    reconhecedorVoz = null;
-    r?.abort();
-    if (temFala) speechSynthesis.cancel();
-    telaVoz.hidden = true;
-    raiz.toggleAttribute('data-voz', false);
-    vozCartao.replaceChildren();
-  }
-
-  /* ---------- campo de texto ---------- */
   function ajustarCampo(): void {
     campo.style.height = 'auto';
     campo.style.height = `${Math.min(campo.scrollHeight, 128)}px`;
@@ -589,25 +409,8 @@ export function iniciarSol(): void {
   painel.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
     e.stopPropagation();
-    if (modoVoz) sairVoz(); else fechar();
+    fechar();
   });
-  btnMic.addEventListener('click', ditar);
-  btnLer.addEventListener('click', () => {
-    estado.voz = !estado.voz;
-    if (!estado.voz && temFala) speechSynthesis.cancel();
-    salvar();
-    pintarLer();
-  });
-  btnConversaVoz.addEventListener('click', entrarVoz);
-  vozOrbe.addEventListener('click', () => {
-    const e = telaVoz.dataset.estado as EstadoVoz | undefined;
-    if (e === 'ouvindo') reconhecedorVoz?.stop();
-    else if (e === 'falando') { if (temFala) speechSynthesis.cancel(); ouvirVoz(); }
-    else if (e === 'pausado') { silencios = 0; ouvirVoz(); }
-  });
-  exigir('[data-sol-voz-sair]', raiz).addEventListener('click', sairVoz);
-  exigir('[data-sol-voz-digitar]', raiz).addEventListener('click', () => { sairVoz(); campo.focus(); });
-  if (temFala) speechSynthesis.addEventListener('voiceschanged', () => { vozEscolhida = undefined; });
 
   // Botões "fale com a Sol" espalhados pela página (escondidos sem JavaScript).
   for (const gatilho of todos<HTMLElement>('[data-sol-abrir]')) {
@@ -621,11 +424,6 @@ export function iniciarSol(): void {
     });
   }
 
-  // Liga o que o navegador suporta e mostra o chat.
-  btnMic.hidden = !Reconhecer;
-  btnConversaVoz.hidden = !(Reconhecer && temFala);
-  btnLer.hidden = !temFala;
-  pintarLer();
   atualizarEnvio();
   raiz.hidden = false;
   window.setTimeout(() => raiz.toggleAttribute('data-chegou', true), 1200);

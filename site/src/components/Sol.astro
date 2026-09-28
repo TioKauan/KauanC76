@@ -1,7 +1,7 @@
 ---
 /**
- * Chat da Sol, a assistente virtual (27/09/2026). A interação fica em
- * src/scripts/sol.ts e as regras em src/lib/sol.ts.
+ * Chat da Sol, a assistente virtual (27/09/2026; sem voz desde 28/09). A
+ * interação fica em src/scripts/sol.ts e as regras em src/lib/sol.ts.
  * Começa escondido: sem JavaScript o chat não funciona, então nem aparece
  * (os botões de WhatsApp da página continuam atendendo).
  */
@@ -25,12 +25,6 @@ const url = import.meta.env.PUBLIC_SOL_URL || SOL_URL;
         <h2 id="sol-titulo">Sol</h2>
         <p><span class="sol-ponto" aria-hidden="true"></span>Assistente virtual da SC</p>
       </div>
-      <button class="sol-icone" type="button" data-sol-conversa-voz aria-label="Conversar por voz" title="Conversar por voz" hidden>
-        <Icone nome="audio-lines" tamanho={20} />
-      </button>
-      <button class="sol-icone" type="button" data-sol-ler aria-pressed="false" aria-label="Ler as respostas em voz alta" title="Ler as respostas em voz alta" hidden>
-        <Icone nome="volume-x" tamanho={20} classe="sol-ic-mudo" /><Icone nome="volume-2" tamanho={20} classe="sol-ic-som" />
-      </button>
       <button class="sol-icone" type="button" data-sol-fechar aria-label="Fechar o chat" title="Fechar">
         <Icone nome="x" tamanho={22} />
       </button>
@@ -43,9 +37,6 @@ const url = import.meta.env.PUBLIC_SOL_URL || SOL_URL;
     <form class="sol-envio" data-sol-form>
       <label class="sr" for="sol-campo">Sua mensagem para a Sol</label>
       <textarea id="sol-campo" rows="1" maxlength="600" placeholder="Escreva sua mensagem…" enterkeyhint="send" data-sol-campo></textarea>
-      <button class="sol-icone sol-mic" type="button" data-sol-mic aria-label="Falar em vez de digitar" title="Falar" hidden>
-        <Icone nome="mic" tamanho={20} />
-      </button>
       <button class="sol-enviar" type="submit" aria-label="Enviar mensagem" data-sol-enviar>
         <Icone nome="send" tamanho={19} traco={2} />
       </button>
@@ -54,18 +45,5 @@ const url = import.meta.env.PUBLIC_SOL_URL || SOL_URL;
       Você está falando com uma assistente virtual. <a href="/privacidade/" target="_blank" rel="noopener">Privacidade</a>
       · <button type="button" class="sol-link" data-sol-recomecar>Recomeçar conversa</button>
     </p>
-
-    <div class="sol-voz" data-sol-voz hidden>
-      <p class="sol-voz-estado" data-sol-voz-estado aria-live="assertive">Ouvindo…</p>
-      <button class="sol-voz-orbe" type="button" data-sol-voz-orbe aria-label="Tocar para falar ou parar">
-        <span class="sol-orbe sol-orbe-g" aria-hidden="true"></span>
-      </button>
-      <p class="sol-voz-texto" data-sol-voz-texto></p>
-      <div class="sol-voz-cartao" data-sol-voz-cartao></div>
-      <div class="sol-voz-acoes">
-        <button class="btn btn-contorno btn-p" type="button" data-sol-voz-digitar><Icone nome="keyboard" tamanho={18} /> Digitar</button>
-        <button class="btn btn-primario btn-p" type="button" data-sol-voz-sair><Icone nome="square" tamanho={16} traco={2.2} /> Encerrar voz</button>
-      </div>
-    </div>
   </section>
 </div>

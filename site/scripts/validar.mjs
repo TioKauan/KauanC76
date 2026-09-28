@@ -403,7 +403,8 @@ grupo('Sol · chat do site');
     const r = corpo.tipo === 'contato'
       ? { ok: true, contato_ok: true, resposta: 'Pronto, Ana! Enquanto a equipe não te chama, posso tirar mais alguma dúvida por aqui.', cartoes: [], opcoes: [], acoes: [] }
       : /erro/.test(m) ? null
-      : /contato/.test(m) ? { ok: true, resposta: 'Deixe seu nome e WhatsApp aqui embaixo que a equipe te chama.', cartoes: [], opcoes: [], acoes: ['contato'] }
+      : corpo.plano ? { ok: true, resposta: 'A equipe te chama no WhatsApp para combinar a vistoria.', cartoes: [], opcoes: [], acoes: ['contato'] }
+      : /contato|de novo/.test(m) ? { ok: true, resposta: 'Deixe seu nome e WhatsApp aqui embaixo que a equipe te chama.', cartoes: [], opcoes: [], acoes: ['contato'] }
       : /html/.test(m) ? { ok: true, resposta: '<img src=x onerror="window.__xss=1">Oi', cartoes: [], opcoes: [], acoes: [] }
       : { ok: true, resposta: 'O plano de 4 câmeras sai *R$ 99,90* por mês. Em que cidade fica o imóvel?', cartoes: [{ tipo: 'plano', cameras: 4 }, { tipo: 'plano', cameras: 7 }], opcoes: ['Francisco Beltrão', 'Outra cidade'], acoes: [] };
     if (!r) return rota.abort();
@@ -447,8 +448,28 @@ grupo('Sol · chat do site');
   conferir('Texto do servidor nunca vira HTML no chat', xss.img === 0 && !xss.executou);
 
   await falar(pagina, 'quero contato', '.sol-contato');
-  const antes = pedidos.length;
   await pagina.fill('.sol-contato input[name="nome"]', 'Ana Teste');
+  // Teste do Kauan (28/09): a Sol ofereceu o contato de novo e o cartão ficou perdido lá em cima.
+  await falar(pagina, 'pode mandar de novo', '.sol-contato');
+  const desceu = await pagina.evaluate(() => {
+    const itens = [...document.querySelectorAll('.sol-conversa > *')];
+    return { cartoes: document.querySelectorAll('.sol-contato').length, ultimo: itens.at(-1)?.matches('.sol-contato'), nome: document.querySelector('.sol-contato input[name="nome"]').value };
+  });
+  conferir('Oferta de contato repetida traz o cartão para baixo, sem duplicar e sem perder o que foi digitado',
+    desceu.cartoes === 1 && desceu.ultimo && desceu.nome === 'Ana Teste', JSON.stringify(desceu));
+  // "Quero este plano": a escolha vai junto (mensagem e contato) e o cartão pede o contato daquele plano.
+  await pagina.click('.sol-plano [data-sol-quero="4"]');
+  await pagina.waitForFunction(() => !document.querySelector('[data-sol][data-esperando]'));
+  await pagina.waitForTimeout(700);
+  const escolha = pedidos.at(-1) ?? {};
+  const cartaoPlanoEscolhido = await pagina.evaluate(() => ({
+    titulo: document.querySelector('.sol-contato [data-sol-contato-titulo]')?.textContent,
+    ultimo: [...document.querySelectorAll('.sol-conversa > *')].at(-1)?.matches('.sol-contato'),
+  }));
+  conferir('"Quero este plano" manda o plano junto e o cartão pede o contato daquele plano',
+    escolha.plano === 4 && escolha.mensagem === 'Quero o plano de 4 câmeras.' && cartaoPlanoEscolhido.titulo === 'Quer o plano de 4 câmeras?' && cartaoPlanoEscolhido.ultimo,
+    JSON.stringify({ plano: escolha.plano, ...cartaoPlanoEscolhido }));
+  const antes = pedidos.length;
   await pagina.fill('.sol-contato input[name="whatsapp"]', '46999999999');
   await pagina.click('.sol-contato button[type="submit"]');
   const erroTel = await pagina.$eval('.sol-contato-erro', (e) => (e.hidden ? '' : e.textContent));
@@ -464,8 +485,9 @@ grupo('Sol · chat do site');
   conferir('Cartão de contato valida número e autorização antes de enviar',
     /Confira o número/.test(erroTel) && /autorização/.test(erroAceite) && semEnvio && mascara === '(46) 99123-4567',
     `máscara ${mascara}`);
-  conferir('Contato vai com tipo "contato", número só com dígitos e autorização marcada',
-    contatoPedido.tipo === 'contato' && contatoPedido.contato?.whatsapp === '46991234567' && contatoPedido.contato?.aceite === true && contatoPedido.contato?.nome === 'Ana Teste');
+  conferir('Contato vai com tipo "contato", número só com dígitos, autorização marcada e o plano escolhido',
+    contatoPedido.tipo === 'contato' && contatoPedido.contato?.whatsapp === '46991234567' && contatoPedido.contato?.aceite === true
+      && contatoPedido.contato?.nome === 'Ana Teste' && contatoPedido.contato?.plano === 4);
 
   await falar(pagina, 'erro', '.sol-whats');
   const falha = await pagina.evaluate(() => ({ texto: [...document.querySelectorAll('.sol-msg-sol')].at(-1)?.textContent ?? '', whats: [...document.querySelectorAll('.sol-whats')].at(-1)?.href ?? '' }));

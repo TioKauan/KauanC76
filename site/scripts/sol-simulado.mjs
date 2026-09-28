@@ -22,6 +22,7 @@ export function responder(corpo) {
   }
   const t = sem(String(corpo.mensagem ?? ''));
   const ok = (resposta, extra = {}) => ({ status: 200, json: { ok: true, resposta, cartoes: [], opcoes: [], acoes: [], ...extra } });
+  if (corpo.plano) return ok('A equipe te chama no WhatsApp para combinar a vistoria. É só deixar seu nome e número aqui embaixo.', { acoes: ['contato'] });
   if (/limite/.test(t)) return { status: 429, json: { ok: false, resposta: 'Você mandou muitas mensagens em pouco tempo. Para continuar, fale com a equipe pelo WhatsApp.', acoes: ['whatsapp'] } };
   if (/cliente|boleto|contrato/.test(t)) return ok('Isso o nosso time de atendimento resolve rapidinho pelo WhatsApp.', { acoes: ['whatsapp'] });
   if (/liga|atendente|equipe|pessoa/.test(t)) return ok('Claro! Deixe seu nome e WhatsApp aqui embaixo que a equipe te chama.', { acoes: ['contato'] });
@@ -33,7 +34,7 @@ export function responder(corpo) {
     const folga = cameras !== n ? `Para ${n} câmeras, o indicado é o plano de 8. ` : '';
     return ok(`${folga}O plano de ${p.cameras} ${p.cameras > 1 ? 'câmeras' : 'câmera'} sai *R$ ${formatarPreco(p.preco)}* por mês, com instalação e manutenção. Em que cidade fica o imóvel?`, { cartoes: [{ tipo: 'plano', cameras: p.cameras }] });
   }
-  if (/quanto|preco|valor|custa/.test(t)) return ok('Depende de quantas câmeras você quer. Quantos pontos você pensa em cobrir?', { opcoes: ['1 câmera', '2 câmeras', '4 câmeras', '8 câmeras'] });
+  if (/quanto|preco|valor|custa/.test(t)) return ok('Depende de quantas câmeras você quer. Quantos pontos você pensa em cobrir?', { opcoes: ['1 câmera', '2 câmeras', '3 câmeras', '4 câmeras', '8 câmeras'] });
   if (/casa|comercio|loja|galpao/.test(t)) return ok('O que te fez pensar em câmera agora, aconteceu alguma coisa aí?', { opcoes: ['Já tive problema', 'É prevenção'] });
   if (/problema|roub|entraram|furt/.test(t)) return ok('Com câmera no ponto certo você vê pelo celular quem chegou e a gravação fica guardada. Quantas câmeras você imagina?', { opcoes: ['2 câmeras', '4 câmeras', 'Não sei ainda'] });
   if (/cidade|beltrao|pato|dois vizinhos/.test(t)) return ok('Atendemos direto por aí. Seu caso está pronto para a equipe montar o orçamento.', { acoes: ['contato'] });

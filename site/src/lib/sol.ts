@@ -48,7 +48,7 @@ export function lerResposta(dado: unknown): RespostaSol {
     ok: d.ok === true && texto.length > 0,
     resposta: texto,
     cartoes: [...new Set(cameras)].slice(0, 2),
-    opcoes: [...new Set(opcoes)].slice(0, 4),
+    opcoes: [...new Set(opcoes)].slice(0, 5),
     acoes: [...new Set(acoes)],
     contatoOk: d.contato_ok === true,
   };
@@ -75,33 +75,6 @@ export function trechos(texto: string): Trecho[][] {
     if (fim < linha.length) partes.push({ texto: linha.slice(fim), negrito: false });
     return partes;
   });
-}
-
-/** Texto para ler em voz alta: sem asterisco e com valor falado como gente fala. */
-export function textoParaFala(texto: string): string {
-  return texto
-    .replace(/\*/g, '')
-    .replace(/R\$\s?(\d{1,3}(?:\.\d{3})*),(\d{2})/g, (_m, reais: string, centavos: string) => {
-      const r = reais.replace(/\./g, '');
-      return centavos === '00' ? `${r} reais` : `${r} reais e ${Number(centavos)} centavos`;
-    })
-    .replace(/\s?\/\s?mês/g, ' por mês')
-    .replace(/(\d)\s?m\b/g, '$1 metros')
-    .replace(/\bSC\b/g, 'S C')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-/** Frases para a fala (o Chrome corta falas muito longas de uma vez só). */
-export function frasesParaFala(texto: string, max = 180): string[] {
-  const frases = textoParaFala(texto).match(/[^.!?…]+[.!?…]*/g) ?? [];
-  const saida: string[] = [];
-  for (const f of frases.map((x) => x.trim()).filter(Boolean)) {
-    const ultima = saida.at(-1);
-    if (ultima && ultima.length + f.length + 1 <= max) saida[saida.length - 1] = `${ultima} ${f}`;
-    else saida.push(f);
-  }
-  return saida;
 }
 
 /* ---------- WhatsApp do cartão de contato ---------- */
@@ -174,13 +147,13 @@ export interface ItemHistorico {
 export interface EstadoSol {
   sessao: string;
   historico: ItemHistorico[];
-  /** Ler as respostas em voz alta. */
-  voz: boolean;
+  /** Plano escolhido em "Quero este plano" (vai junto no contato). */
+  plano: number | null;
   contatoOk: boolean;
 }
 
 export function estadoNovo(): EstadoSol {
-  return { sessao: novaSessao(), historico: [], voz: false, contatoOk: false };
+  return { sessao: novaSessao(), historico: [], plano: null, contatoOk: false };
 }
 
 /** Lê o que ficou guardado; qualquer coisa estranha vira uma conversa nova. */
@@ -197,7 +170,8 @@ export function lerEstado(bruto: string | null): EstadoSol {
         ...(Array.isArray(i.cartoes) ? { cartoes: i.cartoes.filter((n) => planos.some((p) => p.cameras === n)) } : {}),
         ...(Array.isArray(i.acoes) ? { acoes: i.acoes.filter((a) => a === 'contato' || a === 'whatsapp') } : {}),
       }));
-    return { sessao: d.sessao, historico, voz: d.voz === true, contatoOk: d.contatoOk === true };
+    const plano = typeof d.plano === 'number' && planos.some((p) => p.cameras === d.plano) ? d.plano : null;
+    return { sessao: d.sessao, historico, plano, contatoOk: d.contatoOk === true };
   } catch {
     return estadoNovo();
   }

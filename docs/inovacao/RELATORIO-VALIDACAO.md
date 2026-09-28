@@ -1,15 +1,15 @@
 # Relatório de validação do site
 
-Gerado por `npm run validar` em 27/09/2026, 20:18:03.
-Resultado: **63 de 63 itens ✅** — checklist completa.
+Gerado por `npm run validar` em 27/09/2026, 22:47:31.
+Resultado: **65 de 65 itens ✅** — checklist completa.
 
 ## Geral
 
 | | Item | Detalhe |
 |---|---|---|
 | ✅ | Tipos conferidos (astro check) e build sem erro |  |
-| ✅ | Testes unitários das regras (Vitest) passam | 86 testes |
-| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 395 KB em 5 arquivos; maiores: / 200 KB, /assets/Base.astro_astro_type_script_index_0_lang.DCtT1bw0.js 62 KB, /assets/Logo.DkUqRIMF.css 56 KB |
+| ✅ | Testes unitários das regras (Vitest) passam | 84 testes |
+| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 384 KB em 5 arquivos; maiores: / 196 KB, /assets/Base.astro_astro_type_script_index_0_lang.DiwOVqRB.js 57 KB, /assets/Logo.DbP6pUO3.css 54 KB |
 | ✅ | Todo link interno leva a uma seção que existe | 6 destinos conferidos |
 | ✅ | Todo WhatsApp usa wa.me/5549998325623 com mensagem preenchida | 16 links |
 | ✅ | Número antigo (46) 99113-8360 não aparece |  |
@@ -92,11 +92,13 @@ Resultado: **63 de 63 itens ✅** — checklist completa.
 | ✅ | Mensagem vai ao n8n com sessão (UUID) e volta com texto, cartão do plano e botões rápidos | 1 cartão (o de 7 câmeras, que não existe, foi descartado); botões: Francisco Beltrão, Outra cidade |
 | ✅ | Cartão do plano no chat usa preço, taxa de instalação e cabo de dados.ts |  |
 | ✅ | Texto do servidor nunca vira HTML no chat |  |
+| ✅ | Oferta de contato repetida traz o cartão para baixo, sem duplicar e sem perder o que foi digitado | {"cartoes":1,"ultimo":true,"nome":"Ana Teste"} |
+| ✅ | "Quero este plano" manda o plano junto e o cartão pede o contato daquele plano | {"plano":4,"titulo":"Quer o plano de 4 câmeras?","ultimo":true} |
 | ✅ | Cartão de contato valida número e autorização antes de enviar | máscara (46) 99123-4567 |
-| ✅ | Contato vai com tipo "contato", número só com dígitos e autorização marcada |  |
+| ✅ | Contato vai com tipo "contato", número só com dígitos, autorização marcada e o plano escolhido |  |
 | ✅ | Sem conexão com a Sol: aviso e botão do WhatsApp da equipe |  |
 | ✅ | Todo preço no chat bate com dados.ts | 3 preços |
-| ✅ | Esc fecha o chat (foco volta ao botão) e a conversa continua depois de recarregar | 10 → 10 mensagens |
+| ✅ | Esc fecha o chat (foco volta ao botão) e a conversa continua depois de recarregar | 14 → 14 mensagens |
 | ✅ | Zero erros no console com o chat |  |
 | ✅ | Celular: Sol na barra fixa, chat em tela cheia, sem rolagem lateral e toques ≥ 44 px |  |
 | ✅ | Zero erros no console com o chat (celular) |  |

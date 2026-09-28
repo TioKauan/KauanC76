@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  lerResposta, trechos, textoParaFala, frasesParaFala, mascaraWhatsapp, validarWhatsapp, acharTelefone,
+  lerResposta, trechos, mascaraWhatsapp, validarWhatsapp, acharTelefone,
   validarNome, novaSessao, lerEstado, estadoNovo, planoDoCartao, linkWhatsappChat, saudacao, sugestoesIniciais,
   MAX_HISTORICO, SOL_URL,
 } from '../src/lib/sol';
@@ -13,9 +13,9 @@ describe('resposta da Sol (servidor não é confiável)', () => {
   });
 
   it('descarta plano que não existe, ação desconhecida e opções demais', () => {
-    const r = lerResposta({ ok: true, resposta: 'x', cartoes: [{ cameras: 7 }, { cameras: 8 }, { cameras: 8 }], opcoes: ['a', 'b', 'c', 'd', 'e', 3], acoes: ['contato', 'apagar', 'whatsapp'] });
+    const r = lerResposta({ ok: true, resposta: 'x', cartoes: [{ cameras: 7 }, { cameras: 8 }, { cameras: 8 }], opcoes: ['a', 'b', 'c', 'd', 'e', 'f', 3], acoes: ['contato', 'apagar', 'whatsapp'] });
     expect(r.cartoes).toEqual([8]);
-    expect(r.opcoes).toEqual(['a', 'b', 'c', 'd']);
+    expect(r.opcoes).toEqual(['a', 'b', 'c', 'd', 'e']);
     expect(r.acoes).toEqual(['contato', 'whatsapp']);
   });
 
@@ -33,7 +33,7 @@ describe('resposta da Sol (servidor não é confiável)', () => {
   });
 });
 
-describe('texto na tela e na voz', () => {
+describe('texto na tela', () => {
   it('*negrito* vira trecho em negrito, e nada vira HTML', () => {
     expect(trechos('Sai *R$ 99,90* por mês.\n<b>oi</b>')).toEqual([
       [{ texto: 'Sai ', negrito: false }, { texto: 'R$ 99,90', negrito: true }, { texto: ' por mês.', negrito: false }],
@@ -41,17 +41,6 @@ describe('texto na tela e na voz', () => {
     ]);
   });
 
-  it('valores e unidades são falados como gente fala', () => {
-    expect(textoParaFala('O plano sai *R$ 99,90*/mês, com até 80 m de cabo.')).toBe('O plano sai 99 reais e 90 centavos por mês, com até 80 metros de cabo.');
-    expect(textoParaFala('A instalação é R$ 159,90.')).toBe('A instalação é 159 reais e 90 centavos.');
-    expect(textoParaFala('Aqui é a SC Soluções.')).toBe('Aqui é a S C Soluções.');
-  });
-
-  it('fala longa é dividida em frases', () => {
-    const partes = frasesParaFala('Primeira frase curta. Segunda frase. ' + 'Palavra '.repeat(40) + 'fim.', 60);
-    expect(partes.length).toBeGreaterThan(1);
-    expect(partes[0]).toBe('Primeira frase curta. Segunda frase.');
-  });
 });
 
 describe('WhatsApp do cartão de contato', () => {
@@ -101,9 +90,10 @@ describe('sessão e conversa guardadas', () => {
   it('guarda só o que é válido e no máximo o limite de mensagens', () => {
     const base = estadoNovo();
     const historico = Array.from({ length: MAX_HISTORICO + 5 }, (_, i) => ({ de: i % 2 ? 'sol' : 'eu', texto: `m${i}` }));
-    const e = lerEstado(JSON.stringify({ ...base, voz: true, historico: [...historico, { de: 'hacker', texto: 'x' }, { de: 'sol', texto: 'ok', cartoes: [4, 7], acoes: ['contato', 'x'] }] }));
+    const e = lerEstado(JSON.stringify({ ...base, plano: 4, historico: [...historico, { de: 'hacker', texto: 'x' }, { de: 'sol', texto: 'ok', cartoes: [4, 7], acoes: ['contato', 'x'] }] }));
     expect(e.sessao).toBe(base.sessao);
-    expect(e.voz).toBe(true);
+    expect(e.plano).toBe(4);
+    expect(lerEstado(JSON.stringify({ ...base, plano: 7 })).plano).toBeNull();
     expect(e.historico).toHaveLength(MAX_HISTORICO);
     expect(e.historico.at(-1)).toEqual({ de: 'sol', texto: 'ok', cartoes: [4], acoes: ['contato'] });
   });
