@@ -1,7 +1,7 @@
 import { reduzirMovimento } from './movimento';
 import { exigir, todos } from './dom';
 import { buscarDuvidas } from '../lib/busca';
-import { duvidas, linkWhatsapp, formatarPreco, menorPreco, mostrarPrecos, rotuloTaxa } from '../lib/dados';
+import { duvidas, formatarPreco, menorPreco, mostrarPrecos, rotuloTaxa } from '../lib/dados';
 
 /** Linha do tempo que acende + busca nas dúvidas. */
 export function iniciarComoFunciona(): void {
@@ -65,7 +65,6 @@ export function iniciarComoFunciona(): void {
   const perguntas = todos<HTMLDetailsElement>('[data-pergunta]');
   const status = exigir('[data-busca-status]');
   const vazio = exigir('[data-sem-resultado]');
-  const linkPergunta = exigir<HTMLAnchorElement>('[data-pergunta-whatsapp]');
   const abertasAntes = perguntas.map((p) => p.open);
 
   campo.addEventListener('input', () => {
@@ -91,6 +90,5 @@ export function iniciarComoFunciona(): void {
     const achadas = r.mostrar.length;
     status.textContent = achadas ? `${achadas} ${achadas > 1 ? 'respostas encontradas' : 'resposta encontrada'}` : '';
     vazio.hidden = achadas > 0;
-    linkPergunta.href = linkWhatsapp(`Olá! Tenho uma dúvida sobre os planos de locação: ${consulta}`);
   });
 }

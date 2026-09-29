@@ -1,13 +1,11 @@
 ---
 /**
  * Barra fixa do celular; o conteúdo muda conforme a seção (src/scripts/barra.ts).
- * À esquerda, a Sol (orbe; o texto também abre o chat na seção de contato).
- * À direita, o WhatsApp da equipe, com o ícone do WhatsApp: os dois ficam lado a
- * lado e não podem ser confundidos (28/09/2026).
+ * À esquerda, a Sol (orbe); tocar no texto também abre o chat (no configurador,
+ * leva ao resumo). Desde 28/09/2026 (noite) não tem WhatsApp: o da equipe fica só
+ * na seção "Fale com a SC" (decisão do Kauan).
  */
-import IconeWhatsapp from './IconeWhatsapp.astro';
-import { formatarPreco, linkWhatsapp, menorPreco, mostrarPrecos } from '../lib/dados';
-import { msgGeral } from '../lib/site';
+import { formatarPreco, menorPreco, mostrarPrecos } from '../lib/dados';
 
 const preco = mostrarPrecos ? `A partir de R$ ${formatarPreco(menorPreco)}/mês` : 'Planos de locação de câmeras';
 ---
@@ -17,10 +15,6 @@ const preco = mostrarPrecos ? `A partir de R$ ${formatarPreco(menorPreco)}/mês`
   <button class="barra-sol" type="button" data-sol-abrir aria-label="Falar com a Sol, assistente virtual" hidden>
     <span class="sol-orbe sol-orbe-p" aria-hidden="true"></span>
   </button>
-  <div class="barra-texto"><b data-barra-titulo>Fale com a SC</b><span data-barra-sub>{preco}</span></div>
-  <!-- Só o logo do WhatsApp (todo mundo reconhece): o texto da esquerda cabe inteiro. -->
-  <a class="barra-whats" data-barra-link href={linkWhatsapp(msgGeral)} target="_blank" rel="noopener">
-    <IconeWhatsapp tamanho={24} />
-    <span class="sr" data-barra-acao>Falar com a equipe no WhatsApp</span>
-  </a>
+  <!-- Sem JavaScript, o texto leva à seção "Fale com a SC". -->
+  <a class="barra-texto" href="#contato"><b data-barra-titulo>Fale com a SC</b><span data-barra-sub>{preco}</span></a>
 </div>

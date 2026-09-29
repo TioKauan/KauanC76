@@ -1,4 +1,4 @@
-import { formatarPreco, mostrarPrecos, linkWhatsapp, type Upgrade } from '../lib/dados';
+import { formatarPreco, mostrarPrecos, type Upgrade } from '../lib/dados';
 import { ambientesConfig, sistemasCondominio, LOTE, MAX_CAMERAS, nomeEm, type AmbienteConfigId, type Planta } from '../lib/configurador-dados';
 import {
   anguloPara, caboDe, dentro, mensagemWhatsapp, nomeAmbiente, nomeDaZona, plantaDe, resumir,
@@ -11,7 +11,7 @@ const RAIO_CONE = 150;
 const ABERTURA = 32;
 const DICA = 'Toque na planta para marcar uma câmera. Toque de novo para tirar.';
 
-export interface ResumoBarra { titulo: string; sub: string; link: string; acao: string }
+export interface ResumoBarra { titulo: string; sub: string }
 export interface PedidoConfigurar { cameras?: number; ambiente?: AmbienteConfigId }
 
 /** Configurador "Monte seu sistema": planta clicável, plano calculado e mensagem pronta. */
@@ -196,13 +196,12 @@ export function iniciarConfigurador(): void {
     // Mensagem
     const texto = mensagemWhatsapp(estado);
     el('[data-mensagem]').textContent = texto;
-    el<HTMLAnchorElement>('[data-config-enviar]').href = linkWhatsapp(texto);
+    // O botão abre a Sol com o resumo (src/scripts/sol.ts lê isto na hora do toque).
+    el('[data-config-enviar]').dataset.solMensagem = texto;
 
     const resumoBarra: ResumoBarra = {
       titulo: condominio ? 'Condomínio Evoluído' : rec.plano ? `${plural(rec.plano.cameras, 'câmera', 'câmeras')} · ${mostrarPrecos ? `R$ ${formatarPreco(rec.plano.preco)}/mês` : 'sob consulta'}` : n ? `${n} câmeras · proposta` : 'Monte seu sistema',
       sub: condominio ? 'Proposta personalizada' : n ? `${plural(n, 'ponto', 'pontos')} · cabo ≈ ${total} m` : 'Toque na planta para marcar',
-      link: linkWhatsapp(texto),
-      acao: 'Enviar o sistema pelo WhatsApp',
     };
     document.dispatchEvent(new CustomEvent<ResumoBarra>('sc:resumo-config', { detail: resumoBarra }));
   };

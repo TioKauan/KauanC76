@@ -104,6 +104,15 @@ const rolarTudo = (pagina) => pagina.evaluate(async () => {
   const semIcone = await pagina.evaluate(() => [...document.querySelectorAll('a[href*="wa.me"]')]
     .filter((a) => !a.querySelector('use[href="#ic-whatsapp"]')).map((a) => a.textContent.trim().slice(0, 30)));
   conferir('Todo botão de WhatsApp mostra o ícone do WhatsApp', whats.length > 0 && semIcone.length === 0, semIcone.join(' | '));
+  // Decisão do Kauan (28/09/2026, noite): o WhatsApp da equipe fica só na seção "Fale com a SC";
+  // o topo e o menu do celular levam até ela, e os botões de venda abrem a Sol.
+  const foraDoContato = await pagina.evaluate(() => [...document.querySelectorAll('a[href*="wa.me"]')]
+    .filter((a) => !a.closest('#contato')).map((a) => a.textContent.trim().slice(0, 30)));
+  conferir('WhatsApp da equipe só na seção "Fale com a SC"', whats.length > 0 && foraDoContato.length === 0, foraDoContato.join(' | '));
+  const topoContato = await pagina.evaluate(() => [...document.querySelectorAll('.cabecalho-cta, #menu-celular a.btn')]
+    .map((a) => ({ href: a.getAttribute('href'), texto: a.textContent.trim() })));
+  conferir('Topo e menu do celular: "Fale com a SC" leva à seção de contato', topoContato.length === 2
+    && topoContato.every((a) => a.href === '#contato' && a.texto === 'Fale com a SC'), JSON.stringify(topoContato));
   const html = readFileSync(path.join(dist, 'index.html'), 'utf8');
   const textoTodo = await pagina.evaluate(() => document.body.innerText);
   conferir('Número antigo (46) 99113-8360 não aparece', !/99113.?8360|991138360/.test(html + textoTodo));
@@ -180,11 +189,14 @@ for (const largura of [360, 390, 768, 1024, 1440]) {
     planos: document.querySelectorAll('.plano').length,
     duvidas: document.querySelectorAll('[data-pergunta]').length,
     escondidos: [...document.querySelectorAll('[data-revelar]')].filter((el) => getComputedStyle(el).opacity !== '1').length,
-    enviar: document.querySelector('[data-config-enviar]').href,
+    // Os botões de venda (planos, propostas, configurador) abrem a Sol; sem JavaScript, levam a "Fale com a SC".
+    vendas: [...document.querySelectorAll('a[data-sol-abrir]')].filter((a) => a.getAttribute('href') === '#contato' && getComputedStyle(a).display !== 'none').length,
+    whatsContato: Boolean(document.querySelector('#contato a[href*="wa.me"]')),
     // O chat depende de JavaScript: sem ele, nem o botão da Sol aparece.
-    solEscondida: document.querySelector('[data-sol]').hidden && [...document.querySelectorAll('[data-sol-abrir]')].every((b) => b.hidden && getComputedStyle(b).display === 'none'),
+    solEscondida: document.querySelector('[data-sol]').hidden && [...document.querySelectorAll('button[data-sol-abrir]')].every((b) => b.hidden && getComputedStyle(b).display === 'none'),
   }));
-  conferir('Sem JavaScript o conteúdo aparece e os contatos funcionam', semJs.planos === 5 && semJs.duvidas === 7 && semJs.escondidos === 0 && semJs.enviar.includes('wa.me/') && semJs.solEscondida, JSON.stringify({ ...semJs, enviar: semJs.enviar.slice(0, 30) }));
+  conferir('Sem JavaScript o conteúdo aparece e os contatos funcionam (botões de venda levam a "Fale com a SC")',
+    semJs.planos === 5 && semJs.duvidas === 7 && semJs.escondidos === 0 && semJs.vendas === 10 && semJs.whatsContato && semJs.solEscondida, JSON.stringify(semJs));
   await contexto.close();
 }
 
@@ -250,7 +262,11 @@ grupo('Tela 1 · Abertura');
 grupo('Tela 2 · Planos');
 {
   const { pagina, contexto } = await abrir(1440);
-  const cartoes = await pagina.$$eval('.plano', (els) => els.map((e) => ({ n: Number(e.dataset.plano), cams: e.querySelectorAll('.camera-mini').length, texto: e.textContent, destaque: e.classList.contains('plano-destaque'), cta: e.querySelector('[data-plano-cta]').href })));
+  const cartoes = await pagina.$$eval('.plano', (els) => els.map((e) => ({ n: Number(e.dataset.plano), cams: e.querySelectorAll('.camera-mini').length, texto: e.textContent, destaque: e.classList.contains('plano-destaque'), cta: e.querySelector('[data-plano-cta]') })).map((c) => ({
+    ...c,
+    cta: { href: c.cta.getAttribute('href'), plano: c.cta.dataset.solPlano, msg: c.cta.dataset.solMensagem, abreSol: c.cta.hasAttribute('data-sol-abrir'),
+      orbe: Boolean(c.cta.querySelector('.sol-orbe')), whats: Boolean(c.cta.querySelector('use[href="#ic-whatsapp"]')) },
+  })));
   const certos = cartoes.filter((c) => {
     const p = planos.find((x) => x.cameras === c.n);
     return p && c.cams === p.cameras && c.texto.includes(formatarPreco(p.preco)) && c.texto.includes(`${p.caboMetros} m`) && c.texto.includes(p.uso);
@@ -270,8 +286,9 @@ grupo('Tela 2 · Planos');
   const contratuais = /prazo mínimo|24 meses|multa|IPCA|valor de reposição|desistência/i;
   const achadoContratual = (await pagina.evaluate(() => document.body.textContent)).match(contratuais);
   conferir('Condições contratuais ficam no contrato (sem prazo mínimo, multa ou cobranças extras no site)', !achadoContratual, achadoContratual ? `achado: "${achadoContratual[0]}"` : '');
-  const ctas = cartoes.filter((c) => { const t = new URL(c.cta).searchParams.get('text'); const p = planos.find((x) => x.cameras === c.n); return t.includes(`${p.cameras} ${p.cameras > 1 ? 'câmeras' : 'câmera'}`) && t.includes(formatarPreco(p.preco)); });
-  conferir('"Quero este plano" leva nome e valor do plano ao WhatsApp', ctas.length === 5, `${ctas.length}/5`);
+  const ctas = cartoes.filter((c) => c.cta.abreSol && c.cta.href === '#contato' && c.cta.plano === String(c.n) && c.cta.orbe && !c.cta.whats
+    && c.cta.msg === `Quero o plano de ${c.n} ${c.n > 1 ? 'câmeras' : 'câmera'}`);
+  conferir('"Quero este plano" abre a Sol com o plano (orbe, sem WhatsApp; sem JavaScript leva a "Fale com a SC")', ctas.length === 5, `${ctas.length}/5`);
   await pagina.click('#guia-redes');
   const aba = await pagina.evaluate(() => ({ redes: !document.getElementById('aba-redes').hidden, cameras: !document.getElementById('aba-cameras').hidden }));
   await pagina.focus('#guia-redes');
@@ -330,9 +347,9 @@ grupo('Tela 3 · Configurador');
   await pagina.click('[data-recurso][value="nobreak"] ~ .caixinha');
   await pagina.click('[data-recurso][value="colorida"] ~ .caixinha');
   const msg = await pagina.$eval('[data-mensagem]', (e) => e.textContent);
-  const href = await pagina.$eval('[data-config-enviar]', (e) => new URL(e.href).searchParams.get('text'));
-  conferir('Mensagem leva ambiente, quantidade, pontos, plano, valor e recursos',
-    msg === href && ['Ambiente: Casa', 'Câmeras: 8', 'Plano de 8 câmeras', '159,90', 'nobreak', 'imagem colorida à noite', 'entrada principal'].every((t) => msg.includes(t)), msg.replace(/\n/g, ' / ').slice(0, 160));
+  const paraSol = await pagina.$eval('[data-config-enviar]', (e) => e.dataset.solMensagem);
+  conferir('Mensagem para a Sol leva ambiente, quantidade, pontos, plano, valor e recursos',
+    msg === paraSol &&['Ambiente: Casa', 'Câmeras: 8', 'Plano de 8 câmeras', '159,90', 'nobreak', 'imagem colorida à noite', 'entrada principal'].every((t) => msg.includes(t)), msg.replace(/\n/g, ' / ').slice(0, 160));
 
   await pagina.click('[data-config-ambiente="condominio"]');
   await pagina.click('[data-cond-sistema][value="facial"] ~ .caixinha');
@@ -358,8 +375,8 @@ grupo('Tela 4 · Como funciona');
   const visiveis = await pagina.$$eval('[data-pergunta]:not([hidden]) summary', (s) => s.map((x) => x.textContent.trim()));
   conferir('7 perguntas; a busca "celular" mostra a resposta certa', perguntas === 7 && visiveis[0]?.includes('pelo celular'), visiveis.join(' | '));
   await pagina.fill('[data-busca]', 'xyzabc');
-  const semResultado = await pagina.$eval('[data-sem-resultado]', (e) => !e.hidden);
-  conferir('Busca sem resultado oferece perguntar pelo WhatsApp', semResultado);
+  const semResultado = await pagina.$eval('[data-sem-resultado]', (e) => !e.hidden && !e.querySelector('[data-sol-pergunta]').hidden && !e.querySelector('a[href*="wa.me"]'));
+  conferir('Busca sem resultado oferece perguntar para a Sol (sem WhatsApp)', semResultado);
   const cliente = await pagina.$eval('.cliente', (e) => e.textContent);
   conferir('Área do cliente identificada como exemplo ("em breve")', /em breve/i.test(cliente) && /exemplo/i.test(cliente));
   await contexto.close();
@@ -385,6 +402,8 @@ grupo('Tela 5 · Celular');
   await irPara('.config-planta'); modos.push(await modo());
   await irPara('.contato-caixa'); modos.push(await modo());
   conferir('Barra fixa muda conforme a seção', modos.join(',') === 'contato,plano,configurador,contato (escondida)', modos.join(' → '));
+  const barraSemWhats = await pagina.$eval('.barra-fixa', (b) => !b.querySelector('a[href*="wa.me"]') && !b.querySelector('.barra-sol').hidden);
+  conferir('Barra fixa sem WhatsApp: fica a Sol', barraSemWhats);
 
   await pagina.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
   await pagina.click('.menu-botao');
@@ -438,7 +457,8 @@ grupo('Sol · chat do site');
     const minhas = [...document.querySelectorAll('.sol-msg-eu .sol-msg-corpo')].map((m) => m.textContent);
     const campo = document.querySelector('#sol-campo');
     const aviso = document.querySelector('[data-sol-aviso]');
-    const escape = document.querySelector('.sol-rapidas .sol-chip-whats');
+    // Botão fixo de WhatsApp nos botões rápidos: saiu em 28/09/2026 (noite); tem de ficar null.
+    const escape = document.querySelector('.sol-rapidas a[href*="wa.me"]');
     return {
       ultimaSol: falas.at(-1) ?? '',
       falas: falas.length,
@@ -468,17 +488,29 @@ grupo('Sol · chat do site');
   await pagina.waitForSelector('.sol-painel.sol-painel-visivel');
   await pagina.waitForTimeout(500);
   const t0 = await tela(pagina);
-  conferir('Chat abre com a Sol pedindo o nome e o WhatsApp da equipe à mão (nada vai ao servidor ainda)',
+  conferir('Chat abre com a Sol pedindo o nome, sem botão fixo de WhatsApp (nada vai ao servidor ainda)',
     t0.ultimaSol.includes('assistente virtual') && t0.ultimaSol.endsWith('como posso te chamar?') && t0.chips.length === 0
-      && t0.escape?.texto === 'Prefiro falar no WhatsApp' && t0.escape.icone && t0.escape.href.startsWith(`https://wa.me/${contato.whatsapp}?text=`)
-      && t0.dica === 'Seu nome' && pedidos.length === 0,
+      && t0.escape === null && t0.dica === 'Seu nome' && pedidos.length === 0,
     JSON.stringify({ escape: t0.escape?.texto, dica: t0.dica, pedidos: pedidos.length }));
+
+  // Quem pede o WhatsApp recebe o botão da equipe na hora, e o roteiro segue na mesma pergunta.
+  await falar(pagina, 'prefiro falar pelo zap', '.sol-conversa .sol-whats');
+  const tPede = await pagina.evaluate(() => ({
+    fala: [...document.querySelectorAll('.sol-msg-sol:not(.sol-digitando) .sol-msg-corpo')].map((m) => m.textContent).at(-1) ?? '',
+    whats: [...document.querySelectorAll('.sol-conversa .sol-whats')].map((a) => ({ href: a.href, icone: Boolean(a.querySelector('use[href="#ic-whatsapp"]')) })),
+    dica: document.querySelector('#sol-campo').placeholder,
+  }));
+  conferir('Pedir o WhatsApp no roteiro mostra o botão da equipe e continua na mesma pergunta (nada vai ao servidor)',
+    tPede.whats.length === 1 && tPede.whats[0].href.startsWith(`https://wa.me/${contato.whatsapp}?text=`) && tPede.whats[0].icone
+      && /no WhatsApp\. Se preferir seguir por aqui, como posso te chamar\?$/.test(tPede.fala)
+      && tPede.dica === 'Seu nome' && pedidos.length === 0,
+    JSON.stringify(tPede));
 
   await falar(pagina, 'Ana Paula');
   const t1 = await tela(pagina);
   conferir('Depois do nome, pede o WhatsApp com teclado numérico e o aviso de autorização com a política',
     t1.ultimaSol.startsWith('Prazer, Ana!') && /WhatsApp com DDD/.test(t1.ultimaSol) && t1.teclado === 'numeric'
-      && /autoriza a SC Soluções a te chamar no WhatsApp/.test(t1.aviso) && t1.avisoLink === '/privacidade/' && t1.escape !== null,
+      && /autoriza a SC Soluções a te chamar no WhatsApp/.test(t1.aviso) && t1.avisoLink === '/privacidade/' && t1.escape === null,
     JSON.stringify({ teclado: t1.teclado, aviso: t1.aviso.slice(0, 40) }));
 
   await falar(pagina, '46999999999');
@@ -496,8 +528,8 @@ grupo('Sol · chat do site');
 
   await tocar(pagina, 'Francisco Beltrão');
   const t3 = await tela(pagina);
-  conferir('O que a pessoa procura: 5 botões e o WhatsApp da equipe',
-    t3.ultimaSol === 'O que você está procurando?' && t3.chips.join('|') === 'Câmeras|Alarme|Controle de acesso|Redes e Wi-Fi|Outro' && t3.escape !== null,
+  conferir('O que a pessoa procura: 5 botões, sem WhatsApp',
+    t3.ultimaSol === 'O que você está procurando?' && t3.chips.join('|') === 'Câmeras|Alarme|Controle de acesso|Redes e Wi-Fi|Outro' && t3.escape === null,
     t3.chips.join(', '));
 
   await tocar(pagina, 'Câmeras');
@@ -576,7 +608,7 @@ grupo('Sol · chat do site');
   await pagina.waitForTimeout(300);
   const tReset = await tela(pagina);
   conferir('Servidor sem o lead desta conversa: o chat recomeça pelo roteiro',
-    tReset.falas === 1 && tReset.minhas.length === 0 && tReset.ultimaSol.endsWith('como posso te chamar?') && tReset.escape !== null,
+    tReset.falas === 1 && tReset.minhas.length === 0 && tReset.ultimaSol.endsWith('como posso te chamar?') && tReset.escape === null,
     JSON.stringify({ falas: tReset.falas, minhas: tReset.minhas.length }));
 
   // Recarregar no meio do roteiro volta na mesma pergunta.
@@ -587,7 +619,7 @@ grupo('Sol · chat do site');
   await pagina.waitForTimeout(300);
   const tMeio = await tela(pagina);
   conferir('Recarregar no meio do roteiro volta na mesma pergunta',
-    tMeio.ultimaSol.startsWith('Prazer, Bia!') && tMeio.teclado === 'numeric' && tMeio.aviso !== '' && tMeio.escape !== null);
+    tMeio.ultimaSol.startsWith('Prazer, Bia!') && tMeio.teclado === 'numeric' && tMeio.aviso !== '' && tMeio.escape === null);
   // A queda de conexão (rota.abort) e o 403 simulados acima aparecem no console do navegador: são esperados.
   const errosReais = erros.filter((e) => !/net::ERR_FAILED|status of 403/.test(e));
   conferir('Zero erros no console com o chat', errosReais.length === 0, errosReais.slice(0, 2).join(' | '));
@@ -611,6 +643,29 @@ grupo('Sol · chat do site');
       tDuvida.minhas[0] === 'xyzabc qwerty?' && tDuvida.ultimaSol === 'Já te respondo! Antes, como posso te chamar?'
         && pedidosDuvida[0]?.tipo === 'lead' && pedidosDuvida[1]?.mensagem === 'xyzabc qwerty?',
       JSON.stringify(pedidosDuvida.map((x) => x.mensagem ?? x.tipo)));
+    await c.close();
+  }
+
+  // "Quero este plano" da página antes do roteiro: abre a Sol, guarda a escolha e, depois da
+  // captura, manda a frase com o número do plano (o servidor avisa a equipe com o plano certo).
+  {
+    const pedidosPlano = [];
+    const { pagina: p, contexto: c } = await abrir(1440);
+    await simular(p, pedidosPlano);
+    await p.evaluate(() => document.getElementById('plano-4').scrollIntoView({ block: 'center', behavior: 'instant' }));
+    await p.click('#plano-4 [data-plano-cta]');
+    await p.waitForSelector('.sol-painel.sol-painel-visivel');
+    await esperarSol(p);
+    const tPlano = await tela(p);
+    const url = p.url();
+    await capturar(p);
+    await p.waitForSelector('.sol-avisado', { timeout: 8000 });
+    await esperarSol(p);
+    conferir('"Quero este plano" da página abre a Sol e, depois do roteiro, vai com o plano; a página não sai do lugar',
+      tPlano.minhas[0] === 'Quero o plano de 4 câmeras' && tPlano.ultimaSol === 'Já te respondo! Antes, como posso te chamar?'
+        && !url.endsWith('#contato') && pedidosPlano[0]?.tipo === 'lead'
+        && pedidosPlano[1]?.mensagem === 'Quero o plano de 4 câmeras' && pedidosPlano[1]?.plano === 4,
+      JSON.stringify(pedidosPlano.map((x) => x.tipo === 'lead' ? 'lead' : `${x.mensagem} (plano ${x.plano ?? '-'})`)));
     await c.close();
   }
 

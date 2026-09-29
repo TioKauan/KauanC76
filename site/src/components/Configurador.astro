@@ -1,8 +1,7 @@
 ---
 /** Tela 3: configurador "Monte seu sistema". Interação em src/scripts/configurador.ts; regras em src/lib/configurador-logica.ts. */
 import Icone from './Icone.astro';
-import IconeWhatsapp from './IconeWhatsapp.astro';
-import { upgrades, linkWhatsapp } from '../lib/dados';
+import { upgrades } from '../lib/dados';
 import { ambientesConfig, sistemasCondominio } from '../lib/configurador-dados';
 import { desenhoPlanta } from '../lib/plantas-svg';
 import { mensagemInicial } from '../lib/configurador-logica';
@@ -135,8 +134,9 @@ const msgInicial = mensagemInicial('casa');
           <p class="mensagem-previa-topo"><Icone nome="message-circle" tamanho={14} /> Prévia da mensagem</p>
           <p data-mensagem>{msgInicial}</p>
         </div>
-        <a class="btn btn-primario btn-g config-enviar" data-config-enviar href={linkWhatsapp(msgInicial)} target="_blank" rel="noopener">
-          <IconeWhatsapp tamanho={19} /> Enviar para a SC pelo WhatsApp
+        <!-- Abre a Sol com o resumo (data-sol-mensagem, atualizado em src/scripts/configurador.ts); sem JavaScript, leva a "Fale com a SC". -->
+        <a class="btn btn-primario btn-g config-enviar" data-config-enviar data-sol-abrir data-sol-mensagem={msgInicial} href="#contato">
+          <span class="sol-orbe sol-orbe-p" aria-hidden="true"></span> Enviar para a SC<span class="sr"> (abre o chat da Sol)</span>
         </a>
         <p class="resumo-nota">Atendimento pela equipe da SC. A solução final é definida na visita técnica.</p>
       </aside>

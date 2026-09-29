@@ -60,8 +60,31 @@ export function pergunta(etapa: Etapa, nome = ''): string {
   }
 }
 
-/** Quando a pessoa pergunta algo antes de terminar o roteiro: a pergunta fica guardada. */
-export function retomar(etapa: Etapa): string {
+/**
+ * A pessoa pediu para falar pelo WhatsApp ou com uma pessoa durante o roteiro.
+ * Decisão do Kauan em 28/09/2026 (noite): o botão fixo "Prefiro falar no
+ * WhatsApp" saiu do chat; o WhatsApp da equipe aparece quando a pessoa pede.
+ * Um número de telefone digitado ("meu whats é 46 99123-4567") não é pedido.
+ */
+export function pedeWhatsapp(texto: string): boolean {
+  const t = texto.normalize('NFD').replace(/\p{Mn}/gu, '').toLowerCase();
+  if ((t.match(/\d/g) ?? []).length >= 8) return false;
+  return /\b(whats ?app|whats|wats ?app|wpp|zap|zapzap|uatsap)\b/.test(t)
+    || /\b(atendente|humano|pessoa de verdade|falar com (alguem|uma pessoa|a equipe|um vendedor|vendedor))\b/.test(t);
+}
+export const respostaPedeWhatsapp = 'Claro! É só tocar no botão abaixo para falar com a equipe da SC no WhatsApp.';
+
+/** O que os botões "Quero este plano" da página mandam para a Sol (junto com o número do plano). */
+export function mensagemQueroPlano(cameras: number): string {
+  return `Quero o plano de ${cameras} ${cameras > 1 ? 'câmeras' : 'câmera'}`;
+}
+
+/**
+ * Volta para a pergunta do roteiro que ficou pendente. Padrão: a pessoa perguntou
+ * algo antes do fim do roteiro (a pergunta fica guardada); com outro começo, serve
+ * para seguir depois de mostrar o WhatsApp.
+ */
+export function retomar(etapa: Etapa, inicio = 'Já te respondo! Antes, '): string {
   const falta: Record<Etapa, string> = {
     nome: 'como posso te chamar?',
     whatsapp: 'qual é o seu WhatsApp com DDD?',
@@ -70,7 +93,7 @@ export function retomar(etapa: Etapa): string {
     outro: 'me conta o que você procura.',
     pronto: '',
   };
-  return `Já te respondo! Antes, ${falta[etapa]}`;
+  return `${inicio}${falta[etapa]}`;
 }
 
 export type ResultadoEtapa =
@@ -259,6 +282,8 @@ export interface EstadoSol {
   leadOk: boolean;
   /** Pergunta feita antes do fim do roteiro: vira a primeira mensagem para a Sol. */
   pendente: string;
+  /** Plano do botão "Quero este plano" que abriu o chat antes do roteiro: vai junto com a primeira mensagem. */
+  pendentePlano: number | null;
 }
 
 export function capturaNova(): Captura {
@@ -266,7 +291,7 @@ export function capturaNova(): Captura {
 }
 
 export function estadoNovo(): EstadoSol {
-  return { sessao: novaSessao(), historico: [], captura: capturaNova(), leadOk: false, pendente: '' };
+  return { sessao: novaSessao(), historico: [], captura: capturaNova(), leadOk: false, pendente: '', pendentePlano: null };
 }
 
 const ETAPAS: readonly Etapa[] = ['nome', 'whatsapp', 'cidade', 'interesse', 'outro', 'pronto'];
@@ -310,6 +335,8 @@ export function lerEstado(bruto: string | null): EstadoSol {
       captura,
       leadOk: captura.etapa === 'pronto',
       pendente: typeof d.pendente === 'string' ? d.pendente.slice(0, LIMITE_MENSAGEM) : '',
+      pendentePlano: typeof d.pendente === 'string' && d.pendente && planos.some((p) => p.cameras === d.pendentePlano)
+        ? d.pendentePlano as number : null,
     };
   } catch {
     return estadoNovo();

@@ -5,6 +5,7 @@ import {
   LIMITE_MENSAGEM, MAX_HISTORICO, TEMPO_LIMITE_MS, CAMPO, INTERESSES, CIDADE_SUGERIDA,
   saudacao, linkWhatsappChat, pergunta, retomar, responderEtapa, primeiraMensagem,
   lerResposta, lerRespostaLead, planoDoCartao, trechos, mascaraWhatsapp, lerEstado, estadoNovo,
+  pedeWhatsapp, respostaPedeWhatsapp,
   type EstadoSol, type RespostaSol, type Acao,
 } from '../lib/sol';
 import { CHAVE_ORIGEM, lerOrigem, escolherOrigem, lerOrigemGuardada, origemParaEnvio, type Origem } from '../lib/origem';
@@ -19,7 +20,11 @@ import { reduzirMovimento } from './movimento';
  * 28/09/2026: a Sol virou agente de captura de lead. O roteiro (nome,
  * WhatsApp, cidade e o que a pessoa procura) é fixo e roda aqui, sem IA; a
  * equipe recebe o contato assim que ele termina, e só então a Sol (IA) entra.
- * "Prefiro falar no WhatsApp" fica à mão durante todo o roteiro.
+ * Desde 28/09/2026 (noite, decisão do Kauan) não há botão fixo de WhatsApp no
+ * roteiro: quem pede ("whatsapp", "zap", "atendente") recebe o botão na hora.
+ * Os botões de venda da página ("Quero este plano", "Enviar para a SC", "Pedir
+ * proposta") abrem o chat com a escolha já escrita (data-sol-mensagem e
+ * data-sol-plano); sem JavaScript, eles levam à seção "Fale com a SC".
  */
 
 const CHAVE = 'sc-sol-2';
@@ -218,12 +223,6 @@ export function iniciarSol(): void {
       });
       rapidas.append(b);
     });
-    // Durante o roteiro, quem não quer deixar os dados vai direto para a equipe.
-    if (!estado.leadOk) {
-      const w = linkWhatsapp('chip sol-chip sol-chip-whats sol-surge', 'Prefiro falar no WhatsApp', 16);
-      w.style.setProperty('--atraso', `${lista.length * 60}ms`);
-      rapidas.append(w);
-    }
     rolarFim(); // os botões encolhem a conversa: a última mensagem continua à vista
   }
 
@@ -261,6 +260,15 @@ export function iniciarSol(): void {
 
   /** Uma resposta do roteiro. Com o roteiro completo, o lead vai para a equipe. */
   async function capturar(texto: string): Promise<void> {
+    // Pediu o WhatsApp (ou uma pessoa): o botão da equipe aparece e o roteiro continua de onde parou.
+    if (pedeWhatsapp(texto)) {
+      rapidas.replaceChildren();
+      registrar(texto);
+      // Uma fala só: duas seguidas deixavam o campo bloqueado no meio e o que a pessoa digitasse se perdia.
+      await falarSol(`${respostaPedeWhatsapp} ${retomar(estado.captura.etapa, 'Se preferir seguir por aqui, ')}`, ['whatsapp']);
+      prepararEtapa();
+      return;
+    }
     const r = responderEtapa(estado.captura, texto);
     rapidas.replaceChildren();
     registrar(r.ok ? r.mostrar : texto);
@@ -300,12 +308,13 @@ export function iniciarSol(): void {
     }
     // Lead gravado e equipe avisada: agora a conversa é com a Sol (IA).
     const primeira = estado.pendente || primeiraMensagem(c.interesse);
-    estado = { ...estado, captura: { ...c, etapa: 'pronto' }, leadOk: true, pendente: '' };
+    const planoPendente = estado.pendente ? estado.pendentePlano ?? undefined : undefined;
+    estado = { ...estado, captura: { ...c, etapa: 'pronto' }, leadOk: true, pendente: '', pendentePlano: null };
     salvar();
     prepararEtapa();
     tirar();
     tirar = digitando();
-    const r = await pedirSol(primeira);
+    const r = await pedirSol(primeira, planoPendente);
     tirar();
     ocupar(false);
     await mostrarResposta(r);
@@ -444,14 +453,19 @@ export function iniciarSol(): void {
     atualizarEnvio();
   }
 
-  /** Pergunta vinda da página (caixa de dúvidas). Antes do fim do roteiro, fica guardada. */
-  async function perguntarDaPagina(texto: string): Promise<void> {
+  /**
+   * Pergunta ou escolha vinda da página (caixa de dúvidas, "Quero este plano",
+   * "Enviar para a SC", "Pedir proposta"). Antes do fim do roteiro, fica guardada
+   * e vira a primeira mensagem para a Sol, com o plano junto.
+   */
+  async function perguntarDaPagina(texto: string, plano?: number): Promise<void> {
     if (estado.leadOk) {
-      await enviar(texto);
+      await enviar(texto, plano);
       return;
     }
     if (esperando) return;
     estado.pendente = texto.slice(0, LIMITE_MENSAGEM);
+    estado.pendentePlano = plano ?? null;
     rapidas.replaceChildren();
     registrar(estado.pendente);
     await falarSol(retomar(estado.captura.etapa));
@@ -483,17 +497,21 @@ export function iniciarSol(): void {
     fechar();
   });
 
-  // Botões "fale com a Sol" espalhados pela página (escondidos sem JavaScript)
-  // e o texto da barra fixa do celular (evento de src/scripts/barra.ts).
+  // Botões que abrem a Sol espalhados pela página e o texto da barra fixa do
+  // celular (evento de src/scripts/barra.ts). Os <button> ficam escondidos sem
+  // JavaScript; os <a href="#contato"> de venda levam à seção "Fale com a SC".
+  // data-sol-mensagem é lido na hora do toque (o configurador o atualiza).
   document.addEventListener('sc:abrir-sol', abrir);
   for (const gatilho of todos<HTMLElement>('[data-sol-abrir]')) {
     gatilho.hidden = false;
-    gatilho.addEventListener('click', () => {
+    gatilho.addEventListener('click', (e) => {
+      e.preventDefault();
       abrir();
       const texto = gatilho.hasAttribute('data-sol-pergunta')
         ? document.querySelector<HTMLInputElement>('[data-busca]')?.value.trim()
-        : '';
-      if (texto) void perguntarDaPagina(texto);
+        : gatilho.dataset.solMensagem?.trim();
+      const plano = Number(gatilho.dataset.solPlano);
+      if (texto) void perguntarDaPagina(texto, planoDoCartao(plano) ? plano : undefined);
     });
   }
 

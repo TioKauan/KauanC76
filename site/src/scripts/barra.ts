@@ -1,4 +1,4 @@
-import { planos, nomePlano, textoPreco, linkWhatsapp, mensagemPlano, formatarPreco, menorPreco, mostrarPrecos, textoTaxaInstalacao, type Plano } from '../lib/dados';
+import { planos, nomePlano, textoPreco, formatarPreco, menorPreco, mostrarPrecos, textoTaxaInstalacao, type Plano } from '../lib/dados';
 import type { ResumoBarra } from './configurador';
 import { exigir, todos } from './dom';
 
@@ -12,19 +12,15 @@ export function iniciarBarra(): void {
   if (!barra) return;
   const titulo = exigir('[data-barra-titulo]', barra);
   const sub = exigir('[data-barra-sub]', barra);
-  const link = exigir<HTMLAnchorElement>('[data-barra-link]', barra);
-  const acao = exigir('[data-barra-acao]', barra);
 
-  // À esquerda fica a Sol (o orbe e, na seção de contato, o texto); o botão da direita é o WhatsApp.
+  // A Sol fica à esquerda (o orbe); o texto também abre o chat. Sem WhatsApp desde 28/09/2026 (noite).
   const temSol = document.querySelector('[data-sol]') !== null;
   const padrao: ResumoBarra = {
     titulo: temSol ? 'Fale com a Sol' : 'Fale com a SC',
     sub: mostrarPrecos ? `A partir de R$ ${formatarPreco(menorPreco)}/mês` : 'Planos de locação de câmeras',
-    link: link.href,
-    acao: 'Falar com a equipe no WhatsApp',
   };
   let planoVisivel: Plano = planos.find((p) => p.destaque) ?? planos[0]!;
-  let resumoConfig: ResumoBarra = { titulo: 'Monte seu sistema', sub: 'Toque na planta para marcar', link: padrao.link, acao: 'Enviar o sistema pelo WhatsApp' };
+  let resumoConfig: ResumoBarra = { titulo: 'Monte seu sistema', sub: 'Toque na planta para marcar' };
   let secao = 'inicio';
 
   const conteudo = (): ResumoBarra => {
@@ -32,8 +28,6 @@ export function iniciarBarra(): void {
       return {
         titulo: `${nomePlano(planoVisivel).replace('Plano de ', '')} · ${textoPreco(planoVisivel)}`,
         sub: `Instalação: ${textoTaxaInstalacao(planoVisivel)}`,
-        link: linkWhatsapp(mensagemPlano(planoVisivel)),
-        acao: `Quero o ${nomePlano(planoVisivel).toLowerCase()} pelo WhatsApp`,
       };
     }
     return secao === 'monte' ? resumoConfig : padrao;
@@ -43,8 +37,6 @@ export function iniciarBarra(): void {
     barra.dataset.modo = secao === 'monte' ? 'configurador' : secao === 'planos' ? 'plano' : 'contato';
     titulo.textContent = c.titulo;
     sub.textContent = c.sub;
-    link.href = c.link;
-    acao.textContent = c.acao;
   };
 
   // Seção dominante na tela
@@ -71,10 +63,16 @@ export function iniciarBarra(): void {
   });
   todos('.guias [role="tab"]').forEach((g) => g.addEventListener('click', () => requestAnimationFrame(pintar)));
 
-  // Tocar no texto: no configurador leva ao resumo completo; na seção de contato abre a Sol.
-  exigir('.barra-texto', barra).addEventListener('click', () => {
-    if (secao === 'monte') document.querySelector('.config-resumo')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    else if (barra.dataset.modo === 'contato' && temSol) document.dispatchEvent(new CustomEvent('sc:abrir-sol'));
+  // Tocar no texto: no configurador leva ao resumo completo; no resto abre a Sol
+  // (sem o chat, segue o link para a seção "Fale com a SC").
+  exigir('.barra-texto', barra).addEventListener('click', (e) => {
+    if (secao === 'monte') {
+      e.preventDefault();
+      document.querySelector('.config-resumo')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else if (temSol) {
+      e.preventDefault();
+      document.dispatchEvent(new CustomEvent('sc:abrir-sol'));
+    }
   });
 
   // Teclado virtual aberto: esconde a barra para não cobrir o campo.

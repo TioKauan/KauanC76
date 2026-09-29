@@ -196,11 +196,9 @@ html[data-movimento] [data-revelar] { transition: opacity 0.8s var(--suave), tra
   .barra-fixa:is([data-escondida], [data-teclado], [data-menu]) { transform: translateY(140%); opacity: 0; pointer-events: none; }
   .barra-fixa[data-modo='plano'] { border-color: #9a4a1a; }
   .barra-fixa[data-modo='configurador'] { border-color: #2d6f84; }
-  .barra-fixa[data-modo='configurador'] .barra-texto { cursor: pointer; }
-  .barra-texto { flex: 1; min-width: 0; line-height: 1.35; }
+  /* Link para "Fale com a SC" sem JavaScript; com ele, abre a Sol (ou leva ao resumo no configurador). */
+  .barra-texto { flex: 1; min-width: 0; min-height: 44px; display: flex; flex-direction: column; justify-content: center; line-height: 1.35; color: inherit; text-decoration: none; }
   /* WhatsApp da equipe: só o logo, em contorno ciano (o laranja, ao lado, é da Sol) */
-  .barra-whats { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0; border: 1px solid #2d6f84; background: #06121e; color: var(--ciano); transition: transform 0.2s var(--suave), border-color 0.2s; }
-  .barra-whats:active { transform: scale(0.94); border-color: var(--ciano); }
   .barra-texto b { display: block; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .barra-texto span { display: block; font-size: 12px; color: var(--texto-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 }

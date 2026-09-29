@@ -1,12 +1,16 @@
 ---
-/** Tela 2: planos de locação. Abas e carrossel em src/scripts/planos.ts. */
+/**
+ * Tela 2: planos de locação. Abas e carrossel em src/scripts/planos.ts.
+ * Desde 28/09/2026 (noite) os botões de venda abrem a Sol com a escolha já
+ * escrita; sem JavaScript, levam à seção "Fale com a SC" (#contato).
+ */
 import Icone from './Icone.astro';
-import IconeWhatsapp from './IconeWhatsapp.astro';
 import MiniPlanta from './MiniPlanta.astro';
 import {
   planos, upgrades, condicoes, porQueLocar, servicosProposta, textoProposta,
-  formatarPreco, mostrarPrecos, nomePlano, linkWhatsapp, mensagemPlano, textoTaxaInstalacao, rotuloTaxa,
+  formatarPreco, mostrarPrecos, nomePlano, textoTaxaInstalacao, rotuloTaxa,
 } from '../lib/dados';
+import { mensagemQueroPlano } from '../lib/sol';
 
 const cameras = (n: number) => `${n} ${n > 1 ? 'câmeras' : 'câmera'}`;
 ---
@@ -58,8 +62,9 @@ const cameras = (n: number) => `${n} ${n > 1 ? 'câmeras' : 'câmera'}`;
                   <li><Icone nome="check" tamanho={16} traco={2.2} />{p.gravador} e imagens no celular</li>
                   <li><Icone nome="check" tamanho={16} traco={2.2} />Revisão semestral e manutenção</li>
                 </ul>
-                <a class:list={['btn plano-cta', p.destaque ? 'btn-primario' : 'btn-contorno']} href={linkWhatsapp(mensagemPlano(p))} target="_blank" rel="noopener" data-plano-cta={p.cameras}>
-                  <IconeWhatsapp tamanho={17} /> Quero este plano<span class="sr"> ({nomePlano(p)}, abre o WhatsApp)</span>
+                <a class:list={['btn plano-cta', p.destaque ? 'btn-primario' : 'btn-contorno']} href="#contato" data-plano-cta={p.cameras}
+                   data-sol-abrir data-sol-plano={p.cameras} data-sol-mensagem={mensagemQueroPlano(p.cameras)}>
+                  <span class="sol-orbe sol-orbe-p" aria-hidden="true"></span> Quero este plano<span class="sr"> ({nomePlano(p)}, abre o chat da Sol)</span>
                 </a>
                 <a class="plano-simular" href="#monte" data-configurar={p.cameras}>Ver no configurador <Icone nome="arrow-right" tamanho={14} /></a>
               </article>
@@ -88,8 +93,8 @@ const cameras = (n: number) => `${n} ${n > 1 ? 'câmeras' : 'câmera'}`;
           </div>
           <div class="servico-acao">
             <p>{textoProposta}</p>
-            <a class="btn btn-primario" href={linkWhatsapp(`Olá! Gostaria de uma proposta de ${s.titulo.toLowerCase()} para o meu ambiente.`)} target="_blank" rel="noopener">
-              <IconeWhatsapp tamanho={17} /> Pedir proposta pelo WhatsApp
+            <a class="btn btn-primario" href="#contato" data-sol-abrir data-sol-mensagem={`Quero uma proposta de ${s.titulo.toLowerCase()} para o meu ambiente.`}>
+              <span class="sol-orbe sol-orbe-p" aria-hidden="true"></span> Pedir proposta<span class="sr"> (abre o chat da Sol)</span>
             </a>
             {s.id === 'condominio' && (
               <a class="btn btn-contorno" href="#monte" data-configurar-ambiente="condominio">Montar a proposta no configurador</a>

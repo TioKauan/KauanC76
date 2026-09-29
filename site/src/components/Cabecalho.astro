@@ -1,9 +1,8 @@
 ---
 import Icone from './Icone.astro';
-import IconeWhatsapp from './IconeWhatsapp.astro';
 import Logo from './Logo.astro';
-import { contato, empresa, linkWhatsapp } from '../lib/dados';
-import { links, msgGeral } from '../lib/site';
+import { contato, empresa } from '../lib/dados';
+import { links } from '../lib/site';
 ---
 
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -14,9 +13,8 @@ import { links, msgGeral } from '../lib/site';
     <nav class="nav" aria-label="Navegação principal">
       {links.map((l) => <a href={l.href}>{l.rotulo}</a>)}
     </nav>
-    <a class="btn btn-contorno btn-p cabecalho-cta" href={linkWhatsapp(msgGeral)} target="_blank" rel="noopener">
-      <IconeWhatsapp tamanho={16} /> WhatsApp
-    </a>
+    <!-- 28/09/2026: o WhatsApp da equipe fica só na seção "Fale com a SC" (decisão do Kauan). -->
+    <a class="btn btn-contorno btn-p cabecalho-cta" href="#contato">Fale com a SC</a>
     <button class="menu-botao" type="button" aria-expanded="false" aria-controls="menu-celular" aria-label="Abrir menu">
       <Icone nome="menu" tamanho={22} classe="ic-abrir" /><Icone nome="x" tamanho={22} classe="ic-fechar" />
     </button>
@@ -25,9 +23,7 @@ import { links, msgGeral } from '../lib/site';
     <nav aria-label="Navegação no celular">
       {links.map((l, i) => <a href={l.href}><span>0{i + 1}</span>{l.rotulo}<Icone nome="arrow-right" tamanho={18} /></a>)}
     </nav>
-    <a class="btn btn-primario" href={linkWhatsapp(msgGeral)} target="_blank" rel="noopener">
-      <IconeWhatsapp tamanho={18} /> Fale com a SC pelo WhatsApp
-    </a>
+    <a class="btn btn-primario" href="#contato">Fale com a SC</a>
     <p class="menu-nota">{contato.atendimento} · {empresa.regiao}</p>
   </div>
 </header>

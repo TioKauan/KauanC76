@@ -3,7 +3,7 @@ import {
   lerResposta, lerRespostaLead, trechos, mascaraWhatsapp, validarWhatsapp, validarNome, validarCidade,
   novaSessao, lerEstado, estadoNovo, capturaNova, planoDoCartao, linkWhatsappChat, saudacao,
   pergunta, retomar, responderEtapa, primeiraMensagem, primeiroNome, INTERESSES, CAMPO,
-  MAX_HISTORICO, SOL_URL, type Captura,
+  MAX_HISTORICO, SOL_URL, pedeWhatsapp, respostaPedeWhatsapp, mensagemQueroPlano, type Captura,
 } from '../src/lib/sol';
 import { contato, planos } from '../src/lib/dados';
 
@@ -168,7 +168,7 @@ describe('sessão e conversa guardadas', () => {
   it('sessão nova é um UUID v4 e começa pelo roteiro', () => {
     expect(novaSessao()).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
     expect(novaSessao()).not.toBe(novaSessao());
-    expect(estadoNovo()).toMatchObject({ captura: { etapa: 'nome' }, leadOk: false, pendente: '' });
+    expect(estadoNovo()).toMatchObject({ captura: { etapa: 'nome' }, leadOk: false, pendente: '', pendentePlano: null });
   });
 
   it('guardado estranho vira conversa nova', () => {
@@ -214,6 +214,43 @@ describe('sessão e conversa guardadas', () => {
     expect(e.pendente).toBe('funciona sem internet?');
     expect(e.historico).toHaveLength(MAX_HISTORICO);
     expect(e.historico.at(-1)).toEqual({ de: 'sol', texto: 'ok', cartoes: [4], acoes: ['whatsapp'], avisado: true });
+  });
+
+  it('plano do botão "Quero este plano" sobrevive ao recarregar, só se for um plano de verdade e com a mensagem junto', () => {
+    const e = lerEstado(JSON.stringify({ ...estadoNovo(), pendente: 'Quero o plano de 4 câmeras', pendentePlano: 4 }));
+    expect(e).toMatchObject({ pendente: 'Quero o plano de 4 câmeras', pendentePlano: 4 });
+    expect(lerEstado(JSON.stringify({ ...estadoNovo(), pendente: 'Quero o plano', pendentePlano: 7 })).pendentePlano).toBeNull();
+    expect(lerEstado(JSON.stringify({ ...estadoNovo(), pendente: '', pendentePlano: 4 })).pendentePlano).toBeNull();
+    expect(lerEstado(JSON.stringify({ ...estadoNovo(), pendente: 'x', pendentePlano: '4' })).pendentePlano).toBeNull();
+  });
+});
+
+describe('WhatsApp só quando a pessoa pede (28/09/2026)', () => {
+  it('reconhece o pedido, com ou sem acento e nos jeitos comuns de escrever', () => {
+    for (const t of ['quero falar pelo WhatsApp', 'tem whats?', 'me passa o zap', 'wpp', 'Whats App', 'prefiro falar com atendente',
+      'quero falar com alguém', 'falar com uma pessoa', 'é humano?']) {
+      expect(pedeWhatsapp(t), t).toBe(true);
+    }
+  });
+
+  it('nome, cidade, interesse e o próprio número não são pedido', () => {
+    for (const t of ['Ana Paula', 'Francisco Beltrão', 'Câmeras', 'quero câmeras para a loja', 'Zapata',
+      'meu whats é 46 99123-4567', '46991234567', '(46) 99123-4567']) {
+      expect(pedeWhatsapp(t), t).toBe(false);
+    }
+  });
+
+  it('a resposta fala do botão e o roteiro continua na mesma pergunta', () => {
+    expect(respostaPedeWhatsapp).toMatch(/WhatsApp/);
+    expect(retomar('cidade', 'Se preferir seguir por aqui, ')).toBe('Se preferir seguir por aqui, qual é a sua cidade?');
+    expect(retomar('cidade')).toBe('Já te respondo! Antes, qual é a sua cidade?');
+  });
+
+  it('"Quero este plano" da página vira a frase que o servidor entende como contratar', () => {
+    expect(mensagemQueroPlano(1)).toBe('Quero o plano de 1 câmera');
+    expect(mensagemQueroPlano(4)).toBe('Quero o plano de 4 câmeras');
+    // Mesma regra de Validar Entrada (n8n): "quero (o|esse|este) plano".
+    for (const p of planos) expect(/\bquero (o|esse|este) plano\b/.test(mensagemQueroPlano(p.cameras).toLowerCase())).toBe(true);
   });
 });
 
