@@ -5,6 +5,43 @@ Cada publicação tem uma tag `publicado-<data>` no Git, apontando para o commit
 
 ---
 
+## 29/09/2026, 09:19 (UTC) — WhatsApp só em "Fale com a SC"; os botões de venda abrem a Sol
+
+Tag `publicado-2026-09-29-091929` (código do commit `50e4433`).
+
+### O que mudou para quem visita o site
+
+| Onde | Antes | Agora |
+|---|---|---|
+| Topo e menu do celular | Botão "WhatsApp" | "Fale com a SC", que leva até a seção de contato |
+| Chat da Sol | "Prefiro falar no WhatsApp" aparecia em todas as perguntas do começo | Sem botão fixo; quem escreve "whatsapp", "zap" ou "atendente" recebe o botão da equipe e a Sol continua na mesma pergunta |
+| "Quero este plano" (planos) | Abria o WhatsApp | Abre a Sol já com o plano; depois das perguntas do começo, a equipe recebe o aviso de "quer contratar" com o plano certo |
+| "Enviar para a SC" (Monte seu sistema) | Abria o WhatsApp com o resumo | Abre a Sol com o resumo |
+| "Pedir proposta" (redes, alarme, condomínio, nobreak) | Abria o WhatsApp | Abre a Sol com o pedido |
+| Barra fixa do celular | Sol e WhatsApp | Só a Sol |
+| Dúvidas sem resultado | "Perguntar pelo WhatsApp" e "Perguntar para a Sol" | Só "Perguntar para a Sol" |
+| "Já é cliente? Peça suporte" | Abria o WhatsApp | Leva à seção "Fale com a SC" |
+| Seção "Fale com a SC" | WhatsApp e número | Igual: é o único lugar com o WhatsApp da equipe |
+
+### Por quê
+
+- Pedido do Kauan: o aviso de WhatsApp no chat "toda hora é muito chato"; quem quiser o WhatsApp
+  pede ou vai em "Fale com a SC". Os botões de venda passam pela Sol, então todo contato vira lead
+  com a origem da visita e aviso no Telegram (o que o relatório de anúncios mede).
+
+### Técnico
+
+- Sem JavaScript, os botões de venda são links para `#contato`. `pedeWhatsapp` ignora número de
+  telefone digitado. O plano do botão sobrevive a recarregar a página (`pendentePlano`).
+- Corrigido no caminho: a resposta ao pedido de WhatsApp saía em duas falas seguidas e o que a pessoa
+  digitasse no meio se perdia; agora é uma fala só.
+- Testes: 114. Validador: 78/78 (novas: WhatsApp só em "Fale com a SC", topo e menu, barra sem
+  WhatsApp, pedido de WhatsApp no chat, "Quero este plano" chegando à Sol com o plano).
+- Versão anterior em `/opt/somoscella/backups/site-no-ar-antes-20260929-091929-*.tar.gz` e nas pastas
+  `index.antigo-20260929-091929`.
+
+---
+
 ## 28/09/2026, 23:35 (UTC) — O lead do chat passa a dizer de onde a pessoa veio
 
 Tag `publicado-2026-09-28-233530` (código do commit `1981dfa`).
