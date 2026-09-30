@@ -210,6 +210,56 @@ export const duvidas: Duvida[] = [
   },
 ];
 
+/*
+ * Página do Condomínio Evoluído (/condominio/), aprovada pelo Kauan em 30/09/2026.
+ * Os sistemas são os de `servicosProposta` (condomínio) e do configurador; a maquete é
+ * ilustrativa e os textos não prometem quantidade de câmeras, dias de gravação nem preço
+ * (condomínio é sempre proposta personalizada).
+ */
+export const paginaCondominio = {
+  lead: 'Gire a maquete, toque em uma câmera e veja o que ela enxerga. Cada camada mostra o que a SC integra no condomínio.',
+  nota: 'Maquete ilustrativa. Cada projeto é dimensionado na visita técnica.',
+  noturna: 'À noite, a imagem padrão é em preto e branco. Imagem colorida à noite: sob orçamento.',
+  capitulos: {
+    cameras: {
+      sobre: 'Câmeras nas áreas comuns',
+      titulo: 'Veja o que cada câmera enxerga. E o que fica de fora.',
+      texto: 'Portaria, garagem, perímetro e lazer, com gravação no próprio condomínio. Toque numa câmera para ver a imagem dela.',
+      pontosCegos: 'As áreas listradas são de circulação e ficam fora do alcance das câmeras desta maquete. Na visita técnica, a SC define onde cada câmera fica.',
+    },
+    acesso: {
+      sobre: 'Controle de acesso facial',
+      titulo: 'Morador entra pelo rosto. Visitante espera a confirmação.',
+      morador: 'O leitor facial do portão de pedestres reconhece o morador cadastrado e libera a entrada.',
+    },
+    interfonia: {
+      sobre: 'Interfonia',
+      titulo: 'A portaria fala com cada apartamento.',
+      texto: 'A portaria chama o apartamento pela interfonia e só libera o visitante depois que o morador confirma. No mesmo projeto das câmeras e do acesso.',
+    },
+    rede: {
+      sobre: 'Rede e Wi-Fi',
+      titulo: 'Uma rede para tudo funcionar junto.',
+      texto: 'Câmeras, acesso e interfonia ligados ao quadro técnico, e Wi-Fi nas áreas comuns.',
+    },
+    energia: {
+      sobre: 'Nobreak e quadro técnico',
+      titulo: 'E se faltar energia no condomínio?',
+      texto: 'Teste as situações e veja o que continua funcionando.',
+    },
+    alarme: {
+      sobre: 'Alarme integrado',
+      titulo: 'Alarme integrado às câmeras, no celular.',
+      texto: 'Avisos de eventos no aplicativo: você acompanha e comanda pelo celular. Os sensores seguem o projeto de cada condomínio.',
+    },
+    proposta: {
+      sobre: 'Monte a proposta',
+      titulo: 'Marque o que o seu condomínio precisa.',
+      texto: 'A maquete acende o que você marcar. A Sol recebe o pedido e a equipe da SC continua a conversa.',
+    },
+  },
+} as const;
+
 /* ---------- utilidades usadas no site ---------- */
 
 export function formatarPreco(valor: number): string {
