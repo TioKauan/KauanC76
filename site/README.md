@@ -16,7 +16,7 @@ npm run check      # checagem de tipos (astro check)
 npm test           # testes das regras (Vitest)
 npm run build      # checagem de tipos + dist/
 npm run preview    # serve o dist/ em http://localhost:4173
-npm run validar    # tipos, build, testes e 43 conferências em navegador → docs/inovacao/RELATORIO-VALIDACAO.md
+npm run validar    # tipos, build, testes, acessibilidade (axe) e conferências em navegador → docs/inovacao/RELATORIO-VALIDACAO.md
 npm run validar -- --fotos   # + fotos em docs/inovacao/site-final/ e lado a lado com os mockups em comparacao/
 ```
 
@@ -25,6 +25,8 @@ npm run validar -- --fotos   # + fotos em docs/inovacao/site-final/ e lado a lad
 ```
 src/
   pages/index.astro        página (compõe as seções)
+  pages/privacidade.astro  política de privacidade
+  pages/robots.txt.ts      robots.txt gerado no build (aponta o sitemap)
   layouts/Base.astro       <head>, estilos, fonte e o script de interação
   components/*.astro       uma seção por componente (Abertura, Planos, Configurador, ComoFunciona…)
   lib/                     dados e regras, sem DOM (rodam no build e no navegador)

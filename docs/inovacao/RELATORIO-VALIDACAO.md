@@ -1,7 +1,7 @@
 # Relatório de validação do site
 
-Gerado por `npm run validar` em 29/09/2026, 05:08:02.
-Resultado: **78 de 78 itens ✅** — checklist completa.
+Gerado por `npm run validar` em 30/09/2026, 13:22:10.
+Resultado: **82 de 82 itens ✅** — checklist completa.
 
 ## Geral
 
@@ -36,6 +36,7 @@ Resultado: **78 de 78 itens ✅** — checklist completa.
 | ✅ | Sem JavaScript o conteúdo aparece e os contatos funcionam (botões de venda levam a "Fale com a SC") | {"planos":5,"duvidas":7,"escondidos":0,"vendas":10,"whatsContato":true,"solEscondida":true} |
 | ✅ | Rodapé tem link para a Política de privacidade |  |
 | ✅ | /privacidade/ abre com as 9 seções, sem erro no console e sem rolagem lateral | 9 seções; erros: 0; sobra 0 px |
+| ✅ | Buscadores: robots.txt aponta o sitemap, e o sitemap lista todas as páginas | páginas: /, /privacidade/; no sitemap: /, /privacidade/ |
 
 ## Tela 1 · Abertura
 
@@ -115,3 +116,11 @@ Resultado: **78 de 78 itens ✅** — checklist completa.
 | ✅ | Celular: Sol na barra fixa, chat em tela cheia, sem rolagem lateral e toques ≥ 44 px (roteiro e conversa) |  |
 | ✅ | Celular: a última mensagem fica à vista com os botões rápidos na tela (roteiro e conversa) | {"vistaRoteiro":true,"vistaConversa":true} |
 | ✅ | Zero erros no console com o chat (celular) |  |
+
+## Acessibilidade (axe)
+
+| | Item | Detalhe |
+|---|---|---|
+| ✅ | Página inicial: nenhuma violação de acessibilidade (computador e celular) |  |
+| ✅ | /privacidade/: nenhuma violação de acessibilidade (computador e celular) |  |
+| ✅ | Chat da Sol aberto: nenhuma violação de acessibilidade (computador e celular) |  |

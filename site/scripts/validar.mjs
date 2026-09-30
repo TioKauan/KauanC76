@@ -7,9 +7,10 @@
  * Resultado: docs/inovacao/RELATORIO-VALIDACAO.md (+ fotos em docs/inovacao/site-final/).
  */
 import { chromium } from 'playwright';
+import AxeBuilder from '@axe-core/playwright';
 import { createServer } from 'node:http';
 import { execSync } from 'node:child_process';
-import { readFileSync, writeFileSync, existsSync, statSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, statSync, mkdirSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { planos, contato, empresa, formatarPreco } from '../src/lib/dados.ts';
@@ -51,7 +52,7 @@ const totalTestes = testes.match(/Tests\s+(\d+) passed/)?.[1];
 conferir('Testes unitários das regras (Vitest) passam', testesOk && Boolean(totalTestes), totalTestes ? `${totalTestes} testes` : testes.slice(-200));
 
 /* ---------- servidor estático do dist/ ---------- */
-const tipos = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.woff2': 'font/woff2', '.webp': 'image/webp', '.png': 'image/png', '.svg': 'image/svg+xml', '.md': 'text/plain', '.xml': 'application/xml' };
+const tipos = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.woff2': 'font/woff2', '.webp': 'image/webp', '.png': 'image/png', '.svg': 'image/svg+xml', '.md': 'text/plain', '.txt': 'text/plain; charset=utf-8', '.xml': 'application/xml' };
 const servidor = createServer((req, res) => {
   const url = decodeURIComponent(new URL(req.url, 'http://x').pathname);
   let arquivo = path.join(dist, url === '/' ? 'index.html' : url);
@@ -216,6 +217,18 @@ for (const largura of [360, 390, 768, 1024, 1440]) {
     priv.titulo === 'Política de privacidade' && priv.secoes === 9 && erros.length === 0 && priv.sobra <= 0,
     `${priv.secoes} seções; erros: ${erros.slice(0, 1).join('') || 0}; sobra ${priv.sobra} px`);
   await contexto.close();
+
+  // Buscadores: robots.txt aponta o sitemap, e o sitemap lista toda página gerada (cada index.html do dist/).
+  const robots = existsSync(path.join(dist, 'robots.txt')) ? readFileSync(path.join(dist, 'robots.txt'), 'utf8') : '';
+  const paginasGeradas = (function listar(pasta, prefixo) {
+    return readdirSync(pasta, { withFileTypes: true }).flatMap((e) =>
+      e.isDirectory() ? listar(path.join(pasta, e.name), `${prefixo}${e.name}/`) : e.name === 'index.html' ? [prefixo] : []);
+  })(dist, '/').sort();
+  const noSitemap = readdirSync(dist).filter((f) => /^sitemap-\d+\.xml$/.test(f))
+    .flatMap((f) => [...readFileSync(path.join(dist, f), 'utf8').matchAll(/<loc>https:\/\/somoscella\.online(\/[^<]*)<\/loc>/g)].map((m) => m[1])).sort();
+  conferir('Buscadores: robots.txt aponta o sitemap, e o sitemap lista todas as páginas',
+    /User-agent: \*/.test(robots) && robots.includes('Sitemap: https://somoscella.online/sitemap-index.xml') && noSitemap.join(' ') === paginasGeradas.join(' '),
+    `páginas: ${paginasGeradas.join(', ')}; no sitemap: ${noSitemap.join(', ')}`);
 }
 
 grupo('Tela 1 · Abertura');
@@ -705,6 +718,39 @@ grupo('Sol · chat do site');
     JSON.stringify({ vistaRoteiro, vistaConversa }));
   conferir('Zero erros no console com o chat (celular)', cel.erros.length === 0, cel.erros.slice(0, 2).join(' | '));
   await cel.contexto.close();
+}
+
+/* ---------- Acessibilidade automática (axe-core, regras WCAG 2.2 A e AA) ---------- */
+grupo('Acessibilidade (axe)');
+{
+  const regras = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
+  const analisar = async (pagina, rotulo, achados) => {
+    const r = await new AxeBuilder({ page: pagina }).withTags(regras).analyze();
+    for (const v of r.violations) achados.push(`${rotulo}: ${v.id} (${v.nodes.length}) ${v.nodes[0]?.target.join(' ')}`);
+  };
+  for (const [caminho, nome] of [['', 'Página inicial'], ['privacidade/', '/privacidade/']]) {
+    const achados = [];
+    for (const largura of [1440, 390]) {
+      const { pagina, contexto } = await abrir(largura, { reducedMotion: 'reduce' });
+      if (caminho) await pagina.goto(`${endereco}${caminho}`, { waitUntil: 'networkidle' });
+      await rolarTudo(pagina);
+      await analisar(pagina, `${largura}px`, achados);
+      await contexto.close();
+    }
+    conferir(`${nome}: nenhuma violação de acessibilidade (computador e celular)`, achados.length === 0, achados.slice(0, 3).join('; '));
+  }
+  const achadosChat = [];
+  for (const largura of [1440, 390]) {
+    const { pagina, contexto } = await abrir(largura, { reducedMotion: 'reduce' });
+    // No celular o lançador fica escondido (a Sol abre pela barra fixa): basta estar na página.
+    await pagina.waitForSelector('.sol[data-chegou] [data-sol-lancador]', { state: 'attached', timeout: 4000 });
+    await pagina.evaluate(() => document.querySelector('[data-sol-lancador]').click());
+    await pagina.waitForSelector('.sol-painel.sol-painel-visivel');
+    await pagina.waitForTimeout(500);
+    await analisar(pagina, `${largura}px`, achadosChat);
+    await contexto.close();
+  }
+  conferir('Chat da Sol aberto: nenhuma violação de acessibilidade (computador e celular)', achadosChat.length === 0, achadosChat.slice(0, 3).join('; '));
 }
 
 /* ---------- Fotos e comparação com os mockups ---------- */
