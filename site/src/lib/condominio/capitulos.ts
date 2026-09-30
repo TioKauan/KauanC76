@@ -102,13 +102,12 @@ export const CAPITULOS: readonly Capitulo[] = [
   {
     id: 'interfonia',
     numero: 3,
-    vista: { alvo: [-4, 7, 4], raio: 150, azimute: 22, elevacao: 30, deslocar: 0.14 },
+    vista: { alvo: [2, 7, 1], raio: 160, azimute: 14, elevacao: 28, deslocar: 0.1 },
     vistaCelular: { alvo: [-4, 6, 5], raio: 165, azimute: 24, elevacao: 34 },
     camadas: ['interfonia', 'acesso'],
     realce: 'interfonia',
     visitante: true,
-    selecionada: 1,
-    monitor: [1],
+    monitor: [],
   },
   {
     id: 'rede',

@@ -961,6 +961,46 @@ if (comFotos) {
     await comp.screenshot({ path: path.join(pastaComp, `${par.n}-${par.titulo}.png`), fullPage: true });
   }
   console.log('Fotos em docs/inovacao/site-final/ e comparação em docs/inovacao/comparacao/');
+
+  // Condomínio: foto de cada capítulo e lado a lado com as imagens aprovadas (docs/inovacao/condominio/imagens)
+  const pastaCond = path.join(docs, 'condominio');
+  mkdirSync(path.join(pastaCond, 'site-final'), { recursive: true });
+  mkdirSync(path.join(pastaCond, 'comparacao'), { recursive: true });
+  const capitulosFoto = [['abertura', '01-abertura'], ['cameras', '02-cameras-e-pontos-cegos'], ['acesso', '03-acesso-facial-e-interfonia'], ['energia', '04-e-se-faltar-energia'], ['proposta', '05-monte-a-proposta']];
+  for (const [id, nome] of capitulosFoto) {
+    const { pagina, contexto } = await abrir(1440, { deviceScaleFactor: 1.5 }, 'condominio/');
+    await pagina.waitForFunction(() => Number(document.querySelector('[data-maquete]')?.dataset.quadros) > 1, null, { timeout: 90000 });
+    await pagina.evaluate((i) => { const el = document.getElementById(i); scrollTo({ top: el.getBoundingClientRect().top + scrollY - 60, behavior: 'instant' }); }, id);
+    if (id === 'energia') { await pagina.waitForTimeout(400); await pagina.click('[data-ese-nobreak]'); } // "Faltou energia" com nobreak, como na imagem aprovada
+    await pagina.waitForTimeout(2600);
+    await pagina.screenshot({ path: path.join(pastaCond, 'site-final', `${nome}.jpg`), type: 'jpeg', quality: 88 });
+    await contexto.close();
+  }
+  const telasCel = [];
+  for (const id of ['abertura', 'cameras', 'energia']) {
+    const { pagina, contexto } = await abrir(390, {}, 'condominio/');
+    await pagina.waitForFunction(() => Number(document.querySelector('[data-maquete]')?.dataset.quadros) > 1, null, { timeout: 90000 });
+    if (id !== 'abertura') await pagina.evaluate((i) => { const el = document.getElementById(i); scrollTo({ top: el.getBoundingClientRect().top + scrollY - 400, behavior: 'instant' }); }, id);
+    await pagina.waitForTimeout(2600);
+    const arq = path.join(pastaCond, 'site-final', `06-celular-${id}.jpg`);
+    await pagina.screenshot({ path: arq, type: 'jpeg', quality: 88 });
+    telasCel.push(arq);
+    await contexto.close();
+  }
+  const compCond = await (await navegador.newContext({ viewport: { width: 2000, height: 900 } })).newPage();
+  const uri = (arq) => `data:image/jpeg;base64,${readFileSync(arq).toString('base64')}`;
+  const paresCond = [
+    ...capitulosFoto.map(([, nome]) => ({ nome, a: [path.join(pastaCond, 'imagens', `${nome}.jpg`)], b: [path.join(pastaCond, 'site-final', `${nome}.jpg`)] })),
+    { nome: '06-celular', a: [path.join(pastaCond, 'imagens', '06-celular.jpg')], b: telasCel },
+  ];
+  for (const par of paresCond) {
+    const coluna = (lista, rotulo) => `<div class="col"><h2>${rotulo}</h2><div class="imgs">${lista.map((f) => `<img src="${uri(f)}">`).join('')}</div></div>`;
+    await compCond.setContent(`<html><body style="margin:0;background:#0b0f14;font-family:sans-serif;color:#fff">
+      <style>.linha{display:grid;grid-template-columns:1fr 1fr;gap:24px;padding:24px}.col h2{font-size:22px;margin:0 0 12px;color:#ffd84d}.imgs{display:flex;gap:12px;align-items:flex-start}.imgs img{min-width:0;flex:1;width:100%;border:1px solid #2b4358;border-radius:8px}</style>
+      <div class="linha">${coluna(par.a, `Imagem aprovada · ${par.nome}`)}${coluna(par.b, 'Página construída')}</div></body></html>`);
+    await compCond.screenshot({ path: path.join(pastaCond, 'comparacao', `${par.nome}.jpg`), type: 'jpeg', quality: 85, fullPage: true });
+  }
+  console.log('Condomínio: fotos em docs/inovacao/condominio/site-final/ e comparação em docs/inovacao/condominio/comparacao/');
 }
 
 await navegador.close();

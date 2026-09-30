@@ -156,7 +156,7 @@ html:not([data-3d]) .camera-botao { pointer-events: none; }
 }
 
 @media (max-width: 800px) {
-  .tour { --palco-alto: 46svh; }
+  .tour { --palco-alto: 42svh; }
   .palco { z-index: 3; box-shadow: 0 12px 24px -12px #000; }
   .palco-veu { background: linear-gradient(0deg, #020710 0%, transparent 22%); }
   .palco-veu::after, .camadas, .palco-nota { display: none; }

@@ -31,7 +31,7 @@ const navegador = await chromium.launch({ args: ['--enable-unsafe-swiftshader', 
 // Tamanho da janela escolhido para o palco (altura da tela menos o cabeçalho) sair no tamanho da imagem.
 for (const { nome, largura, altura, escala, celular } of [
   { nome: 'maquete.webp', largura: 1600, altura: 991, escala: 1, celular: false },
-  { nome: 'maquete-celular.webp', largura: 390, altura: 848, escala: 2, celular: true },
+  { nome: 'maquete-celular.webp', largura: 390, altura: 929, escala: 2, celular: true },
 ]) {
   const contexto = await navegador.newContext({ viewport: { width: largura, height: altura }, deviceScaleFactor: escala, isMobile: celular, hasTouch: celular, reducedMotion: 'reduce' });
   const pagina = await contexto.newPage();

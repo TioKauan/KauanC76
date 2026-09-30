@@ -531,7 +531,7 @@ export function criarMaquete({ canvas, palco, movimento }: { canvas: HTMLCanvasE
 
   // Alarme: sensores no alto do muro e zona tracejada no perímetro
   const perimetro = [[LOTE.x0, LOTE.z0], [LOTE.x1, LOTE.z0], [LOTE.x1, LOTE.z1], [LOTE.x0, LOTE.z1]] as const;
-  const matSensor = brilho(corCamada.alarme, 3);
+  const matSensor = brilho(corCamada.alarme, 4.2);
   const tracos: THREE.Vector3[] = [];
   perimetro.forEach(([ax, az], k) => {
     const [bx, bz] = perimetro[(k + 1) % 4]!;
@@ -540,7 +540,7 @@ export function criarMaquete({ canvas, palco, movimento }: { canvas: HTMLCanvasE
       const x = ax + ((bx - ax) * d) / l;
       const z = az + ((bz - az) * d) / l;
       if (k === 2 && x > -9 && x < 10) continue;
-      const s = new THREE.Mesh(new THREE.OctahedronGeometry(0.32), matSensor);
+      const s = new THREE.Mesh(new THREE.OctahedronGeometry(0.46), matSensor);
       s.position.set(x, 2.35, z);
       camadas.alarme.add(...explicativo(s));
     }
@@ -550,7 +550,7 @@ export function criarMaquete({ canvas, palco, movimento }: { canvas: HTMLCanvasE
       tracos.push(new THREE.Vector3(ax + (bx - ax) * t0, 2.05, az + (bz - az) * t0), new THREE.Vector3(ax + (bx - ax) * t1, 2.05, az + (bz - az) * t1));
     }
   });
-  camadas.alarme.add(...explicativo(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(tracos), new THREE.LineBasicMaterial({ color: corCamada.alarme.clone().multiplyScalar(1.6) }))));
+  camadas.alarme.add(...explicativo(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(tracos), new THREE.LineBasicMaterial({ color: corCamada.alarme.clone().multiplyScalar(2.4) }))));
 
   /* ---------- câmera principal, pós-processamento, explorar ---------- */
   const camera = new THREE.PerspectiveCamera(28, 1, 1, 600);
@@ -723,7 +723,7 @@ export function criarMaquete({ canvas, palco, movimento }: { canvas: HTMLCanvasE
       if (noite && e.nobreak && !celular()) lista.push(etiqueta(fundo.x - 3, fundo.y + 2, fundo.z + 2, cor('cameras'), 'cctv', 'Câmeras gravando', s.textos.cameras));
       if (e.situacao === 'internet') lista.push(etiqueta(RACK[0], 3, RACK[1], cor('rede'), 'wifi-off', s.textos.internet, 'Gravação continua'));
     }
-    if (cap === 'alarme') lista.push(etiqueta(LOTE.x1, 4, -6, cor('alarme'), 'bell-ring', 'Alarme', 'Avisos no aplicativo'));
+    if (cap === 'alarme') lista.push(etiqueta(LOTE.x0 + 6, 4.5, LOTE.z0, cor('alarme'), 'bell-ring', 'Alarme', 'Avisos no aplicativo'));
     camadaRotulos.replaceChildren(...lista.map((r) => r.el));
     rotulos = lista;
   }

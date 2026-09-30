@@ -1,6 +1,6 @@
 # Relatório de validação do site
 
-Gerado por `npm run validar` em 30/09/2026, 18:34:34.
+Gerado por `npm run validar` em 30/09/2026, 18:48:38.
 Resultado: **100 de 100 itens ✅** — checklist completa.
 
 ## Geral
@@ -134,7 +134,7 @@ Resultado: **100 de 100 itens ✅** — checklist completa.
 | ✅ | Sem preço, prazo de contrato nem "instalação inclusa" na página do condomínio |  |
 | ✅ | Zero erros no console (maquete 3D, computador) |  |
 | ✅ | Peso: primeira visão ≤ 300 KB e maquete 3D ≤ 700 KB (baixada depois, sem compactação) | primeira visão 249 KB; maquete 616 KB |
-| ✅ | Celular: maquete no alto da tela, sem rolagem lateral, toques ≥ 44 px e sem erros | {"sobra":0,"alturaPalco":388,"pequenos":[],"erros":[]} |
+| ✅ | Celular: maquete no alto da tela, sem rolagem lateral, toques ≥ 44 px e sem erros | {"sobra":0,"alturaPalco":354,"pequenos":[],"erros":[]} |
 | ✅ | Condomínio sem 3D: imagem da maquete, os 8 capítulos e o contato; controles da maquete escondidos | {"imagem":true,"capitulos":8,"so3d":0,"canvas":false,"contato":true} |
 | ✅ | Condomínio sem JavaScript: imagem da maquete, os 8 capítulos e o contato; controles da maquete escondidos | {"imagem":true,"capitulos":8,"so3d":0,"canvas":false,"contato":true} |
 | ✅ | Inicial leva ao condomínio: abertura (ao escolher "Condomínio"), aba dos planos, configurador e menu | {"escondidoAntes":true,"linkAbertura":"/condominio/","planos":true,"configurador":true,"menu":true} |

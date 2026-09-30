@@ -47,6 +47,11 @@ solução, não a mais simples de entender; nas conversas, explique o porquê da
 - **Botões:** todo botão que abre o WhatsApp mostra o ícone do WhatsApp (`IconeWhatsapp.astro` ou
   `iconeWhatsapp()` de `src/lib/marcas.ts`), em contorno ciano, nunca verde; tudo o que abre a Sol
   mostra o orbe laranja. O validador confere o ícone.
+- **Página do Condomínio Evoluído** (`/condominio/`, aprovada em 30/09/2026): maquete 3D ilustrativa
+  (Three.js, baixado só com WebGL 2) com capítulos por rolagem. Textos em `dados.ts` (`paginaCondominio`);
+  maquete e regras em `src/lib/condominio/` (com testes). Nada de preço, dias de gravação ou quantidade
+  de câmeras nessa página: condomínio é proposta personalizada, pela Sol. Mudou a maquete? Rode
+  `npm run build && npm run imagem-condominio` para refazer a imagem pronta. Plano: `docs/inovacao/condominio/`.
 - Logo: só os arquivos oficiais (`site/public/marca/`); nunca redesenhe. O Claude não gera foto.
 - **Publicar é ação externa: só com pedido explícito do Kauan** (Nginx do VPS, guardando antes a versão no ar).
 

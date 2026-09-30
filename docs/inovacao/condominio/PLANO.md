@@ -1,9 +1,23 @@
 # Condomínio Evoluído em 3D: plano da página
 
-**Situação (30/09/2026): proposta para aprovação.** As imagens abaixo saíram de um protótipo 3D de
-verdade (`mockups/`), não de desenho solto. A página ainda **não** foi construída no site: ela só
-começa depois que o Kauan aprovar o visual. A página inicial continua como está; o condomínio ganha
-uma página própria (`somoscella.online/condominio/`), e a inicial ganha um link para ela.
+**Situação (30/09/2026): aprovada pelo Kauan e construída** no ramo `claude/sweet-faraday-yvwddr`
+(ainda **não publicada**). As imagens abaixo são as do protótipo aprovado (`mockups/`); as fotos da
+página construída estão em `site-final/` e o lado a lado em `comparacao/`.
+
+**Decisões do Kauan (30/09):** visual aprovado; "Condomínio" no menu principal; blocos e apartamentos
+no formulário (opcionais); link na abertura (ao escolher "Condomínio"), na aba Condomínio dos planos e
+no configurador.
+
+**Diferenças em relação às imagens, e por quê:**
+
+- As camadas ficaram dentro do painel do monitor. Na coluna da esquerda elas batiam no texto dos
+  capítulos mais longos.
+- O botão da abertura leva ao formulário "Monte a proposta", e é de lá que a Sol abre, já com os
+  sistemas marcados.
+- Interfonia e alarme ganharam capítulos próprios, completando os 6.
+- O monitor fica um pouco mais alto, para não ficar embaixo do botão "Fale com a Sol".
+- No "E se…?", ao tocar em "Faltou energia" o nobreak começa desligado, como na página inicial, e a
+  pessoa liga para ver a diferença.
 
 ---
 

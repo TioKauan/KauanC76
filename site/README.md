@@ -18,17 +18,21 @@ npm run build      # checagem de tipos + dist/
 npm run preview    # serve o dist/ em http://localhost:4173
 npm run validar    # tipos, build, testes, acessibilidade (axe) e conferências em navegador → docs/inovacao/RELATORIO-VALIDACAO.md
 npm run validar -- --fotos   # + fotos em docs/inovacao/site-final/ e lado a lado com os mockups em comparacao/
+                             #   (e as do condomínio em docs/inovacao/condominio/site-final/ e comparacao/)
+npm run imagem-condominio    # depois de npm run build: refaz a imagem pronta da maquete (public/condominio/)
 ```
 
 ## Arquitetura
 
 ```
 src/
-  pages/index.astro        página (compõe as seções)
+  pages/index.astro        página inicial (compõe as seções; importa os estilos e o script dela)
+  pages/condominio.astro   Condomínio Evoluído: capítulos + maquete 3D (plano em docs/inovacao/condominio/)
   pages/privacidade.astro  política de privacidade
   pages/robots.txt.ts      robots.txt gerado no build (aponta o sitemap)
-  layouts/Base.astro       <head>, estilos, fonte e o script de interação
+  layouts/Base.astro       <head>, fonte e estilos-base comuns a todas as páginas
   components/*.astro       uma seção por componente (Abertura, Planos, Configurador, ComoFunciona…)
+  components/condominio/   Palco (maquete, monitor, camadas) e Capitulos (todo o texto da página)
   lib/                     dados e regras, sem DOM (rodam no build e no navegador)
     dados.ts               conteúdo comercial: planos, preços, condições, dúvidas, contato
     cenarios.ts            estados do "E se…?" por ambiente e situação
@@ -38,11 +42,16 @@ src/
     busca.ts               busca nas dúvidas (sinônimos, peso por raridade, intenção de preço)
     plantas-svg.ts         desenho das plantas do configurador
     icones.ts              subconjunto do Lucide
+    condominio/            maquete.ts (lote, prédios, câmeras), cobertura.ts (campo de visão e pontos
+                           cegos), capitulos.ts (camadas e enquadramentos), proposta.ts (mensagem para a Sol)
   scripts/*.ts             interação no navegador (sem framework de cliente)
+  scripts/condominio/      pagina.ts (capítulos, E se…?, proposta) e cena.ts (Three.js, baixado só se
+                           o aparelho tiver WebGL 2 e não estiver economizando dados)
   styles/*.css             estilos por seção; tokens de cor da logo em base.css
 tests/*.test.ts            Vitest (regras de negócio)
 scripts/validar.mjs        validador de ponta a ponta (Playwright)
 scripts/gerar-marca.mjs    favicon, ícone e imagem Open Graph a partir da logo oficial
+scripts/gerar-imagem-condominio.mjs  imagem pronta da maquete (aparece antes do 3D e no lugar dele)
 ```
 
 Princípios:
@@ -64,6 +73,9 @@ Princípios:
 | Trocar o número do WhatsApp | `src/lib/dados.ts` → `contato.whatsapp` |
 | Editar as dúvidas frequentes | `src/lib/dados.ts` → `duvidas` (e sinônimos em `src/lib/busca.ts`) |
 | Mudar pontos sugeridos do configurador | `src/lib/configurador-dados.ts` |
+| Mudar textos da página do condomínio | `src/lib/dados.ts` → `paginaCondominio` (os sistemas vêm de `servicosProposta` e do configurador) |
+| Mudar prédios ou câmeras da maquete | `src/lib/condominio/maquete.ts`; depois `npm run build && npm run imagem-condominio` |
+| Mudar o enquadramento de um capítulo | `src/lib/condominio/capitulos.ts` (`vista` e `vistaCelular`) |
 | Mudar a taxa de instalação (hoje, 1 mensalidade) | `src/lib/dados.ts` → `taxaInstalacaoMensalidades` |
 | Mudar o que aparece em "Simples de contratar" | `src/lib/dados.ts` → `condicoes` |
 | Trocar CNPJ, cidade ou e-mail do rodapé | `src/lib/dados.ts` → `empresa` e `contato.email` |

@@ -65,10 +65,20 @@ a pessoa quer. O site diz "atendimento pela equipe da SC" e não promete respost
 | Fonte e ícones | Embutidos (Manrope OFL, Lucide ISC) | Sem chamadas a servidores de terceiros |
 | Node.js | 22.18 ou mais novo | O validador lê `dados.ts` direto (suporte nativo a TypeScript do Node 22.18+) |
 
-## Página do Condomínio Evoluído (proposta de 30/09/2026, aguardando aprovação)
+## Página do Condomínio Evoluído (30/09/2026: aprovada e construída, ainda não publicada)
 
 O Kauan pediu páginas separadas, começando pelo condomínio, com algo imersivo e interação 3D, e quer
 ver imagens antes da construção. A proposta, as imagens do protótipo e as decisões em aberto estão em
 [`condominio/PLANO.md`](condominio/PLANO.md). Resumo: maquete 3D gerada a partir de dados (Three.js),
 câmeras que mostram o que enxergam, pontos cegos, camadas do Condomínio Evoluído e proposta pela Sol.
-A página inicial não muda, a não ser pelo link para a página nova.
+A página inicial não muda, a não ser pelos links para a página nova (menu, abertura ao escolher
+"Condomínio", aba Condomínio dos planos e configurador).
+
+| Tema | Decisão | Motivo |
+|---|---|---|
+| Motor 3D | Three.js r186, baixado **depois** da página e só com WebGL 2 | Padrão de mercado, leve para o que faz (616 KB; primeira visão da página: 249 KB) |
+| Modelo | Gerado a partir de dados (`lib/condominio/maquete.ts`), sem arquivo 3D | Mudar uma câmera é mudar um número; as regras (pontos cegos) têm testes |
+| Sem 3D | Imagem pronta da maquete (gerada da própria cena) e todo o texto no HTML | Funciona sem WebGL, sem JavaScript e com economia de dados |
+| Imagem das câmeras | Cada câmera renderiza a cena num só canvas; desenhos explicativos ficam fora da imagem | Uma única conexão com a placa de vídeo; a imagem mostra só o que existiria |
+| Bateria | Desenha só quando precisa, pausa fora da tela, qualidade cai sozinha em aparelho lento | Página imersiva sem esquentar o celular |
+| Proposta | Sistemas marcados → mensagem para a Sol (mesmo começo do configurador) | Regra de 28/09: botões de venda passam pela Sol; WhatsApp só em "Fale com a SC" |
