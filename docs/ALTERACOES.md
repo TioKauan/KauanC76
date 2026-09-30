@@ -5,6 +5,45 @@ Cada publicação tem uma tag `publicado-<data>` no Git, apontando para o commit
 
 ---
 
+## 30/09/2026, 22:29 (UTC) — Página do Condomínio Evoluído, com a maquete 3D
+
+Tag `publicado-2026-09-30-222923` (código do commit `3ca5ebe`).
+
+### O que mudou para quem visita o site
+
+| Onde | Antes | Agora |
+|---|---|---|
+| `/condominio/` | Não existia | Página do Condomínio Evoluído: maquete 3D do condomínio que acompanha a leitura em 8 capítulos, acendendo cada camada (câmeras, acesso facial, interfonia, alarme, rede e wi-fi, nobreak); monitor com a imagem de cada câmera, pontos cegos, "E se…?" de falta de energia e "Monte a proposta", que manda os sistemas marcados (e, se quiser, blocos e apartamentos) para a Sol |
+| Menu (computador e celular) | — | "Condomínio" leva à página nova |
+| Página inicial | Sem link para o condomínio | Links para a página nova na abertura (ao escolher "Condomínio"), na aba Condomínio dos planos e no configurador |
+| `/robots.txt` | Não existia (o endereço devolvia a página inicial) | Libera o site para os buscadores e aponta o sitemap, que agora lista as 3 páginas |
+
+Sem 3D (aparelho sem WebGL 2) ou sem JavaScript, a página mostra a imagem pronta da maquete e
+todo o texto. A página não tem preço, prazo de contrato nem WhatsApp fora de "Fale com a SC".
+
+### Por quê
+
+- Pedido do Kauan: páginas separadas, começando pelo condomínio, com algo imersivo e interação 3D.
+  Ele aprovou o protótipo, o visual e "Condomínio" no menu em 30/09/2026
+  (`docs/inovacao/condominio/PLANO.md`).
+- `robots.txt`: sem ele, o buscador recebia a página inicial no lugar do arquivo e não achava o
+  sitemap.
+
+### Técnico
+
+- Three.js r186, baixado depois da página: primeira visão 249 KB, maquete 616 KB. Desenha só quando
+  algo muda, pausa fora da tela e respeita "reduzir movimento".
+- Acessibilidade automática (axe, WCAG 2.2 A/AA) na inicial, em `/privacidade/`, em `/condominio/` e
+  com o chat aberto, no computador e no celular: nenhuma violação.
+- Testes: 142. Validador: 100/100.
+- Publicado no domínio, no `www` e no endereço provisório. Conferido de fora: os 22 arquivos, nos 3
+  endereços, respondem 200 e são idênticos ao build; no ar, a maquete desenha e o console fica sem
+  erros. Versão anterior em
+  `/opt/somoscella/backups/site-no-ar-antes-20260930-222923-*.tar.gz` e nas pastas
+  `index.antigo-20260930-222923`.
+
+---
+
 ## 29/09/2026, 09:19 (UTC) — WhatsApp só em "Fale com a SC"; os botões de venda abrem a Sol
 
 Tag `publicado-2026-09-29-091929` (código do commit `50e4433`).
