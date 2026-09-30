@@ -17,7 +17,7 @@ export function iniciarBarra(): void {
   const temSol = document.querySelector('[data-sol]') !== null;
   const padrao: ResumoBarra = {
     titulo: temSol ? 'Fale com a Sol' : 'Fale com a SC',
-    sub: mostrarPrecos ? `A partir de R$ ${formatarPreco(menorPreco)}/mês` : 'Planos de locação de câmeras',
+    sub: barra.dataset.subFixo ?? (mostrarPrecos ? `A partir de R$ ${formatarPreco(menorPreco)}/mês` : 'Planos de locação de câmeras'),
   };
   let planoVisivel: Plano = planos.find((p) => p.destaque) ?? planos[0]!;
   let resumoConfig: ResumoBarra = { titulo: 'Monte seu sistema', sub: 'Toque na planta para marcar' };

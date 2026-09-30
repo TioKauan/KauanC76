@@ -1,6 +1,6 @@
 # Relatório de validação do site
 
-Gerado por `npm run validar` em 30/09/2026, 13:22:10.
+Gerado por `npm run validar` em 30/09/2026, 18:08:08.
 Resultado: **82 de 82 itens ✅** — checklist completa.
 
 ## Geral
@@ -8,8 +8,8 @@ Resultado: **82 de 82 itens ✅** — checklist completa.
 | | Item | Detalhe |
 |---|---|---|
 | ✅ | Tipos conferidos (astro check) e build sem erro |  |
-| ✅ | Testes unitários das regras (Vitest) passam | 114 testes |
-| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 386 KB em 5 arquivos; maiores: / 194 KB, /assets/Base.astro_astro_type_script_index_0_lang.gi_fvzDT.js 63 KB, /assets/Logo.3_xYzUnw.css 53 KB |
+| ✅ | Testes unitários das regras (Vitest) passam | 118 testes |
+| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 387 KB em 6 arquivos; maiores: / 194 KB, /assets/index.astro_astro_type_script_index_0_lang.CZWyw72K.js 63 KB, /marca/sc-logo.webp 52 KB |
 | ✅ | Todo link interno leva a uma seção que existe | 7 destinos conferidos |
 | ✅ | Todo WhatsApp usa wa.me/5549998325623 com mensagem preenchida | 1 links |
 | ✅ | Todo botão de WhatsApp mostra o ícone do WhatsApp |  |
@@ -75,7 +75,7 @@ Resultado: **82 de 82 itens ✅** — checklist completa.
 
 | | Item | Detalhe |
 |---|---|---|
-| ✅ | Linha do tempo acende etapa por etapa | 0 → 1 → 2 → 3 → 4 → 4 → 5 |
+| ✅ | Linha do tempo acende etapa por etapa | 0 → 1 → 2 → 3 → 3 → 4 → 5 |
 | ✅ | 7 perguntas; a busca "celular" mostra a resposta certa | Consigo ver as câmeras pelo celular? |
 | ✅ | Busca sem resultado oferece perguntar para a Sol (sem WhatsApp) |  |
 | ✅ | Área do cliente identificada como exemplo ("em breve") |  |

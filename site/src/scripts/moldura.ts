@@ -58,13 +58,16 @@ export function iniciarMoldura(): void {
     for (const e of entradas) {
       if (!e.isIntersecting) continue;
       links.forEach((a) => {
+        if (!a.getAttribute('href')?.startsWith('#')) return; // "Condomínio" (página) não entra aqui
         if (a.getAttribute('href') === `#${e.target.id}`) a.setAttribute('aria-current', 'true');
         else a.removeAttribute('aria-current');
       });
     }
   }, { rootMargin: '-45% 0px -50% 0px' });
   links.forEach((a) => {
-    const secao = document.querySelector(a.getAttribute('href') ?? '');
+    // Só âncoras desta página (#planos); links para outras páginas (/condominio/, /#planos) ficam de fora.
+    const href = a.getAttribute('href') ?? '';
+    const secao = href.startsWith('#') ? document.querySelector(href) : null;
     if (secao) ativo.observe(secao);
   });
 }

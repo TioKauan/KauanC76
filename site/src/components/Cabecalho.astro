@@ -2,16 +2,23 @@
 import Icone from './Icone.astro';
 import Logo from './Logo.astro';
 import { contato, empresa } from '../lib/dados';
-import { links } from '../lib/site';
+import { hrefSecao, links } from '../lib/site';
+
+interface Props {
+  /** false nas outras páginas: o menu aponta para as seções da inicial (/#planos). */
+  naInicial?: boolean;
+}
+const { naInicial = true } = Astro.props;
+const atual = (href: string) => (href === Astro.url.pathname ? 'page' : undefined);
 ---
 
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
 <div class="progresso-leitura" aria-hidden="true"></div>
 <header class="cabecalho">
   <div class="wrap cabecalho-linha">
-    <a href="#inicio" class="logo-link" aria-label="SC Soluções, voltar ao início"><Logo /></a>
+    <a href={naInicial ? '#inicio' : '/'} class="logo-link" aria-label={naInicial ? 'SC Soluções, voltar ao início' : 'SC Soluções, página inicial'}><Logo /></a>
     <nav class="nav" aria-label="Navegação principal">
-      {links.map((l) => <a href={l.href}>{l.rotulo}</a>)}
+      {links.map((l) => <a href={hrefSecao(l.href, naInicial)} aria-current={atual(l.href)}>{l.rotulo}</a>)}
     </nav>
     <!-- 28/09/2026: o WhatsApp da equipe fica só na seção "Fale com a SC" (decisão do Kauan). -->
     <a class="btn btn-contorno btn-p cabecalho-cta" href="#contato">Fale com a SC</a>
@@ -21,7 +28,7 @@ import { links } from '../lib/site';
   </div>
   <div class="menu-celular" id="menu-celular" hidden>
     <nav aria-label="Navegação no celular">
-      {links.map((l, i) => <a href={l.href}><span>0{i + 1}</span>{l.rotulo}<Icone nome="arrow-right" tamanho={18} /></a>)}
+      {links.map((l, i) => <a href={hrefSecao(l.href, naInicial)} aria-current={atual(l.href)}><span>0{i + 1}</span>{l.rotulo}<Icone nome="arrow-right" tamanho={18} /></a>)}
     </nav>
     <a class="btn btn-primario" href="#contato">Fale com a SC</a>
     <p class="menu-nota">{contato.atendimento} · {empresa.regiao}</p>

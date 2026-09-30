@@ -8,6 +8,11 @@ import ComoFunciona from '../components/ComoFunciona.astro';
 import ContatoFinal from '../components/ContatoFinal.astro';
 import Rodape from '../components/Rodape.astro';
 import BarraFixa from '../components/BarraFixa.astro';
+import '../styles/abertura.css';
+import '../styles/planos.css';
+import '../styles/configurador.css';
+import '../styles/como-funciona.css';
+// Depois dos estilos das seções, na mesma ordem de antes (o sol.css vem com o componente).
 import Sol from '../components/Sol.astro';
 import { formatarPreco, menorPreco, mostrarPrecos } from '../lib/dados';
 
@@ -31,4 +36,7 @@ const aPartir = mostrarPrecos ? ` a partir de R$ ${formatarPreco(menorPreco)}/m�
   <Rodape />
   <BarraFixa />
   <Sol />
+  <script>
+    import '../scripts/main';
+  </script>
 </Base>

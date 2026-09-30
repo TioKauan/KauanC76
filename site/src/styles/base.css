@@ -111,8 +111,8 @@ p { margin: 0; }
 .nav { display: flex; gap: 30px; margin-inline: auto; font-size: 14px; color: #c4cfdb; }
 .nav a { position: relative; padding-block: 8px; transition: color 0.2s; }
 .nav a::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; border-radius: 2px; background: var(--laranja); transform: scaleX(0); transform-origin: left; transition: transform 0.35s var(--suave); }
-.nav a:hover, .nav a[aria-current='true'] { color: #fff; }
-.nav a:hover::after, .nav a[aria-current='true']::after { transform: scaleX(1); }
+.nav a:hover, .nav a[aria-current='true'], .nav a[aria-current='page'] { color: #fff; }
+.nav a:hover::after, .nav a[aria-current='true']::after, .nav a[aria-current='page']::after { transform: scaleX(1); }
 .menu-botao { display: none; width: 44px; height: 44px; border-radius: 10px; border: 1px solid var(--linha-2); place-items: center; margin-left: auto; }
 .menu-botao .ic-fechar, .menu-botao[aria-expanded='true'] .ic-abrir { display: none; }
 .menu-botao[aria-expanded='true'] .ic-fechar { display: block; }

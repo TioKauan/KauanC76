@@ -1,12 +1,10 @@
 ---
-/** Estrutura da página: metadados, fonte, estilos e o script de interação. */
+/**
+ * Estrutura comum a todas as páginas: metadados, fonte e estilos-base.
+ * Os estilos e o script de cada página ficam na própria página, para cada uma baixar só o que usa.
+ */
 import fonteLatina from '../assets/fontes/manrope-latin-wght-normal.woff2?url';
 import '../styles/base.css';
-import '../styles/abertura.css';
-import '../styles/planos.css';
-import '../styles/configurador.css';
-import '../styles/como-funciona.css';
-import '../styles/sol.css';
 import { empresa } from '../lib/dados';
 import { simboloWhatsapp } from '../lib/marcas';
 
@@ -45,8 +43,5 @@ const imagemSocial = new URL('/marca/og-imagem.png', empresa.site).href;
   <body>
     <Fragment set:html={simboloWhatsapp()} />
     <slot />
-    <script>
-      import '../scripts/main';
-    </script>
   </body>
 </html>
