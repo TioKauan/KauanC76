@@ -56,6 +56,7 @@
 .condominio-proposta { padding: 30px; }
 .condominio-proposta[hidden] { display: none; }
 .condominio-proposta h3 { font-size: 28px; margin: 14px 0 8px; }
+.link-3d { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 6px; font-size: 14px; font-weight: 700; color: var(--ciano); text-decoration: underline; text-underline-offset: 3px; }
 .condominio-proposta > p { color: var(--texto-2); max-width: 520px; }
 .condominio-sistemas { border: 0; padding: 0; margin: 22px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 

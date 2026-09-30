@@ -97,6 +97,7 @@ const cameras = (n: number) => `${n} ${n > 1 ? 'câmeras' : 'câmera'}`;
               <span class="sol-orbe sol-orbe-p" aria-hidden="true"></span> Pedir proposta<span class="sr"> (abre o chat da Sol)</span>
             </a>
             {s.id === 'condominio' && (
+              <a class="btn btn-contorno" href="/condominio/"><Icone nome="layers" tamanho={18} /> Ver o Condomínio Evoluído em 3D</a>
               <a class="btn btn-contorno" href="#monte" data-configurar-ambiente="condominio">Montar a proposta no configurador</a>
             )}
           </div>

@@ -1,0 +1,182 @@
+---
+/**
+ * Capítulos da página do condomínio. Todo o texto está aqui no HTML (funciona sem JavaScript);
+ * o script só liga cada capítulo à maquete. Textos: dados.ts (paginaCondominio, servicosProposta)
+ * e cenarios.ts (o mesmo "E se…?" da página inicial, versão condomínio).
+ */
+import Icone from '../Icone.astro';
+import { paginaCondominio, servicosProposta, textoProposta } from '../../lib/dados';
+import { ambientes, situacoes, sistemas, estadoCena, type SistemaId } from '../../lib/cenarios';
+import { CAMADAS, CAPITULOS } from '../../lib/condominio/capitulos';
+import { CAMERAS, rotuloCamera } from '../../lib/condominio/maquete';
+import { mensagemProposta } from '../../lib/condominio/proposta';
+
+const t = paginaCondominio.capitulos;
+const servico = (id: string) => {
+  const s = servicosProposta.find((x) => x.id === id);
+  if (!s) throw new Error(`servicosProposta sem ${id}`);
+  return s;
+};
+const condominio = servico('condominio');
+const redes = servico('redes');
+const alarme = servico('alarme');
+const visita = estadoCena('condominio', 'visita', false);
+const inicialEse = estadoCena('condominio', 'energia', true);
+const visitaTexto = ambientes.find((a) => a.id === 'condominio')!.visita;
+const total = CAPITULOS.filter((c) => c.numero).length;
+const numero = (id: string) => CAPITULOS.find((c) => c.id === id)?.numero;
+// Marcados de início no formulário (os mesmos da imagem aprovada).
+const marcados = ['cameras', 'facial', 'interfonia', 'nobreak'];
+const mensagemInicial = mensagemProposta({ sistemas: marcados });
+const ordemSistemas: SistemaId[] = ['rede', 'cameras', 'acesso', 'energia', 'internet'];
+---
+
+<div class="capitulos">
+  <article class="capitulo capitulo-abertura" id="abertura" data-capitulo="abertura" aria-labelledby="cond-titulo">
+    <div class="capitulo-caixa">
+      <p class="sobretitulo">{condominio.titulo}</p>
+      <h1 id="cond-titulo">{condominio.texto}</h1>
+      <p class="capitulo-lead">{paginaCondominio.lead}</p>
+      <div class="capitulo-acoes">
+        <a class="btn btn-primario btn-g" href="#proposta">Montar a proposta <Icone nome="arrow-down" tamanho={18} traco={2} /></a>
+        <button type="button" class="btn btn-contorno btn-g" data-explorar data-so-3d hidden><Icone nome="move" tamanho={18} /> Explorar a maquete</button>
+      </div>
+      <ul class="sistemas-lista">
+        {condominio.itens.map((i) => <li><Icone nome="check" tamanho={15} traco={2.4} />{i}</li>)}
+      </ul>
+    </div>
+  </article>
+
+  <article class="capitulo" id="cameras" data-capitulo="cameras" aria-labelledby="cap-cameras">
+    <div class="capitulo-caixa">
+      <p class="sobretitulo">{t.cameras.sobre} <span class="capitulo-num">{numero('cameras')} de {total}</span></p>
+      <h2 id="cap-cameras">{t.cameras.titulo}</h2>
+      <p class="capitulo-lead">{t.cameras.texto}</p>
+      <div class="lista-cameras" role="group" aria-label="Câmeras da maquete">
+        {
+          CAMERAS.map((c) => (
+            <button type="button" class="camera-botao" data-camera={c.id} aria-pressed="false">
+              <b>{rotuloCamera(c.id).replace('CAM ', '')}</b> {c.nome}
+            </button>
+          ))
+        }
+      </div>
+      <div class="aviso-cegos">
+        <button type="button" class="interruptor-botao" data-pontos-cegos aria-pressed="true" data-so-3d hidden>
+          <span class="interruptor" aria-hidden="true"></span><span class="sr">Mostrar pontos cegos</span>
+        </button>
+        <p><b>Pontos cegos</b>{t.cameras.pontosCegos}</p>
+      </div>
+    </div>
+  </article>
+
+  <article class="capitulo" id="acesso" data-capitulo="acesso" aria-labelledby="cap-acesso">
+    <div class="capitulo-caixa">
+      <p class="sobretitulo">{t.acesso.sobre} <span class="capitulo-num">{numero('acesso')} de {total}</span></p>
+      <h2 id="cap-acesso">{t.acesso.titulo}</h2>
+      <ul class="passos">
+        <li style="--cor:#3be38a"><Icone nome="scan-face" tamanho={20} /><div><b>Morador cadastrado</b><span>{t.acesso.morador}</span></div></li>
+        <li style="--cor:#8aa8ff"><Icone nome="phone" tamanho={20} /><div><b>Visitante</b><span>{visitaTexto}</span></div></li>
+      </ul>
+      <div class="estado-caixa">
+        <b>{visita.titulo}</b>
+        <small>{visita.condicao}</small>
+      </div>
+    </div>
+  </article>
+
+  <article class="capitulo" id="interfonia" data-capitulo="interfonia" aria-labelledby="cap-interfonia">
+    <div class="capitulo-caixa">
+      <p class="sobretitulo">{t.interfonia.sobre} <span class="capitulo-num">{numero('interfonia')} de {total}</span></p>
+      <h2 id="cap-interfonia">{t.interfonia.titulo}</h2>
+      <p class="capitulo-lead">{t.interfonia.texto}</p>
+    </div>
+  </article>
+
+  <article class="capitulo" id="rede" data-capitulo="rede" aria-labelledby="cap-rede">
+    <div class="capitulo-caixa">
+      <p class="sobretitulo">{t.rede.sobre} <span class="capitulo-num">{numero('rede')} de {total}</span></p>
+      <h2 id="cap-rede">{t.rede.titulo}</h2>
+      <p class="capitulo-lead">{t.rede.texto}</p>
+      <ul class="sistemas-lista">{redes.itens.map((i) => <li><Icone nome="check" tamanho={15} traco={2.4} />{i}</li>)}</ul>
+    </div>
+  </article>
+
+  <article class="capitulo" id="energia" data-capitulo="energia" aria-labelledby="cap-energia">
+    <div class="capitulo-caixa">
+      <p class="sobretitulo">{t.energia.sobre} <span class="capitulo-num">{numero('energia')} de {total}</span></p>
+      <h2 id="cap-energia">{t.energia.titulo}</h2>
+      <div class="ese" role="group" aria-labelledby="cap-energia" data-ese data-situacao="energia" data-reserva="sim">
+        <div class="ese-opcoes" role="group" aria-label="Situações para simular">
+          {
+            situacoes.map((s) => (
+              <button type="button" class="ese-opcao" data-ese-situacao={s.id} aria-pressed={s.id === 'energia' ? 'true' : 'false'}>
+                <Icone nome={s.icone} tamanho={18} /> {s.nome}
+              </button>
+            ))
+          }
+        </div>
+        <button type="button" class="ese-nobreak" data-ese-nobreak aria-pressed="true">
+          <span class="interruptor" aria-hidden="true"></span>
+          <span><b>Com nobreak</b><small>Para câmeras, rede, gravador e acesso</small></span>
+        </button>
+        <div aria-live="polite">
+          <p class="ese-titulo" data-ese-titulo>{inicialEse.titulo}</p>
+          <p class="ese-texto" data-ese-explicacao>{inicialEse.explicacao}</p>
+          <p class="ese-cond" data-ese-condicao>{inicialEse.condicao}</p>
+        </div>
+        <div class="ese-sistemas">
+          {
+            ordemSistemas.map((id) => (
+              <div data-ese-sistema={id} data-estado={inicialEse.estados[id]}>
+                <b>{sistemas[id].nome}</b>
+                <span data-ese-texto>{inicialEse.textos[id]}</span>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <article class="capitulo" id="alarme" data-capitulo="alarme" aria-labelledby="cap-alarme">
+    <div class="capitulo-caixa">
+      <p class="sobretitulo">{t.alarme.sobre} <span class="capitulo-num">{numero('alarme')} de {total}</span></p>
+      <h2 id="cap-alarme">{t.alarme.titulo}</h2>
+      <p class="capitulo-lead">{t.alarme.texto}</p>
+      <ul class="sistemas-lista">{alarme.itens.map((i) => <li><Icone nome="check" tamanho={15} traco={2.4} />{i}</li>)}</ul>
+    </div>
+  </article>
+
+  <article class="capitulo capitulo-proposta" id="proposta" data-capitulo="proposta" aria-labelledby="cap-proposta">
+    <div class="capitulo-caixa">
+      <p class="sobretitulo">{t.proposta.sobre}</p>
+      <h2 id="cap-proposta">{t.proposta.titulo}</h2>
+      <p class="capitulo-lead">{t.proposta.texto}</p>
+      <div class="proposta" role="group" aria-labelledby="cap-proposta" data-proposta>
+        <fieldset class="proposta-sistemas">
+          <legend class="sr">Sistemas de interesse</legend>
+          {
+            CAMADAS.map((c) => (
+              <label class="proposta-opcao" style={`--cor:${c.cor}`}>
+                <input type="checkbox" value={c.sistema} data-proposta-sistema checked={marcados.includes(c.sistema)} />
+                <span class="caixinha" aria-hidden="true"><Icone nome="check" tamanho={13} traco={3} /></span>
+                <span>{c.nome}</span>
+                <Icone nome={c.icone} tamanho={18} />
+              </label>
+            ))
+          }
+        </fieldset>
+        <div class="proposta-numeros">
+          <label>Blocos <span class="opcional">(opcional)</span><input type="number" inputmode="numeric" min="1" max="50" step="1" placeholder="Ex.: 2" data-proposta-blocos /></label>
+          <label>Apartamentos <span class="opcional">(opcional)</span><input type="number" inputmode="numeric" min="1" max="3000" step="1" placeholder="Ex.: 56" data-proposta-apartamentos /></label>
+        </div>
+        <p class="proposta-mensagem" data-proposta-mensagem>{mensagemInicial}</p>
+        <a class="btn btn-primario btn-g proposta-enviar" href="#contato" data-sol-abrir data-sol-mensagem={mensagemInicial} data-proposta-enviar>
+          <span class="sol-orbe sol-orbe-p" aria-hidden="true"></span> Enviar para a SC pela Sol<span class="sr"> (abre o chat da Sol)</span>
+        </a>
+        <p class="proposta-miuda">{textoProposta}</p>
+      </div>
+    </div>
+  </article>
+</div>

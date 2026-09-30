@@ -1,0 +1,38 @@
+---
+/**
+ * Condomínio Evoluído: a maquete 3D do condomínio (aprovada pelo Kauan em 30/09/2026).
+ * Plano e imagens de referência: docs/inovacao/condominio/PLANO.md.
+ * Todo o texto está no HTML; a maquete 3D entra por cima, só quando o aparelho aguenta.
+ */
+import Base from '../layouts/Base.astro';
+import Cabecalho from '../components/Cabecalho.astro';
+import Palco from '../components/condominio/Palco.astro';
+import Capitulos from '../components/condominio/Capitulos.astro';
+import ContatoFinal from '../components/ContatoFinal.astro';
+import Rodape from '../components/Rodape.astro';
+import BarraFixa from '../components/BarraFixa.astro';
+import '../styles/condominio.css';
+import Sol from '../components/Sol.astro';
+---
+
+<Base
+  titulo="Condomínio Evoluído | Câmeras, acesso facial e interfonia para condomínios | SC Soluções"
+  descricao="Veja numa maquete 3D como câmeras, controle de acesso facial, interfonia, rede, nobreak e alarme funcionam juntos no condomínio. Proposta personalizada da SC Soluções em Francisco Beltrão e região."
+  tituloSocial="Condomínio Evoluído em 3D | SC Soluções"
+  descricaoSocial="Acessos, segurança e infraestrutura em um projeto só. Gire a maquete e veja o que cada câmera enxerga."
+>
+  <Cabecalho naInicial={false} />
+  <main id="conteudo">
+    <section class="tour" aria-label="Condomínio Evoluído, capítulo por capítulo" data-tour>
+      <Palco />
+      <Capitulos />
+    </section>
+    <ContatoFinal />
+  </main>
+  <Rodape naInicial={false} />
+  <BarraFixa sub="Monte a proposta do condomínio" />
+  <Sol />
+  <script>
+    import '../scripts/condominio/pagina';
+  </script>
+</Base>

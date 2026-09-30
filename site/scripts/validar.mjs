@@ -65,8 +65,9 @@ const servidor = createServer((req, res) => {
 await new Promise((r) => servidor.listen(0, '127.0.0.1', r));
 const endereco = `http://127.0.0.1:${servidor.address().port}/`;
 
-const navegador = await chromium.launch();
-const abrir = async (largura, extras = {}) => {
+// WebGL por software (SwiftShader) para a maquete 3D do condomínio.
+const navegador = await chromium.launch({ args: ['--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+const abrir = async (largura, extras = {}, caminho = '') => {
   const celular = largura <= 800;
   const contexto = await navegador.newContext({ viewport: { width: largura, height: celular ? 844 : 900 }, deviceScaleFactor: celular ? 2 : 1, hasTouch: celular, isMobile: celular && largura < 600, ...extras });
   const pagina = await contexto.newPage();
@@ -75,7 +76,7 @@ const abrir = async (largura, extras = {}) => {
   pagina.on('console', (m) => { if (m.type() === 'error') erros.push(m.text()); });
   pagina.on('pageerror', (e) => erros.push(String(e)));
   pagina.on('request', (r) => { if (r.url().startsWith(endereco)) bytes.urls.add(new URL(r.url()).pathname); });
-  await pagina.goto(endereco, { waitUntil: 'networkidle' });
+  await pagina.goto(endereco + caminho, { waitUntil: 'networkidle' });
   await pagina.evaluate(() => document.fonts.ready);
   return { pagina, contexto, erros, bytes };
 };
@@ -720,6 +721,168 @@ grupo('Sol · chat do site');
   await cel.contexto.close();
 }
 
+/* ---------- Condomínio Evoluído (/condominio/) ---------- */
+grupo('Condomínio · maquete 3D');
+{
+  // As regras do condomínio importam outros módulos sem extensão: quem carrega é o Vite (o mesmo do Astro).
+  const { createServer: criarVite } = await import('vite');
+  const vite = await criarVite({ root: raizSite, logLevel: 'silent', appType: 'custom', server: { middlewareMode: true, hmr: false } });
+  const { CAPITULOS } = await vite.ssrLoadModule('/src/lib/condominio/capitulos.ts');
+  const { mensagemProposta } = await vite.ssrLoadModule('/src/lib/condominio/proposta.ts');
+  const { estadoCena } = await vite.ssrLoadModule('/src/lib/cenarios.ts');
+  await vite.close();
+  const esperar3D = (p) => p.waitForFunction(() => Number(document.querySelector('[data-maquete]')?.dataset.quadros) > 1, null, { timeout: 90000 });
+  const estado = (p) => p.evaluate(() => window.__condominio());
+  const irPara = async (p, id) => {
+    await p.evaluate((i) => { const el = document.getElementById(i); scrollTo({ top: el.getBoundingClientRect().top + scrollY - 60, behavior: 'instant' }); }, id);
+    await p.waitForTimeout(500);
+  };
+
+  const { pagina, contexto, erros, bytes } = await abrir(1440, { reducedMotion: 'reduce' }, 'condominio/');
+  await esperar3D(pagina);
+  const cores = await pagina.evaluate(() => window.__maquetePixels());
+  const pronto = await pagina.evaluate(() => ({ canvas: !document.querySelector('[data-maquete]').hidden, marca: document.documentElement.hasAttribute('data-3d'), monitor: document.querySelectorAll('[data-monitor-grade] .feed').length }));
+  conferir('A maquete 3D desenha de verdade (WebGL) e o monitor mostra 4 câmeras na abertura',
+    pronto.canvas && pronto.marca && new Set(cores).size >= 6 && pronto.monitor === 4, `${new Set(cores).size} cores distintas na amostra; ${pronto.monitor} câmeras no monitor`);
+
+  const errados = [];
+  for (const c of CAPITULOS) {
+    await irPara(pagina, c.id);
+    const e = await estado(pagina);
+    const esperadas = c.id === 'proposta' ? null : [...c.camadas].sort().join();
+    if (e.capitulo !== c.id || (esperadas && e.camadas.sort().join() !== esperadas) || e.monitor.join() !== c.monitor.join()) errados.push(`${c.id}→${e.capitulo}`);
+  }
+  conferir('Cada capítulo, ao rolar, acende as suas camadas e as suas câmeras no monitor', errados.length === 0, errados.join(', ') || `${CAPITULOS.length} capítulos`);
+
+  await irPara(pagina, 'cameras');
+  await pagina.focus('[data-camera="5"]');
+  await pagina.keyboard.press('Enter');
+  const porTeclado = await estado(pagina);
+  const nomeFeed = await pagina.$eval('[data-monitor-grade] .feed-nome', (el) => el.textContent);
+  await pagina.click('.rotulo-camera[aria-label^="CAM 07"]');
+  const porToque = await estado(pagina);
+  conferir('Escolher câmera pelo teclado ou tocando no número dela na maquete mostra a imagem dela',
+    porTeclado.selecionada === 5 && porTeclado.monitor.join() === '5' && nomeFeed.startsWith('CAM 05') && porToque.selecionada === 7, `teclado → ${porTeclado.selecionada} (${nomeFeed}); toque → ${porToque.selecionada}`);
+  const cegosAntes = (await estado(pagina)).pontosCegos;
+  await pagina.click('[data-pontos-cegos]');
+  const cegosDepois = (await estado(pagina)).pontosCegos;
+  conferir('Pontos cegos aparecem no capítulo das câmeras e dá para esconder', cegosAntes === true && cegosDepois === false);
+
+  await irPara(pagina, 'energia');
+  const ese = async (situacao, nobreak) => {
+    await pagina.click(`[data-ese-situacao="${situacao}"]`);
+    if (nobreak) await pagina.click('[data-ese-nobreak]');
+    return { titulo: await pagina.textContent('[data-ese-titulo]'), e: await estado(pagina) };
+  };
+  const semLuz = await ese('energia', false);
+  const comNobreak = await ese('energia', true);
+  const internet = await ese('internet', false);
+  const esperado = (s, r) => estadoCena('condominio', s, r).titulo;
+  conferir('"E se…?" do condomínio: textos iguais aos da inicial e a maquete apaga sem energia',
+    semLuz.titulo === esperado('energia', false) && !semLuz.e.nobreak && comNobreak.titulo === esperado('energia', true) && comNobreak.e.nobreak && internet.titulo === esperado('internet', false),
+    `${semLuz.titulo} / ${comNobreak.titulo} / ${internet.titulo}`);
+
+  await irPara(pagina, 'proposta');
+  await pagina.click('[data-proposta-sistema][value="rede"] ~ .caixinha');
+  await pagina.click('[data-proposta-sistema][value="interfonia"] ~ .caixinha');
+  await pagina.fill('[data-proposta-blocos]', '3');
+  await pagina.fill('[data-proposta-apartamentos]', '72');
+  const prop = await pagina.evaluate(() => ({
+    texto: document.querySelector('[data-proposta-mensagem]').textContent,
+    sol: document.querySelector('[data-proposta-enviar]').dataset.solMensagem,
+    orbe: Boolean(document.querySelector('[data-proposta-enviar] .sol-orbe')),
+    href: document.querySelector('[data-proposta-enviar]').getAttribute('href'),
+  }));
+  const eProp = await estado(pagina);
+  const msgEsperada = mensagemProposta({ sistemas: ['cameras', 'facial', 'rede', 'nobreak'], blocos: 3, apartamentos: 72 });
+  conferir('Proposta: marcar sistemas muda a maquete e a mensagem vai pronta para a Sol (orbe; sem JavaScript leva a "Fale com a SC")',
+    prop.texto === msgEsperada && prop.sol === msgEsperada && prop.orbe && prop.href === '#contato' && eProp.camadas.sort().join() === 'acesso,cameras,energia,rede',
+    prop.texto.replace(/\n/g, ' / '));
+  await pagina.click('[data-proposta-enviar]');
+  await pagina.waitForSelector('.sol-painel.sol-painel-visivel', { timeout: 5000 });
+  conferir('"Enviar para a SC pela Sol" abre o chat', true);
+  await pagina.keyboard.press('Escape');
+
+  await irPara(pagina, 'abertura');
+  await pagina.click('[data-explorar]');
+  const explorando = await pagina.evaluate(() => ({ modo: document.querySelector('[data-tour]').hasAttribute('data-explorar'), foco: document.activeElement?.hasAttribute('data-explorar-sair'), fixo: getComputedStyle(document.querySelector('[data-palco]')).position }));
+  await pagina.keyboard.press('Escape');
+  const saiu = await pagina.evaluate(() => ({ modo: document.querySelector('[data-tour]').hasAttribute('data-explorar'), foco: document.activeElement?.hasAttribute('data-explorar') }));
+  conferir('"Explorar a maquete" abre em tela cheia e Esc volta ao roteiro (com o foco no botão)', explorando.modo && explorando.foco && explorando.fixo === 'fixed' && !saiu.modo && saiu.foco, JSON.stringify({ explorando, saiu }));
+
+  // "Reduzir movimento": a maquete só desenha quando algo muda
+  const q1 = await pagina.$eval('[data-maquete]', (c) => Number(c.dataset.quadros));
+  await pagina.waitForTimeout(1500);
+  const q2 = await pagina.$eval('[data-maquete]', (c) => Number(c.dataset.quadros));
+  conferir('"Reduzir movimento": a maquete não anima sozinha (desenha só quando algo muda)', q2 - q1 <= 1, `${q2 - q1} quadros em 1,5 s parada`);
+
+  const whatsFora = await pagina.evaluate(() => [...document.querySelectorAll('a[href*="wa.me"]')].filter((a) => !a.closest('#contato')).length);
+  const whatsContato = await pagina.evaluate(() => document.querySelectorAll('#contato a[href*="wa.me"]').length);
+  conferir('WhatsApp da equipe só em "Fale com a SC" também nesta página', whatsFora === 0 && whatsContato > 0, `${whatsContato} no contato, ${whatsFora} fora`);
+  const texto = await pagina.evaluate(() => document.body.innerText);
+  conferir('Sem preço, prazo de contrato nem "instalação inclusa" na página do condomínio', !/R\$|instalação inclusa|sem investimento|24 meses|multa/i.test(texto));
+  conferir('Zero erros no console (maquete 3D, computador)', erros.length === 0, erros.slice(0, 2).join(' | '));
+
+  // Peso: a primeira visão é leve; a maquete 3D chega depois, num arquivo só
+  const tamanhos = [...bytes.urls].map((u) => { const f = path.join(dist, u.endsWith('/') ? `${u}index.html` : u); return existsSync(f) && statSync(f).isFile() ? { u, t: statSync(f).size } : null; }).filter(Boolean);
+  const cena = tamanhos.filter((x) => /\/assets\/cena\./.test(x.u));
+  const inicial = tamanhos.filter((x) => !/\/assets\/cena\./.test(x.u) && !/maquete-celular/.test(x.u)).reduce((s, x) => s + x.t, 0);
+  const pesoCena = cena.reduce((s, x) => s + x.t, 0);
+  conferir('Peso: primeira visão ≤ 300 KB e maquete 3D ≤ 700 KB (baixada depois, sem compactação)', inicial <= 300 * 1024 && pesoCena > 0 && pesoCena <= 700 * 1024, `primeira visão ${(inicial / 1024).toFixed(0)} KB; maquete ${(pesoCena / 1024).toFixed(0)} KB`);
+  await contexto.close();
+
+  // Celular: maquete no alto, sem rolagem lateral, toques ≥ 44 px, sem erros
+  const cel = await abrir(390, {}, 'condominio/');
+  await esperar3D(cel.pagina);
+  await rolarTudo(cel.pagina);
+  const celInfo = await cel.pagina.evaluate(() => {
+    const palco = document.querySelector('[data-palco]').getBoundingClientRect();
+    // As caixinhas da proposta ficam escondidas: quem recebe o toque é o rótulo inteiro (.proposta-opcao).
+    const alvo = '.capitulos button, .capitulos a.btn, .capitulos .proposta-opcao, .capitulos input:not([type="checkbox"]), .ese-opcao, .ese-nobreak';
+    const pequenos = [...document.querySelectorAll(alvo)].filter((el) => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== 'hidden' && r.height < 44; }).map((el) => `${el.className || el.tagName} ${Math.round(el.getBoundingClientRect().height)}`);
+    return { sobra: document.documentElement.scrollWidth - innerWidth, alturaPalco: Math.round(palco.height), pequenos };
+  });
+  conferir('Celular: maquete no alto da tela, sem rolagem lateral, toques ≥ 44 px e sem erros',
+    celInfo.sobra <= 0 && celInfo.alturaPalco > 250 && celInfo.alturaPalco < 500 && celInfo.pequenos.length === 0 && cel.erros.length === 0,
+    JSON.stringify({ ...celInfo, pequenos: celInfo.pequenos.slice(0, 3), erros: cel.erros.slice(0, 1) }));
+  await cel.contexto.close();
+  for (const largura of [360, 768, 1024]) {
+    const t = await abrir(largura, {}, 'condominio/?sem3d');
+    const sobra = await t.pagina.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+    if (sobra > 0) conferir(`Condomínio sem rolagem horizontal em ${largura} px`, false, `${sobra} px`);
+    await t.contexto.close();
+  }
+
+  // Sem 3D (aparelho sem WebGL ou economizando dados) e sem JavaScript: imagem pronta e todo o texto
+  for (const [rotulo, extras, caminho] of [['sem 3D', {}, 'condominio/?sem3d'], ['sem JavaScript', { javaScriptEnabled: false }, 'condominio/']]) {
+    const t = await abrir(1440, extras, caminho);
+    const info = await t.pagina.evaluate(() => ({
+      imagem: (() => { const img = document.querySelector('[data-palco-imagem] img'); return img.complete && img.naturalWidth > 0 && getComputedStyle(img).opacity !== '0'; })(),
+      capitulos: document.querySelectorAll('[data-capitulo] h1, [data-capitulo] h2').length,
+      so3d: [...document.querySelectorAll('[data-so-3d]')].filter((el) => el.getBoundingClientRect().width > 0).length,
+      canvas: !document.querySelector('[data-maquete]').hidden,
+      contato: Boolean(document.querySelector('#contato a[href*="wa.me"]')),
+    }));
+    conferir(`Condomínio ${rotulo}: imagem da maquete, os 8 capítulos e o contato; controles da maquete escondidos`,
+      info.imagem && info.capitulos === CAPITULOS.length && info.so3d === 0 && !info.canvas && info.contato && t.erros.length === 0, JSON.stringify(info));
+    await t.contexto.close();
+  }
+
+  // Na inicial: os três caminhos até a página nova
+  const ini = await abrir(1440);
+  const escondidoAntes = await ini.pagina.$eval('[data-link-condominio]', (a) => a.hidden);
+  await ini.pagina.click('.ambientes .chip[data-ambiente="condominio"]');
+  const linkAbertura = await ini.pagina.$eval('[data-link-condominio]', (a) => !a.hidden && a.getAttribute('href'));
+  const outros = await ini.pagina.evaluate(() => ({
+    planos: Boolean(document.querySelector('#aba-condominio a[href="/condominio/"]')),
+    configurador: Boolean(document.querySelector('[data-condominio] a[href="/condominio/"]')),
+    menu: Boolean(document.querySelector('.nav a[href="/condominio/"]')),
+  }));
+  conferir('Inicial leva ao condomínio: abertura (ao escolher "Condomínio"), aba dos planos, configurador e menu',
+    escondidoAntes && linkAbertura === '/condominio/' && outros.planos && outros.configurador && outros.menu, JSON.stringify({ escondidoAntes, linkAbertura, ...outros }));
+  await ini.contexto.close();
+}
+
 /* ---------- Acessibilidade automática (axe-core, regras WCAG 2.2 A e AA) ---------- */
 grupo('Acessibilidade (axe)');
 {
@@ -728,7 +891,7 @@ grupo('Acessibilidade (axe)');
     const r = await new AxeBuilder({ page: pagina }).withTags(regras).analyze();
     for (const v of r.violations) achados.push(`${rotulo}: ${v.id} (${v.nodes.length}) ${v.nodes[0]?.target.join(' ')}`);
   };
-  for (const [caminho, nome] of [['', 'Página inicial'], ['privacidade/', '/privacidade/']]) {
+  for (const [caminho, nome] of [['', 'Página inicial'], ['privacidade/', '/privacidade/'], ['condominio/', '/condominio/']]) {
     const achados = [];
     for (const largura of [1440, 390]) {
       const { pagina, contexto } = await abrir(largura, { reducedMotion: 'reduce' });

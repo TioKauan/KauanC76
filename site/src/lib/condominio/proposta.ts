@@ -8,8 +8,9 @@ import { sistemasCondominio } from '../configurador-dados';
 export interface PedidoCondominio {
   /** Ids de `sistemasCondominio`. */
   sistemas: readonly string[];
-  blocos?: number | null;
-  apartamentos?: number | null;
+  /** Número ou o texto do campo (vazio ou inválido fica fora da mensagem). */
+  blocos?: number | string | null;
+  apartamentos?: number | string | null;
 }
 
 export const LIMITES = { blocos: [1, 50], apartamentos: [1, 3000] } as const;

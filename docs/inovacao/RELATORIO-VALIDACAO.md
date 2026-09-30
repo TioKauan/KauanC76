@@ -1,15 +1,15 @@
 # Relatório de validação do site
 
-Gerado por `npm run validar` em 30/09/2026, 18:08:08.
-Resultado: **82 de 82 itens ✅** — checklist completa.
+Gerado por `npm run validar` em 30/09/2026, 18:34:34.
+Resultado: **100 de 100 itens ✅** — checklist completa.
 
 ## Geral
 
 | | Item | Detalhe |
 |---|---|---|
 | ✅ | Tipos conferidos (astro check) e build sem erro |  |
-| ✅ | Testes unitários das regras (Vitest) passam | 118 testes |
-| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 387 KB em 6 arquivos; maiores: / 194 KB, /assets/index.astro_astro_type_script_index_0_lang.CZWyw72K.js 63 KB, /marca/sc-logo.webp 52 KB |
+| ✅ | Testes unitários das regras (Vitest) passam | 142 testes |
+| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 392 KB em 8 arquivos; maiores: / 196 KB, /marca/sc-logo.webp 52 KB, /assets/cenarios.BXkJPdU0.js 46 KB |
 | ✅ | Todo link interno leva a uma seção que existe | 7 destinos conferidos |
 | ✅ | Todo WhatsApp usa wa.me/5549998325623 com mensagem preenchida | 1 links |
 | ✅ | Todo botão de WhatsApp mostra o ícone do WhatsApp |  |
@@ -36,7 +36,7 @@ Resultado: **82 de 82 itens ✅** — checklist completa.
 | ✅ | Sem JavaScript o conteúdo aparece e os contatos funcionam (botões de venda levam a "Fale com a SC") | {"planos":5,"duvidas":7,"escondidos":0,"vendas":10,"whatsContato":true,"solEscondida":true} |
 | ✅ | Rodapé tem link para a Política de privacidade |  |
 | ✅ | /privacidade/ abre com as 9 seções, sem erro no console e sem rolagem lateral | 9 seções; erros: 0; sobra 0 px |
-| ✅ | Buscadores: robots.txt aponta o sitemap, e o sitemap lista todas as páginas | páginas: /, /privacidade/; no sitemap: /, /privacidade/ |
+| ✅ | Buscadores: robots.txt aponta o sitemap, e o sitemap lista todas as páginas | páginas: /, /condominio/, /privacidade/; no sitemap: /, /condominio/, /privacidade/ |
 
 ## Tela 1 · Abertura
 
@@ -117,10 +117,33 @@ Resultado: **82 de 82 itens ✅** — checklist completa.
 | ✅ | Celular: a última mensagem fica à vista com os botões rápidos na tela (roteiro e conversa) | {"vistaRoteiro":true,"vistaConversa":true} |
 | ✅ | Zero erros no console com o chat (celular) |  |
 
+## Condomínio · maquete 3D
+
+| | Item | Detalhe |
+|---|---|---|
+| ✅ | A maquete 3D desenha de verdade (WebGL) e o monitor mostra 4 câmeras na abertura | 16 cores distintas na amostra; 4 câmeras no monitor |
+| ✅ | Cada capítulo, ao rolar, acende as suas camadas e as suas câmeras no monitor | 8 capítulos |
+| ✅ | Escolher câmera pelo teclado ou tocando no número dela na maquete mostra a imagem dela | teclado → 5 (CAM 05 · Perímetro dos fundos); toque → 7 |
+| ✅ | Pontos cegos aparecem no capítulo das câmeras e dá para esconder |  |
+| ✅ | "E se…?" do condomínio: textos iguais aos da inicial e a maquete apaga sem energia | Sem reserva, os sistemas ficam sem energia. / Com nobreak, os sistemas seguem funcionando. / A gravação continua. Só o celular fica sem imagens. |
+| ✅ | Proposta: marcar sistemas muda a maquete e a mensagem vai pronta para a Sol (orbe; sem JavaScript leva a "Fale com a SC") | Olá! Quero uma proposta de Condomínio Evoluído. / Sistemas de interesse: câmeras nas áreas comuns, controle de acesso facial, rede e wi-fi, nobreak e quadro técnico. / O condomínio tem 3 blocos e 72 apartamentos. / Podemos conversar? |
+| ✅ | "Enviar para a SC pela Sol" abre o chat |  |
+| ✅ | "Explorar a maquete" abre em tela cheia e Esc volta ao roteiro (com o foco no botão) | {"explorando":{"modo":true,"foco":true,"fixo":"fixed"},"saiu":{"modo":false,"foco":true}} |
+| ✅ | "Reduzir movimento": a maquete não anima sozinha (desenha só quando algo muda) | 1 quadros em 1,5 s parada |
+| ✅ | WhatsApp da equipe só em "Fale com a SC" também nesta página | 1 no contato, 0 fora |
+| ✅ | Sem preço, prazo de contrato nem "instalação inclusa" na página do condomínio |  |
+| ✅ | Zero erros no console (maquete 3D, computador) |  |
+| ✅ | Peso: primeira visão ≤ 300 KB e maquete 3D ≤ 700 KB (baixada depois, sem compactação) | primeira visão 249 KB; maquete 616 KB |
+| ✅ | Celular: maquete no alto da tela, sem rolagem lateral, toques ≥ 44 px e sem erros | {"sobra":0,"alturaPalco":388,"pequenos":[],"erros":[]} |
+| ✅ | Condomínio sem 3D: imagem da maquete, os 8 capítulos e o contato; controles da maquete escondidos | {"imagem":true,"capitulos":8,"so3d":0,"canvas":false,"contato":true} |
+| ✅ | Condomínio sem JavaScript: imagem da maquete, os 8 capítulos e o contato; controles da maquete escondidos | {"imagem":true,"capitulos":8,"so3d":0,"canvas":false,"contato":true} |
+| ✅ | Inicial leva ao condomínio: abertura (ao escolher "Condomínio"), aba dos planos, configurador e menu | {"escondidoAntes":true,"linkAbertura":"/condominio/","planos":true,"configurador":true,"menu":true} |
+
 ## Acessibilidade (axe)
 
 | | Item | Detalhe |
 |---|---|---|
 | ✅ | Página inicial: nenhuma violação de acessibilidade (computador e celular) |  |
 | ✅ | /privacidade/: nenhuma violação de acessibilidade (computador e celular) |  |
+| ✅ | /condominio/: nenhuma violação de acessibilidade (computador e celular) |  |
 | ✅ | Chat da Sol aberto: nenhuma violação de acessibilidade (computador e celular) |  |

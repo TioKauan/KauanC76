@@ -1,0 +1,54 @@
+---
+/**
+ * Palco da maquete: fica preso na tela enquanto os capítulos rolam.
+ * Sem 3D (sem WebGL, sem JavaScript ou economia de dados) fica a imagem pronta da maquete.
+ * A cena 3D, o monitor e os rótulos são ligados por src/scripts/condominio/.
+ */
+import Icone from '../Icone.astro';
+import { CAMADAS } from '../../lib/condominio/capitulos';
+import { paginaCondominio } from '../../lib/dados';
+---
+
+<div class="palco" data-palco>
+  <picture class="palco-imagem" data-palco-imagem>
+    <source media="(max-width: 800px)" srcset="/condominio/maquete-celular.webp" width="585" height="585" />
+    <img
+      src="/condominio/maquete.webp"
+      width="1600"
+      height="915"
+      alt="Maquete ilustrativa de um condomínio à noite: dois blocos, portaria, garagem, piscina e playground, com o campo de visão das câmeras."
+      fetchpriority="high"
+      decoding="async"
+    />
+  </picture>
+  <canvas class="palco-canvas" data-maquete role="img" aria-label="Maquete 3D ilustrativa do condomínio. As mesmas informações estão no texto da página." hidden></canvas>
+  <div class="palco-veu" aria-hidden="true"></div>
+  <div class="rotulos" data-rotulos aria-hidden="true"></div>
+
+  <!-- Painel: camadas e o que as câmeras veem. O fundo e as imagens são desenhados no próprio canvas (maquete 3D). -->
+  <aside class="monitor" data-monitor aria-label="Camadas do projeto e imagens das câmeras da maquete (simulação)" hidden>
+    <div class="camadas">
+      <p id="camadas-titulo">Camadas do projeto</p>
+      <div class="camadas-lista" role="group" aria-labelledby="camadas-titulo">
+        {
+          CAMADAS.map((c) => (
+            <button type="button" class="camada" data-camada={c.id} aria-pressed="false" style={`--cor:${c.cor}`}>
+              <Icone nome={c.icone} tamanho={17} /> {c.curto}
+            </button>
+          ))
+        }
+      </div>
+    </div>
+    <div data-monitor-cameras>
+      <div class="monitor-topo"><b>Ao vivo na maquete</b><span data-monitor-info>Simulação</span></div>
+      <div class="monitor-grade" data-monitor-grade></div>
+      <p class="monitor-pe" data-monitor-pe></p>
+    </div>
+  </aside>
+
+  <div class="explorar-barra" data-explorar-barra hidden>
+    <p><Icone nome="move" tamanho={18} /> Arraste para girar, use dois dedos ou a roda do mouse para aproximar e toque numa câmera.</p>
+    <button type="button" class="btn btn-contorno btn-p" data-explorar-sair>Voltar ao roteiro <Icone nome="x" tamanho={16} /></button>
+  </div>
+  <p class="palco-nota"><Icone nome="info" tamanho={15} /> {paginaCondominio.nota}</p>
+</div>
