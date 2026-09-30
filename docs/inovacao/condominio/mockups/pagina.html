@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup · Condomínio Evoluído em 3D</title>
+<!-- Mockup: o Three.js vem da jsDelivr só aqui. No site ele sai do próprio build (sem servidores de terceiros). -->
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"
+} }
+</script>
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body data-estado="geral">
+<canvas id="maquete" aria-label="Maquete 3D ilustrativa de um condomínio" role="img"></canvas>
+<div class="veu" aria-hidden="true"></div>
+<div class="rotulos" id="rotulos" aria-hidden="true"></div>
+
+<header class="topo">
+  <a class="logo" href="#"><img src="assets/sc-logo.webp" alt="SC Soluções"></a>
+  <nav class="nav">
+    <a href="#">Início</a><a href="#">Planos</a><a class="ativo" href="#">Condomínio</a><a href="#">Como funciona</a><a href="#">Dúvidas</a>
+  </nav>
+  <a class="btn btn-contorno btn-p" href="#">Fale com a SC</a>
+  <span class="menu" data-ic="menu"></span>
+</header>
+
+<!-- Abertura -->
+<section class="painel" data-painel="geral">
+  <p class="sobre">Condomínio Evoluído</p>
+  <h1>Acessos, segurança e infraestrutura em um projeto só.</h1>
+  <p class="lead">Gire a maquete, toque em uma câmera e veja o que ela enxerga. Cada camada mostra o que a SC integra no condomínio.</p>
+  <div class="acoes">
+    <a class="btn btn-primario" href="#"><span class="orbe"></span>Montar a proposta com a Sol</a>
+    <a class="btn btn-contorno" href="#"><span data-ic="move"></span>Explorar a maquete</a>
+  </div>
+  <div class="chips-cel">
+    <span class="chip" style="--cor: var(--c-cameras)" aria-pressed="true"><span data-ic="cctv"></span>Câmeras</span>
+    <span class="chip" style="--cor: var(--c-acesso)" aria-pressed="true"><span data-ic="scan-face"></span>Acesso</span>
+    <span class="chip" style="--cor: var(--c-interfonia)" aria-pressed="true"><span data-ic="phone"></span>Interfonia</span>
+  </div>
+  <p class="nota"><span data-ic="info"></span>Maquete ilustrativa. Cada projeto é dimensionado na visita técnica.</p>
+</section>
+
+<!-- 1. Câmeras -->
+<section class="painel" data-painel="cameras">
+  <p class="sobre">Câmeras nas áreas comuns <b>1 de 6</b></p>
+  <h2>Veja o que cada câmera enxerga. E o que fica de fora.</h2>
+  <p class="lead">Portaria, garagem, perímetro e lazer, com gravação no próprio condomínio. Toque numa câmera para ver a imagem dela.</p>
+  <div class="lista-cams" id="lista-cams"></div>
+  <div class="alternar">
+    <span class="interruptor" aria-hidden="true"></span>
+    <div><b>Pontos cegos à mostra</b><span>As áreas listradas ficam fora do alcance das câmeras desta maquete. Na visita técnica, a SC define onde cada câmera fica.</span></div>
+  </div>
+</section>
+
+<!-- 2 e 3. Acesso facial e interfonia -->
+<section class="painel" data-painel="acesso">
+  <p class="sobre">Controle de acesso facial e interfonia <b>2 e 3 de 6</b></p>
+  <h2>Morador entra pelo rosto. Visitante espera a confirmação.</h2>
+  <ul class="passos">
+    <li style="--cor: var(--c-acesso)"><span data-ic="scan-face"></span><div><b>Morador cadastrado</b><span>O leitor facial do portão de pedestres reconhece o morador e libera a entrada.</span></div></li>
+    <li style="--cor: var(--c-interfonia)"><span data-ic="phone"></span><div><b>Visitante</b><span>A portaria chama o apartamento pela interfonia e só abre depois que o morador confirma.</span></div></li>
+  </ul>
+  <div class="status">
+    <b>O sistema funciona. A entrada aguarda autorização.</b>
+    <p>A portaria identifica o visitante e confirma com o morador antes de liberar a entrada.</p>
+    <small>A chegada do visitante não libera a entrada sozinha.</small>
+  </div>
+</section>
+
+<!-- 5. Energia -->
+<section class="painel" data-painel="energia">
+  <p class="sobre">Nobreak e quadro técnico <b>5 de 6</b></p>
+  <h2>E se faltar energia no condomínio?</h2>
+  <div class="ese">
+    <div class="ese-opcoes">
+      <span class="ese-opcao" aria-pressed="false"><span data-ic="circle-check"></span>Tudo normal</span>
+      <span class="ese-opcao" aria-pressed="true"><span data-ic="zap-off"></span>Faltou energia</span>
+      <span class="ese-opcao" aria-pressed="false"><span data-ic="wifi-off"></span>A internet caiu</span>
+      <span class="ese-opcao" aria-pressed="false"><span data-ic="user-check"></span>Chegou visita</span>
+    </div>
+    <div class="alternar" style="margin-top: 12px">
+      <span class="interruptor" aria-hidden="true"></span>
+      <div><b>Com nobreak</b><span>Para câmeras, rede, gravador e acesso</span></div>
+    </div>
+    <p class="ese-titulo">Com nobreak, os sistemas seguem funcionando.</p>
+    <p class="ese-texto">Neste exemplo, o nobreak mantém câmeras, rede, gravador e controle de acesso ligados.</p>
+    <p class="ese-cond">A duração depende da bateria e do consumo. Ver imagens pelo celular também depende da internet da operadora.</p>
+    <div class="sistemas">
+      <div class="reserva"><b>Rede</b><span>Ligado no nobreak</span></div>
+      <div class="reserva"><b>Câmeras</b><span>Ligado no nobreak</span></div>
+      <div class="reserva"><b>Acesso</b><span>Ligado no nobreak</span></div>
+      <div class="reserva"><b>Energia</b><span>Nobreak segurando</span></div>
+      <div class="incerto"><b>Internet</b><span>Depende da operadora</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- Monte a proposta -->
+<section class="painel" data-painel="projeto">
+  <p class="sobre">Monte a proposta</p>
+  <h2>Marque o que o seu condomínio precisa.</h2>
+  <div class="formulario">
+    <div class="opcoes">
+      <span class="opcao on" style="--cor: var(--c-cameras)"><span class="caixa"><span data-ic="check"></span></span>Câmeras nas áreas comuns</span>
+      <span class="opcao on" style="--cor: var(--c-acesso)"><span class="caixa"><span data-ic="check"></span></span>Controle de acesso facial</span>
+      <span class="opcao on" style="--cor: var(--c-interfonia)"><span class="caixa"><span data-ic="check"></span></span>Interfonia</span>
+      <span class="opcao" style="--cor: var(--c-rede)"><span class="caixa"></span>Rede e Wi-Fi</span>
+      <span class="opcao on" style="--cor: var(--c-energia)"><span class="caixa"><span data-ic="check"></span></span>Nobreak e quadro técnico</span>
+      <span class="opcao" style="--cor: var(--c-alarme)"><span class="caixa"></span>Alarme integrado</span>
+    </div>
+    <div class="contadores">
+      <div class="contador">Blocos <span class="mais"><span data-ic="minus"></span><b>2</b><span data-ic="plus"></span></span></div>
+      <div class="contador">Apartamentos <span class="mais"><span data-ic="minus"></span><b>56</b><span data-ic="plus"></span></span></div>
+    </div>
+    <p class="mensagem">Olá! Quero uma proposta do Condomínio Evoluído. Sistemas: câmeras nas áreas comuns, controle de acesso facial, interfonia, nobreak e quadro técnico. Condomínio com 2 blocos e 56 apartamentos.</p>
+    <a class="btn btn-primario" href="#"><span class="orbe"></span>Enviar para a SC pela Sol</a>
+    <p class="miuda">A SC prepara proposta técnica, composição de equipamentos, mensalidade, taxa de implantação quando aplicável, manutenção preventiva e contrato personalizados.</p>
+  </div>
+</section>
+
+<div class="camadas">
+  <p>Camadas do projeto</p>
+  <div class="chips" id="chips"></div>
+</div>
+
+<aside class="monitor" id="monitor">
+  <div class="monitor-topo"><b>Ao vivo na maquete</b><span id="monitor-info">Simulação</span></div>
+  <div class="grade" id="grade"></div>
+  <p class="monitor-pe" id="monitor-pe"></p>
+</aside>
+
+<div class="barra">
+  <span class="orbe"></span>
+  <div><b>Fale com a Sol</b><span>Monte a proposta do condomínio</span></div>
+  <a href="#">Conversar</a>
+</div>
+
+<script type="module" src="pagina.js"></script>
+</body>
+</html>

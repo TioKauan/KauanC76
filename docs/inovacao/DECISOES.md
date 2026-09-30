@@ -64,3 +64,11 @@ a pessoa quer. O site diz "atendimento pela equipe da SC" e não promete respost
 | Pasta `site/` | Separada do projeto anterior | Evita conflito se o projeto React/Vinext vier para este repositório |
 | Fonte e ícones | Embutidos (Manrope OFL, Lucide ISC) | Sem chamadas a servidores de terceiros |
 | Node.js | 22.18 ou mais novo | O validador lê `dados.ts` direto (suporte nativo a TypeScript do Node 22.18+) |
+
+## Página do Condomínio Evoluído (proposta de 30/09/2026, aguardando aprovação)
+
+O Kauan pediu páginas separadas, começando pelo condomínio, com algo imersivo e interação 3D, e quer
+ver imagens antes da construção. A proposta, as imagens do protótipo e as decisões em aberto estão em
+[`condominio/PLANO.md`](condominio/PLANO.md). Resumo: maquete 3D gerada a partir de dados (Three.js),
+câmeras que mostram o que enxergam, pontos cegos, camadas do Condomínio Evoluído e proposta pela Sol.
+A página inicial não muda, a não ser pelo link para a página nova.
