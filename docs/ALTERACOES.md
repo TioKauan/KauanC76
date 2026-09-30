@@ -42,6 +42,19 @@ todo o texto. A página não tem preço, prazo de contrato nem WhatsApp fora de 
   `/opt/somoscella/backups/site-no-ar-antes-20260930-222923-*.tar.gz` e nas pastas
   `index.antigo-20260930-222923`.
 
+### Pendente: página inicial sem estilo no Vivaldi do Kauan
+
+- Depois da publicação, o Kauan abriu a inicial no Vivaldi e ela apareceu **sem CSS** (o logo em
+  tamanho natural e "Pular para o conteúdo" como link comum). No navegador do app, abriu certo.
+- Confirmado no servidor: o `index.html` sai **sem `Cache-Control`** (o cache do domínio está
+  desligado no painel ICP) e um arquivo que não existe mais, como o CSS da versão anterior
+  (`/assets/Logo.3_xYzUnw.css`), responde **200 com `text/html`** (o `try_files` devolve a inicial).
+- Causa provável, **ainda não confirmada**: o Vivaldi usou a inicial antiga guardada no cache, que
+  pede o CSS antigo; o navegador recebe HTML no lugar e descarta o estilo. O teste (Ctrl + F5 no
+  Vivaldi) ficou para o Kauan fazer.
+- Se confirmar, o conserto é no servidor (HTML com `Cache-Control: no-cache` e/ou manter os
+  `assets/` da versão anterior na publicação) e precisa do "sim" do Kauan. Nada foi mudado ainda.
+
 ---
 
 ## 29/09/2026, 09:19 (UTC) — WhatsApp só em "Fale com a SC"; os botões de venda abrem a Sol

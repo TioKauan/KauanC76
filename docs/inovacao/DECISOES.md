@@ -65,7 +65,7 @@ a pessoa quer. O site diz "atendimento pela equipe da SC" e não promete respost
 | Fonte e ícones | Embutidos (Manrope OFL, Lucide ISC) | Sem chamadas a servidores de terceiros |
 | Node.js | 22.18 ou mais novo | O validador lê `dados.ts` direto (suporte nativo a TypeScript do Node 22.18+) |
 
-## Página do Condomínio Evoluído (30/09/2026: aprovada e construída, ainda não publicada)
+## Página do Condomínio Evoluído (30/09/2026: aprovada, construída e publicada; tag `publicado-2026-09-30-222923`)
 
 O Kauan pediu páginas separadas, começando pelo condomínio, com algo imersivo e interação 3D, e quer
 ver imagens antes da construção. A proposta, as imagens do protótipo e as decisões em aberto estão em

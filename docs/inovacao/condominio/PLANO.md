@@ -1,7 +1,7 @@
 # Condomínio Evoluído em 3D: plano da página
 
-**Situação (30/09/2026): aprovada pelo Kauan e construída** no ramo `claude/sweet-faraday-yvwddr`
-(ainda **não publicada**). As imagens abaixo são as do protótipo aprovado (`mockups/`); as fotos da
+**Situação (30/09/2026): aprovada pelo Kauan, construída e publicada** às 22:29 UTC (tag
+`publicado-2026-09-30-222923`, commit `3ca5ebe`; ver `docs/ALTERACOES.md`). As imagens abaixo são as do protótipo aprovado (`mockups/`); as fotos da
 página construída estão em `site-final/` e o lado a lado em `comparacao/`.
 
 **Decisões do Kauan (30/09):** visual aprovado; "Condomínio" no menu principal; blocos e apartamentos
