@@ -87,14 +87,21 @@ taxa de instalação igual a 1 mensalidade, CNPJ válido).
 ## Publicação
 
 Manual e **só com decisão do Kauan**. O Nginx do painel ICP serve a pasta
-`/etc/icontainer/apps/nginx/nginx/www/sites/somoscella.online/index` no VPS. Passo a passo usado em 25/09/2026:
+`/etc/icontainer/apps/nginx/nginx/www/sites/somoscella.online/index` no VPS, e a pasta irmã
+`landing.vps11377.panel.icontainer.net/index` serve o endereço provisório: publique nas duas.
+Passo a passo (25/09/2026, revisto em 01/10/2026):
 
 1. `npm run validar` com 100% ✅ e `npx astro build`.
 2. Empacotar `dist/` **sem** `fotos/LEIA-ME.md` (nota interna, não vai para o ar).
 3. No servidor, guardar a versão no ar num `.tar.gz` antes de qualquer troca.
-4. Extrair o pacote numa pasta `index.novo-<data>` **ao lado** de `index` e trocar as duas com `mv`
-   (a troca é instantânea: o site nunca fica pela metade). Donos `root`, pastas 755, arquivos 644.
-5. Conferir de fora: HTTPS 200, `index.html` idêntico ao gerado, todos os recursos 200.
+4. Extrair o pacote numa pasta `index.novo-<data>` **ao lado** de `index`. **Copie para
+   `index.novo-<data>/assets/` os arquivos de `index/assets/` que não existirem lá** (sem
+   sobrescrever). Quem tem a página antiga no cache pede o CSS e o JS antigos; sem eles, o Nginx
+   devolve a inicial no lugar (`try_files`) e a página aparece sem estilo (aconteceu em 30/09).
+   Depois troque as duas pastas com `mv` (a troca é instantânea: o site nunca fica pela metade).
+   Donos `root`, pastas 755, arquivos 644.
+5. Conferir de fora: HTTPS 200 **e o conteúdo** idêntico ao gerado. Endereço que não existe também
+   responde 200 (com a inicial), então só o código não prova nada.
 6. Marcar o commit publicado com a tag `publicado-<data>` e enviar ao GitHub.
 
 O histórico das publicações está em `docs/ALTERACOES.md`.
