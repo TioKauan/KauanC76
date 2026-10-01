@@ -42,18 +42,15 @@ todo o texto. A página não tem preço, prazo de contrato nem WhatsApp fora de 
   `/opt/somoscella/backups/site-no-ar-antes-20260930-222923-*.tar.gz` e nas pastas
   `index.antigo-20260930-222923`.
 
-### Pendente: página inicial sem estilo no Vivaldi do Kauan
+### Corrigido em 01/10: página inicial sem estilo para quem tinha a versão antiga guardada
 
-- Depois da publicação, o Kauan abriu a inicial no Vivaldi e ela apareceu **sem CSS** (o logo em
-  tamanho natural e "Pular para o conteúdo" como link comum). No navegador do app, abriu certo.
-- Confirmado no servidor: o `index.html` sai **sem `Cache-Control`** (o cache do domínio está
-  desligado no painel ICP) e um arquivo que não existe mais, como o CSS da versão anterior
-  (`/assets/Logo.3_xYzUnw.css`), responde **200 com `text/html`** (o `try_files` devolve a inicial).
-- Causa provável, **ainda não confirmada**: o Vivaldi usou a inicial antiga guardada no cache, que
-  pede o CSS antigo; o navegador recebe HTML no lugar e descarta o estilo. O teste (Ctrl + F5 no
-  Vivaldi) ficou para o Kauan fazer.
-- Se confirmar, o conserto é no servidor (HTML com `Cache-Control: no-cache` e/ou manter os
-  `assets/` da versão anterior na publicação) e precisa do "sim" do Kauan. Nada foi mudado ainda.
+- O Kauan abriu a inicial no Vivaldi e ela apareceu **sem CSS**. Causa confirmada (com Ctrl + F5
+  voltou ao normal): o Vivaldi usou a inicial antiga do cache, que pede o CSS antigo. Esse arquivo
+  tinha saído do servidor e o `try_files` devolvia a inicial (200, `text/html`) no lugar dele.
+- Conserto (com o "sim" do Kauan): os `assets/` de todas as pastas `index.antigo-*` foram copiados
+  para o `index` no ar, sem sobrescrever nada e sem conflito de nome. O CSS antigo agora responde
+  `text/css`. **Nas próximas publicações, copie os `assets/` da versão anterior para a pasta nova.**
+- Ainda não feito (decisão do Kauan): `Cache-Control: no-cache` no HTML pelo painel ICP.
 
 ---
 
