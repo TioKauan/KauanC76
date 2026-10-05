@@ -15,7 +15,7 @@ Tag `publicado-2026-10-05-154247` (código do commit `e078391`; a data da tag é
 |---|---|---|
 | `/casa/`, `/comercio/`, `/empresa/` | Não existiam | Uma página por ambiente com maquete 3D, capítulos por rolagem, "E se…?" e o plano sugerido |
 | Menu | "Condomínio" | "Soluções", com Casa, Comércio, Empresa e Condomínio |
-| `/404.html` | Não existia | Página "Este endereço não existe" (o Nginx ainda não a usa: ver abaixo) |
+| `/404.html` | Não existia | Página "Este endereço não existe", servida com código 404 (Nginx ajustado às 12:56) |
 | Inicial | — | Dados da empresa para o Google (schema.org), sem telefone |
 
 O WhatsApp continua (46) 99133-1306 em todas as páginas.
@@ -31,8 +31,11 @@ O WhatsApp continua (46) 99133-1306 em todas as páginas.
 - Conferido de fora: os 10 arquivos (HTML, sitemap, robots) nos 3 endereços respondem 200 e são
   idênticos ao build; os 22 recursos respondem 200; zero erros no console em Casa, Comércio e Empresa.
 - Anterior guardada em `index.antigo-20261005-154247` e em `/opt/somoscella/backups/`.
-- **Pendente:** a troca do `try_files` no Nginx (README, "Página 404"). Até lá, endereço que não
-  existe ainda devolve a inicial com 200.
+- Nginx (12:56, com o "sim" do Kauan): `try_files $uri $uri/ =404;` nos dois sites, testado com
+  `nginx -t` e recarregado (sem reiniciar). Configuração anterior em
+  `/opt/somoscella/backups/nginx-20261005-125627/`. Conferido de fora: endereço inexistente
+  (página ou `assets/`) responde 404 com "Este endereço não existe"; as 6 páginas, `robots.txt`,
+  sitemap e os 22 recursos seguem 200 nos 3 endereços; n8n 200.
 
 ---
 

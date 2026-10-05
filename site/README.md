@@ -121,7 +121,9 @@ Passo a passo (25/09/2026, revisto em 01/10/2026):
 
 ### Página 404 (configuração do Nginx, uma vez só)
 
-Hoje o Nginx devolve a página inicial, com código 200, para qualquer endereço que não existe
+**Feito em 05/10/2026** nos dois sites (backup da configuração anterior em
+`/opt/somoscella/backups/nginx-20261005-125627/`). Se o painel ICP regravar a configuração do site,
+confira se a linha voltou ao `/index.html` e refaça. Contexto: antes, o Nginx devolvia a página inicial, com código 200, para qualquer endereço que não existe
 (`try_files … /index.html`). Para o Google isso é uma "página repetida", e quem chega por um link
 antigo cai na inicial sem saber por quê. A pasta `dist/` já traz o `404.html`; para o servidor
 usá-lo, no site `somoscella.online` (e no endereço provisório) do painel ICP troque o fim do
