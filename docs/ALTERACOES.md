@@ -5,6 +5,33 @@ Cada publicação tem uma tag `publicado-<data>` no Git, apontando para o commit
 
 ---
 
+## 05/10/2026, 12:19 (Brasília) — WhatsApp de volta para (46) 99133-1306
+
+Tag `publicado-2026-10-05-121935` (código do commit `ba5ff3c`).
+
+### O que mudou para quem visita o site
+
+| Onde | Antes | Agora |
+|---|---|---|
+| Botão do WhatsApp em "Fale com a SC" (e o aviso do chat quando a Sol está fora) | (49) 99832-5623 | (46) 99133-1306 |
+
+### Por quê
+
+- Decisão do Kauan em 04/10/2026: "este é o número correto". É o mesmo número das artes e das
+  propostas. O (49) 99832-5623, usado de 27/09 a 04/10, passa a ser conferido pelo teste como
+  número que não pode aparecer, assim como o (46) 99113-8360.
+
+### Técnico
+
+- Validador: 100/100.
+- Publicado no domínio, no `www` e no endereço provisório, com os assets da versão anterior
+  mantidos. Conferido de fora: as 3 páginas, nos 3 endereços, respondem 200 e são idênticas ao
+  build; os recursos respondem 200; o único `wa.me` no ar é o 5546991331306; o console fica sem erros.
+- Versão anterior guardada no servidor em `index.antigo-20261005-121935` e em
+  `/root/backup-site/*-index-antes-2026-10-05-121835.tar.gz`.
+
+---
+
 ## 30/09/2026, 22:29 (UTC) — Página do Condomínio Evoluído, com a maquete 3D
 
 Tag `publicado-2026-09-30-222923` (código do commit `3ca5ebe`).
