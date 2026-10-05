@@ -25,8 +25,9 @@ solução, não a mais simples de entender; nas conversas, explique o porquê da
 - **A instalação não é grátis:** taxa = valor de 1 mensalidade do plano, paga antecipadamente
   (`taxaInstalacaoMensalidades` em `dados.ts`). Nunca escreva "instalação inclusa" nem "sem
   investimento inicial"; o validador falha.
-- WhatsApp do site: `(49) 99832-5623` (desde 27/09/2026), atendimento humano. Os números
-  `(46) 99113-8360` e `(46) 99133-1306` não são usados no site e não podem aparecer.
+- WhatsApp do site: `(46) 99133-1306` (de volta em 04/10/2026, por decisão do Kauan:
+  "este é o número correto"), atendimento humano. Os números `(46) 99113-8360` (banido em
+  19/09) e `(49) 99832-5623` (usado de 27/09 a 04/10) não podem aparecer; o teste confere.
 - **O WhatsApp da equipe fica só na seção "Fale com a SC" (`#contato`)** (decisão do Kauan em
   28/09/2026, noite: "não gostei do WhatsApp ali direto"). O topo e o menu do celular levam até lá; os
   botões de venda ("Quero este plano", "Enviar para a SC", "Pedir proposta") abrem a Sol com a

@@ -44,8 +44,8 @@ export const empresa = {
 export const contato = {
   // Número usado em todos os botões de WhatsApp: atendimento humano, pela equipe.
   // A assistente virtual (Sol) atende no chat do próprio site, não no WhatsApp.
-  whatsapp: '5549998325623',
-  whatsappExibicao: '(49) 99832-5623',
+  whatsapp: '5546991331306',
+  whatsappExibicao: '(46) 99133-1306',
   email: 'somoscella@gmail.com',
   atendimento: 'Atendimento pela equipe da SC',
 };

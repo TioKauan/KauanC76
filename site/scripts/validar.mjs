@@ -100,7 +100,7 @@ const rolarTudo = (pagina) => pagina.evaluate(async () => {
   conferir('Todo link interno leva a uma seção que existe', quebradas.length === 0, quebradas.length ? `quebrados: ${quebradas.join(', ')}` : `${new Set(ancoras).size} destinos conferidos`);
 
   const whats = await pagina.evaluate(() => [...document.querySelectorAll('a[href*="wa.me"]')].map((a) => a.href));
-  const errados = whats.filter((h) => !h.startsWith(`https://wa.me/${'5549998325623'}?text=`) || new URL(h).searchParams.get('text').length < 20);
+  const errados = whats.filter((h) => !h.startsWith(`https://wa.me/${'5546991331306'}?text=`) || new URL(h).searchParams.get('text').length < 20);
   conferir(`Todo WhatsApp usa wa.me/${contato.whatsapp} com mensagem preenchida`, whats.length > 0 && errados.length === 0, `${whats.length} links${errados.length ? `; errados: ${errados.slice(0, 3).join(' ')}` : ''}`);
   // Regra de 28/09/2026: o visitante sabe pelo desenho se vai para a equipe (WhatsApp) ou para a Sol (orbe).
   const semIcone = await pagina.evaluate(() => [...document.querySelectorAll('a[href*="wa.me"]')]

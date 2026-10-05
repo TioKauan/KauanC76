@@ -58,9 +58,9 @@ describe('textos e contato', () => {
   });
 
   it('WhatsApp usa o número atual, nunca o antigo', () => {
-    expect(contato.whatsapp).toBe('5549998325623');
-    // números banidos: nenhum dos dois pode reaparecer
-    expect(JSON.stringify({ contato, planos, duvidas, condicoes })).not.toMatch(/99113.?8360|99133.?1306/);
+    expect(contato.whatsapp).toBe('5546991331306');
+    // números que saíram do site: o antigo (banido em 19/09) e o usado de 27/09 a 04/10
+    expect(JSON.stringify({ contato, planos, duvidas, condicoes })).not.toMatch(/99113.?8360|99832.?5623/);
   });
 
   it('link do WhatsApp leva a mensagem codificada', () => {
