@@ -1,7 +1,7 @@
 # Relatório de validação do site
 
-Gerado por `npm run validar` em 05/10/2026, 07:32:02.
-Resultado: **136 de 139 itens ✅**.
+Gerado por `npm run validar` em 05/10/2026, 07:38:20.
+Resultado: **138 de 138 itens ✅** — checklist completa.
 
 ## Geral
 
@@ -29,7 +29,7 @@ Resultado: **136 de 139 itens ✅**.
 | ✅ | Zero erros no console (celular) |  |
 | ✅ | Celular: botões e controles com área de toque ≥ 44 px |  |
 | ✅ | Sem rolagem horizontal em 768 px |  |
-| ❌ | Sem rolagem horizontal em 1024 px | 37 px sobrando |
+| ✅ | Sem rolagem horizontal em 1024 px |  |
 | ✅ | Sem rolagem horizontal em 1440 px |  |
 | ✅ | "Reduzir movimento": nenhuma animação contínua roda | 0 animações contínuas |
 | ✅ | "Reduzir movimento": todo conteúdo aparece sem animação | 0 blocos escondidos |
@@ -55,7 +55,7 @@ Resultado: **136 de 139 itens ✅**.
 | ✅ | Os 4 cenários do "E se…?" mudam a cena e o texto |  |
 | ✅ | Em "Faltou energia" o nobreak pode ser ligado | off → reserva |
 | ✅ | "A partir de R$ 49,90/mês" visível sem rolar em 1440 px | fim do bloco em 883 de 900 px |
-| ❌ | "A partir de R$ 49,90/mês" visível sem rolar em 390 px | fim do bloco em 778 de 768 px |
+| ✅ | "A partir de R$ 49,90/mês" visível sem rolar em 390 px | fim do bloco em 683 de 768 px |
 
 ## Tela 2 · Planos
 
@@ -144,7 +144,6 @@ Resultado: **136 de 139 itens ✅**.
 | ✅ | Zero erros no console (maquete 3D, computador) |  |
 | ✅ | Peso: primeira visão ≤ 300 KB e maquete 3D ≤ 700 KB (baixada depois, sem compactação) | primeira visão 276 KB; maquete 640 KB |
 | ✅ | Celular: maquete no alto da tela, sem rolagem lateral, toques ≥ 44 px e sem erros | {"sobra":0,"alturaPalco":354,"pequenos":[],"erros":[]} |
-| ❌ | Condomínio sem rolagem horizontal em 1024 px | 37 px |
 | ✅ | Condomínio sem 3D: imagem da maquete, os 8 capítulos e o contato; controles da maquete escondidos | {"imagem":true,"capitulos":8,"so3d":0,"canvas":false,"contato":true} |
 | ✅ | Condomínio sem JavaScript: imagem da maquete, os 8 capítulos e o contato; controles da maquete escondidos | {"imagem":true,"capitulos":8,"so3d":0,"canvas":false,"contato":true} |
 | ✅ | Inicial leva às páginas 3D: convite na abertura (um por ambiente), aba dos planos, configurador e menu "Soluções" | {"escondidoAntes":true,"linkAbertura":"/condominio/","planos":true,"configurador":true,"menu":true} |
