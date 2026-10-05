@@ -58,7 +58,12 @@ const servidor = createServer((req, res) => {
   let arquivo = path.join(dist, url === '/' ? 'index.html' : url);
   // Endereço de pasta (/privacidade/) serve o index.html dela, como o Nginx faz.
   if (existsSync(arquivo) && statSync(arquivo).isDirectory()) arquivo = path.join(arquivo, 'index.html');
-  if (!arquivo.startsWith(dist) || !existsSync(arquivo) || statSync(arquivo).isDirectory()) { res.writeHead(404); return res.end('404'); }
+  // Endereço que não existe: 404 com a página 404.html, como o Nginx configurado (site/README.md).
+  if (!arquivo.startsWith(dist) || !existsSync(arquivo) || statSync(arquivo).isDirectory()) {
+    const pagina404 = path.join(dist, '404.html');
+    res.writeHead(404, { 'content-type': tipos['.html'] });
+    return res.end(existsSync(pagina404) ? readFileSync(pagina404) : '404');
+  }
   res.writeHead(200, { 'content-type': tipos[path.extname(arquivo)] || 'application/octet-stream' });
   res.end(readFileSync(arquivo));
 });
@@ -230,6 +235,55 @@ for (const largura of [360, 390, 768, 1024, 1440]) {
   conferir('Buscadores: robots.txt aponta o sitemap, e o sitemap lista todas as páginas',
     /User-agent: \*/.test(robots) && robots.includes('Sitemap: https://somoscella.online/sitemap-index.xml') && noSitemap.join(' ') === paginasGeradas.join(' '),
     `páginas: ${paginasGeradas.join(', ')}; no sitemap: ${noSitemap.join(', ')}`);
+}
+
+/* ---------- Buscadores: dados da empresa e página 404 ---------- */
+grupo('Buscadores');
+{
+  // Dados estruturados (schema.org) na inicial: os mesmos do rodapé, sem telefone nem WhatsApp.
+  const html = readFileSync(path.join(dist, 'index.html'), 'utf8');
+  const blocos = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => m[1]);
+  let grafo = [];
+  try { grafo = blocos.length === 1 ? JSON.parse(blocos[0])['@graph'] : []; } catch { grafo = []; }
+  const negocio = grafo.find((g) => g['@type'] === 'LocalBusiness');
+  const siteLd = grafo.find((g) => g['@type'] === 'WebSite');
+  const cidade = empresa.cidade.replace(/\s+/g, ' ');
+  conferir('Inicial tem os dados da empresa para o Google (schema.org): nome, CNPJ, cidade e e-mail iguais aos do rodapé',
+    negocio && siteLd && negocio.name === empresa.nome && negocio.taxID === empresa.cnpj && negocio.email === contato.email
+      && `${negocio.address?.addressLocality} - ${negocio.address?.addressRegion}` === cidade && siteLd.publisher?.['@id'] === negocio['@id']
+      && !/telephone|wa\.me|99832|5623/.test(blocos.join('')),
+    negocio ? `${negocio.name} · ${negocio.taxID} · ${negocio.address?.addressLocality} · ${negocio.email}` : `${blocos.length} bloco(s) JSON-LD`);
+
+  // Página 404: endereço que não existe responde 404 (não a inicial com 200) e mostra por onde continuar.
+  const naoIndexadas = ['condominio/index.html', 'privacidade/index.html', 'index.html']
+    .filter((f) => /<meta name="robots" content="noindex"/.test(readFileSync(path.join(dist, f), 'utf8')));
+  conferir('Só a página 404 fica fora do Google (noindex); as outras são indexadas', naoIndexadas.length === 0 && existsSync(path.join(dist, '404.html'))
+    && /<meta name="robots" content="noindex"/.test(readFileSync(path.join(dist, '404.html'), 'utf8')), naoIndexadas.join(', '));
+  for (const largura of [1440, 390]) {
+    const { pagina, contexto, erros } = await abrir(largura);
+    // O navegador avisa no console que a própria página veio com 404 (é o esperado); os outros arquivos precisam carregar.
+    const falhas = [];
+    pagina.on('response', (resp) => { if (resp.status() >= 400 && resp.request().resourceType() !== 'document') falhas.push(new URL(resp.url()).pathname); });
+    const resposta = await pagina.goto(`${endereco}um/endereco/que-nao-existe/`, { waitUntil: 'networkidle' });
+    const outrosErros = erros.filter((e) => !/status of 404/.test(e));
+    const r = await pagina.evaluate(() => ({
+      titulo: document.querySelector('h1')?.textContent.trim(),
+      caminhos: [...document.querySelectorAll('.erro-caminhos a')].map((a) => a.getAttribute('href')),
+      // Esta página aparece em qualquer caminho: link relativo (planos/, ../) quebraria.
+      relativos: [...document.querySelectorAll('a[href]')].map((a) => a.getAttribute('href')).filter((h) => !/^(\/|#|https:|mailto:)/.test(h)),
+      ancorasQuebradas: [...document.querySelectorAll('a[href^="#"]')].map((a) => a.getAttribute('href')).filter((h) => h.length > 1 && !document.querySelector(h)),
+      whatsFora: [...document.querySelectorAll('a[href*="wa.me"]')].filter((a) => !a.closest('#contato')).length,
+      estilos: getComputedStyle(document.body).fontFamily.includes('Manrope'),
+      sobra: document.documentElement.scrollWidth - innerWidth,
+      sol: Boolean(document.querySelector('.sol[data-chegou], [data-sol]')),
+    }));
+    conferir(`Endereço inexistente: responde 404 com a página "não encontrada" e caminhos para o site (${largura} px)`,
+      resposta.status() === 404 && r.titulo?.includes('não existe') && r.caminhos.join(' ') === '/#planos /#monte /condominio/ /#duvidas'
+        && r.relativos.length === 0 && r.ancorasQuebradas.length === 0 && r.whatsFora === 0 && r.estilos && r.sol && r.sobra <= 0
+        && falhas.length === 0 && outrosErros.length === 0,
+      `status ${resposta.status()}; relativos: ${r.relativos.join(' ') || 0}; âncoras quebradas: ${r.ancorasQuebradas.join(' ') || 0}; WhatsApp fora do contato: ${r.whatsFora}; sobra ${r.sobra} px; arquivos que falharam: ${falhas.join(' ') || 0}; erros: ${outrosErros.slice(0, 1).join('') || 0}`);
+    await contexto.close();
+  }
 }
 
 grupo('Tela 1 · Abertura');
@@ -891,7 +945,7 @@ grupo('Acessibilidade (axe)');
     const r = await new AxeBuilder({ page: pagina }).withTags(regras).analyze();
     for (const v of r.violations) achados.push(`${rotulo}: ${v.id} (${v.nodes.length}) ${v.nodes[0]?.target.join(' ')}`);
   };
-  for (const [caminho, nome] of [['', 'Página inicial'], ['privacidade/', '/privacidade/'], ['condominio/', '/condominio/']]) {
+  for (const [caminho, nome] of [['', 'Página inicial'], ['privacidade/', '/privacidade/'], ['condominio/', '/condominio/'], ['nao-existe/', 'Página 404']]) {
     const achados = [];
     for (const largura of [1440, 390]) {
       const { pagina, contexto } = await abrir(largura, { reducedMotion: 'reduce' });

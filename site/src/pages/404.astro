@@ -1,0 +1,63 @@
+---
+/**
+ * Página 404: endereço que não existe (link antigo, erro de digitação).
+ * Em vez de devolver a inicial com "200" (o que o Google trata como página repetida),
+ * o servidor responde 404 com esta página, que mostra por onde continuar.
+ * No Nginx: `try_files $uri $uri/ =404;` e `error_page 404 /404.html;` (ver site/README.md).
+ * Todos os endereços são absolutos (/#planos), porque esta página aparece em qualquer caminho.
+ */
+import Base from '../layouts/Base.astro';
+import Cabecalho from '../components/Cabecalho.astro';
+import ContatoFinal from '../components/ContatoFinal.astro';
+import Rodape from '../components/Rodape.astro';
+import BarraFixa from '../components/BarraFixa.astro';
+import Icone from '../components/Icone.astro';
+import type { NomeIcone } from '../lib/icones';
+import '../styles/erro.css';
+import Sol from '../components/Sol.astro';
+
+const caminhos: { href: string; icone: NomeIcone; titulo: string; texto: string }[] = [
+  { href: '/#planos', icone: 'cctv', titulo: 'Planos de locação', texto: 'Câmeras com instalação, gravação local e imagens no celular.' },
+  { href: '/#monte', icone: 'mouse-pointer-click', titulo: 'Monte seu sistema', texto: 'Marque na planta onde quer as câmeras e veja o plano indicado.' },
+  { href: '/condominio/', icone: 'building-2', titulo: 'Condomínio Evoluído', texto: 'Acessos, segurança e infraestrutura em um projeto só.' },
+  { href: '/#duvidas', icone: 'search', titulo: 'Dúvidas', texto: 'Pergunte com as suas palavras e veja a resposta.' },
+];
+---
+
+<Base
+  titulo="Página não encontrada | SC Soluções"
+  descricao="Este endereço não existe no site da SC Soluções. Veja os planos de locação de câmeras ou fale com a equipe."
+  tituloSocial="SC Soluções | Tecnologia que precisa funcionar"
+  descricaoSocial="Planos de locação de câmeras com instalação, gravação local e imagens no celular."
+  indexar={false}
+>
+  <Cabecalho naInicial={false} />
+  <main id="conteudo">
+    <section class="erro wrap" aria-labelledby="erro-titulo">
+      <p class="sobretitulo">Página não encontrada</p>
+      <h1 id="erro-titulo" class="titulo-secao">Este endereço <span class="destaque">não existe</span> ou mudou de lugar.</h1>
+      <p class="erro-texto">Pode ser um link antigo ou um erro de digitação. Escolha por onde continuar:</p>
+      <ul class="erro-caminhos">
+        {
+          caminhos.map((c) => (
+            <li>
+              <a href={c.href}>
+                <span class="erro-icone"><Icone nome={c.icone} tamanho={22} /></span>
+                <span class="erro-rotulo"><b>{c.titulo}</b><small>{c.texto}</small></span>
+                <Icone nome="arrow-right" tamanho={18} classe="erro-seta" />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <a class="btn btn-contorno btn-p erro-inicio" href="/"><Icone nome="house" tamanho={16} /> Ir para a página inicial</a>
+    </section>
+    <ContatoFinal />
+  </main>
+  <Rodape naInicial={false} />
+  <BarraFixa sub="Tire suas dúvidas agora" />
+  <Sol />
+  <script>
+    import '../scripts/erro';
+  </script>
+</Base>

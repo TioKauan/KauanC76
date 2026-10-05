@@ -7,14 +7,19 @@ import fonteLatina from '../assets/fontes/manrope-latin-wght-normal.woff2?url';
 import '../styles/base.css';
 import { empresa } from '../lib/dados';
 import { simboloWhatsapp } from '../lib/marcas';
+import { jsonParaScript } from '../lib/buscadores';
 
 interface Props {
   titulo: string;
   descricao: string;
   tituloSocial: string;
   descricaoSocial: string;
+  /** Dados estruturados (schema.org) desta página; ver src/lib/buscadores.ts. */
+  dadosEstruturados?: object;
+  /** false: os buscadores não guardam a página (a 404); sem endereço canônico. */
+  indexar?: boolean;
 }
-const { titulo, descricao, tituloSocial, descricaoSocial } = Astro.props;
+const { titulo, descricao, tituloSocial, descricaoSocial, dadosEstruturados, indexar = true } = Astro.props;
 const canonica = new URL(Astro.url.pathname, empresa.site).href;
 const imagemSocial = new URL('/marca/og-imagem.png', empresa.site).href;
 ---
@@ -26,19 +31,20 @@ const imagemSocial = new URL('/marca/og-imagem.png', empresa.site).href;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{titulo}</title>
     <meta name="description" content={descricao} />
-    <link rel="canonical" href={canonica} />
+    {indexar ? <link rel="canonical" href={canonica} /> : <meta name="robots" content="noindex" />}
     <meta name="theme-color" content="#020710" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="pt_BR" />
     <meta property="og:site_name" content={empresa.nome} />
     <meta property="og:title" content={tituloSocial} />
     <meta property="og:description" content={descricaoSocial} />
-    <meta property="og:url" content={canonica} />
+    {indexar && <meta property="og:url" content={canonica} />}
     <meta property="og:image" content={imagemSocial} />
     <link rel="icon" href="/marca/favicon-64.png" sizes="64x64" type="image/png" />
     <link rel="apple-touch-icon" href="/marca/icone-180.png" />
     <link rel="preload" href={fonteLatina} as="font" type="font/woff2" crossorigin />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    {dadosEstruturados && <script type="application/ld+json" is:inline set:html={jsonParaScript(dadosEstruturados)} />}
   </head>
   <body>
     <Fragment set:html={simboloWhatsapp()} />

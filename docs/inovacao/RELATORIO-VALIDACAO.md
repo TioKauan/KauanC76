@@ -1,15 +1,15 @@
 # Relatório de validação do site
 
-Gerado por `npm run validar` em 30/09/2026, 18:48:38.
-Resultado: **100 de 100 itens ✅** — checklist completa.
+Gerado por `npm run validar` em 04/10/2026, 23:09:43.
+Resultado: **105 de 105 itens ✅** — checklist completa.
 
 ## Geral
 
 | | Item | Detalhe |
 |---|---|---|
 | ✅ | Tipos conferidos (astro check) e build sem erro |  |
-| ✅ | Testes unitários das regras (Vitest) passam | 142 testes |
-| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 392 KB em 8 arquivos; maiores: / 196 KB, /marca/sc-logo.webp 52 KB, /assets/cenarios.BXkJPdU0.js 46 KB |
+| ✅ | Testes unitários das regras (Vitest) passam | 150 testes |
+| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 393 KB em 9 arquivos; maiores: / 197 KB, /marca/sc-logo.webp 52 KB, /assets/sol.Bs4nQpMj.js 40 KB |
 | ✅ | Todo link interno leva a uma seção que existe | 7 destinos conferidos |
 | ✅ | Todo WhatsApp usa wa.me/5549998325623 com mensagem preenchida | 1 links |
 | ✅ | Todo botão de WhatsApp mostra o ícone do WhatsApp |  |
@@ -37,6 +37,15 @@ Resultado: **100 de 100 itens ✅** — checklist completa.
 | ✅ | Rodapé tem link para a Política de privacidade |  |
 | ✅ | /privacidade/ abre com as 9 seções, sem erro no console e sem rolagem lateral | 9 seções; erros: 0; sobra 0 px |
 | ✅ | Buscadores: robots.txt aponta o sitemap, e o sitemap lista todas as páginas | páginas: /, /condominio/, /privacidade/; no sitemap: /, /condominio/, /privacidade/ |
+
+## Buscadores
+
+| | Item | Detalhe |
+|---|---|---|
+| ✅ | Inicial tem os dados da empresa para o Google (schema.org): nome, CNPJ, cidade e e-mail iguais aos do rodapé | SC Soluções · 62.768.829/0001-96 · Francisco Beltrão · somoscella@gmail.com |
+| ✅ | Só a página 404 fica fora do Google (noindex); as outras são indexadas |  |
+| ✅ | Endereço inexistente: responde 404 com a página "não encontrada" e caminhos para o site (1440 px) | status 404; relativos: 0; âncoras quebradas: 0; WhatsApp fora do contato: 0; sobra 0 px; arquivos que falharam: 0; erros: 0 |
+| ✅ | Endereço inexistente: responde 404 com a página "não encontrada" e caminhos para o site (390 px) | status 404; relativos: 0; âncoras quebradas: 0; WhatsApp fora do contato: 0; sobra 0 px; arquivos que falharam: 0; erros: 0 |
 
 ## Tela 1 · Abertura
 
@@ -146,4 +155,5 @@ Resultado: **100 de 100 itens ✅** — checklist completa.
 | ✅ | Página inicial: nenhuma violação de acessibilidade (computador e celular) |  |
 | ✅ | /privacidade/: nenhuma violação de acessibilidade (computador e celular) |  |
 | ✅ | /condominio/: nenhuma violação de acessibilidade (computador e celular) |  |
+| ✅ | Página 404: nenhuma violação de acessibilidade (computador e celular) |  |
 | ✅ | Chat da Sol aberto: nenhuma violação de acessibilidade (computador e celular) |  |

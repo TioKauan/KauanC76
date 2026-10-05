@@ -52,6 +52,9 @@ solução, não a mais simples de entender; nas conversas, explique o porquê da
   maquete e regras em `src/lib/condominio/` (com testes). Nada de preço, dias de gravação ou quantidade
   de câmeras nessa página: condomínio é proposta personalizada, pela Sol. Mudou a maquete? Rode
   `npm run build && npm run imagem-condominio` para refazer a imagem pronta. Plano: `docs/inovacao/condominio/`.
+- **Buscadores** (05/10/2026): os dados da empresa para o Google (schema.org) saem de `dados.ts` em
+  `src/lib/buscadores.ts`, sem telefone nem WhatsApp. `src/pages/404.astro` é a página de endereço
+  inexistente (fora do Google); para valer no ar, o Nginx precisa da troca descrita em `site/README.md`.
 - Logo: só os arquivos oficiais (`site/public/marca/`); nunca redesenhe. O Claude não gera foto.
 - **Publicar é ação externa: só com pedido explícito do Kauan** (Nginx do VPS, guardando antes a versão no ar).
 

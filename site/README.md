@@ -30,6 +30,7 @@ src/
   pages/condominio.astro   Condomínio Evoluído: capítulos + maquete 3D (plano em docs/inovacao/condominio/)
   pages/privacidade.astro  política de privacidade
   pages/robots.txt.ts      robots.txt gerado no build (aponta o sitemap)
+  pages/404.astro          endereço que não existe: caminhos para o site (fora do Google; ver Publicação)
   layouts/Base.astro       <head>, fonte e estilos-base comuns a todas as páginas
   components/*.astro       uma seção por componente (Abertura, Planos, Configurador, ComoFunciona…)
   components/condominio/   Palco (maquete, monitor, camadas) e Capitulos (todo o texto da página)
@@ -40,6 +41,7 @@ src/
     configurador-dados.ts  plantas, zonas e pontos sugeridos
     configurador-logica.ts cabo estimado, recomendação de plano, nomes, mensagem do WhatsApp
     busca.ts               busca nas dúvidas (sinônimos, peso por raridade, intenção de preço)
+    buscadores.ts          dados da empresa para o Google (schema.org), tirados de dados.ts
     plantas-svg.ts         desenho das plantas do configurador
     icones.ts              subconjunto do Lucide
     condominio/            maquete.ts (lote, prédios, câmeras), cobertura.ts (campo de visão e pontos
@@ -78,7 +80,7 @@ Princípios:
 | Mudar o enquadramento de um capítulo | `src/lib/condominio/capitulos.ts` (`vista` e `vistaCelular`) |
 | Mudar a taxa de instalação (hoje, 1 mensalidade) | `src/lib/dados.ts` → `taxaInstalacaoMensalidades` |
 | Mudar o que aparece em "Simples de contratar" | `src/lib/dados.ts` → `condicoes` |
-| Trocar CNPJ, cidade ou e-mail do rodapé | `src/lib/dados.ts` → `empresa` e `contato.email` |
+| Trocar CNPJ, cidade ou e-mail do rodapé | `src/lib/dados.ts` → `empresa` e `contato.email` (os dados para o Google acompanham) |
 
 Depois de qualquer mudança: `npm run validar`. Os testes em `tests/dados.test.ts` conferem invariantes
 (preço e cabo crescendo com as câmeras, gravador com canais suficientes, só um destaque, número antigo ausente,
@@ -103,6 +105,27 @@ Passo a passo (25/09/2026, revisto em 01/10/2026):
 5. Conferir de fora: HTTPS 200 **e o conteúdo** idêntico ao gerado. Endereço que não existe também
    responde 200 (com a inicial), então só o código não prova nada.
 6. Marcar o commit publicado com a tag `publicado-<data>` e enviar ao GitHub.
+
+### Página 404 (configuração do Nginx, uma vez só)
+
+Hoje o Nginx devolve a página inicial, com código 200, para qualquer endereço que não existe
+(`try_files … /index.html`). Para o Google isso é uma "página repetida", e quem chega por um link
+antigo cai na inicial sem saber por quê. A pasta `dist/` já traz o `404.html`; para o servidor
+usá-lo, no site `somoscella.online` (e no endereço provisório) do painel ICP troque o fim do
+`try_files` e acrescente o `error_page`:
+
+```nginx
+location / {
+    try_files $uri $uri/ =404;
+}
+error_page 404 /404.html;
+```
+
+É uma mudança no servidor: só com o "sim" do Kauan, guardando antes a configuração atual. Depois,
+confira de fora: `https://somoscella.online/qualquer-coisa` responde **404** e mostra a página
+"Este endereço não existe", e `/`, `/condominio/` e `/privacidade/` continuam 200. Os `assets/` das
+versões anteriores continuam valendo (passo 4): sem eles, o CSS antigo agora daria 404 em vez da
+inicial no lugar, e a página antiga em cache continuaria sem estilo.
 
 O histórico das publicações está em `docs/ALTERACOES.md`.
 

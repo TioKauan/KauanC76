@@ -82,3 +82,15 @@ A página inicial não muda, a não ser pelos links para a página nova (menu, a
 | Imagem das câmeras | Cada câmera renderiza a cena num só canvas; desenhos explicativos ficam fora da imagem | Uma única conexão com a placa de vídeo; a imagem mostra só o que existiria |
 | Bateria | Desenha só quando precisa, pausa fora da tela, qualidade cai sozinha em aparelho lento | Página imersiva sem esquentar o celular |
 | Proposta | Sistemas marcados → mensagem para a Sol (mesmo começo do configurador) | Regra de 28/09: botões de venda passam pela Sol; WhatsApp só em "Fale com a SC" |
+
+## Buscadores: dados da empresa e página 404 (05/10/2026, ainda não publicados)
+
+O Kauan pediu as melhorias rápidas para aparecer melhor no Google.
+
+| Tema | Decisão | Motivo |
+|---|---|---|
+| Dados estruturados | Bloco schema.org (JSON-LD) na inicial: `LocalBusiness` (nome, CNPJ, Francisco Beltrão - PR, e-mail, região, logo) e `WebSite` (nome "SC Soluções") | O Google entende quem é a empresa e onde atende (buscas locais) e passa a mostrar "SC Soluções" como nome do site. Tudo vem de `dados.ts` (`lib/buscadores.ts`, com testes) |
+| Sem telefone | O bloco não leva o WhatsApp nem telefone | O WhatsApp da equipe fica só em "Fale com a SC" (28/09); com telefone, o Google mostraria um botão "Ligar" no resultado. Muda só com pedido do Kauan |
+| Sem endereço de rua nem preço | Só cidade, estado e região | Não há endereço de atendimento ao público no site; preço fica nos planos |
+| Página 404 | `404.html` com os caminhos para planos, Monte seu sistema, Condomínio e Dúvidas, mais "Fale com a SC" e a Sol; fora do Google (`noindex`) | Quem chega por link antigo continua no site, e o Google para de ver a inicial repetida em endereços que não existem |
+| Servidor | Depende de trocar o `try_files` no Nginx (`site/README.md`, "Página 404") | Mudança no servidor: só com o "sim" do Kauan |
