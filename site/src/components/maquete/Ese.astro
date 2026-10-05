@@ -1,0 +1,50 @@
+---
+/**
+ * "E se…?" das páginas com maquete: os mesmos textos da página inicial (cenarios.ts),
+ * na versão de cada ambiente. O script (src/scripts/maquete/roteiro.ts) troca a situação.
+ */
+import Icone from '../Icone.astro';
+import { situacoes, sistemas, estadoCena, type AmbienteId, type SistemaId } from '../../lib/cenarios';
+
+interface Props {
+  ambiente: AmbienteId;
+  /** id do título do capítulo (rótulo do grupo). */
+  rotulo: string;
+  /** Texto pequeno do interruptor do nobreak. */
+  nobreak: string;
+}
+const { ambiente, rotulo, nobreak } = Astro.props;
+const inicial = estadoCena(ambiente, 'energia', true);
+const ordem: SistemaId[] = ['rede', 'cameras', 'acesso', 'energia', 'internet'];
+---
+
+<div class="ese" role="group" aria-labelledby={rotulo} data-ese data-situacao="energia" data-reserva="sim">
+  <div class="ese-opcoes" role="group" aria-label="Situações para simular">
+    {
+      situacoes.map((s) => (
+        <button type="button" class="ese-opcao" data-ese-situacao={s.id} aria-pressed={s.id === 'energia' ? 'true' : 'false'}>
+          <Icone nome={s.icone} tamanho={18} /> {s.nome}
+        </button>
+      ))
+    }
+  </div>
+  <button type="button" class="ese-nobreak" data-ese-nobreak aria-pressed="true">
+    <span class="interruptor" aria-hidden="true"></span>
+    <span><b>Com nobreak</b><small>{nobreak}</small></span>
+  </button>
+  <div aria-live="polite">
+    <p class="ese-titulo" data-ese-titulo>{inicial.titulo}</p>
+    <p class="ese-texto" data-ese-explicacao>{inicial.explicacao}</p>
+    <p class="ese-cond" data-ese-condicao>{inicial.condicao}</p>
+  </div>
+  <div class="ese-sistemas">
+    {
+      ordem.map((id) => (
+        <div data-ese-sistema={id} data-estado={inicial.estados[id]}>
+          <b>{sistemas[id].nome}</b>
+          <span data-ese-texto>{inicial.textos[id]}</span>
+        </div>
+      ))
+    }
+  </div>
+</div>

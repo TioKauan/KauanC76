@@ -84,6 +84,13 @@ export function resumir(estado: EstadoConfigurador): Resumo {
   return { recomendacao, quantidade, caboEstimado, caboExcedente };
 }
 
+/** Aviso embaixo do medidor de cabo (configurador e páginas de ambiente). */
+export function avisoCabo(excedente: number): string {
+  return excedente
+    ? `Passa cerca de ${excedente} m do limite: o excedente é orçado à parte, na visita técnica.`
+    : 'Dentro do limite do plano: sem cobrança de cabo extra.';
+}
+
 const preco = (p: Plano) => (mostrarPrecos ? `R$ ${formatarPreco(p.preco)}/mês` : 'sob consulta');
 
 export function mensagemInicial(ambiente: AmbienteConfigId): string {

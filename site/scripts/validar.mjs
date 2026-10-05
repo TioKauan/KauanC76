@@ -924,17 +924,137 @@ grupo('Condomínio · maquete 3D');
 
   // Na inicial: os três caminhos até a página nova
   const ini = await abrir(1440);
-  const escondidoAntes = await ini.pagina.$eval('[data-link-condominio]', (a) => a.hidden);
+  const visiveis = () => ini.pagina.$$eval('[data-link-ambiente]', (as) => as.filter((a) => !a.hidden).map((a) => a.getAttribute('href')).join());
+  const escondidoAntes = (await visiveis()) === '/casa/';
   await ini.pagina.click('.ambientes .chip[data-ambiente="condominio"]');
-  const linkAbertura = await ini.pagina.$eval('[data-link-condominio]', (a) => !a.hidden && a.getAttribute('href'));
+  const linkAbertura = await visiveis();
   const outros = await ini.pagina.evaluate(() => ({
     planos: Boolean(document.querySelector('#aba-condominio a[href="/condominio/"]')),
     configurador: Boolean(document.querySelector('[data-condominio] a[href="/condominio/"]')),
-    menu: Boolean(document.querySelector('.nav a[href="/condominio/"]')),
+    menu: ['/casa/', '/comercio/', '/empresa/', '/condominio/'].every((h) => document.querySelector(`.nav-menu a[href="${h}"]`) && document.querySelector(`.menu-celular-solucoes a[href="${h}"]`)),
   }));
-  conferir('Inicial leva ao condomínio: abertura (ao escolher "Condomínio"), aba dos planos, configurador e menu',
+  conferir('Inicial leva às páginas 3D: convite na abertura (um por ambiente), aba dos planos, configurador e menu "Soluções"',
     escondidoAntes && linkAbertura === '/condominio/' && outros.planos && outros.configurador && outros.menu, JSON.stringify({ escondidoAntes, linkAbertura, ...outros }));
   await ini.contexto.close();
+}
+
+/* ---------- Casa, Comércio e Empresa (/casa/, /comercio/, /empresa/) ---------- */
+grupo('Casa, Comércio e Empresa · maquetes 3D');
+{
+  const { createServer: criarVite } = await import('vite');
+  const vite = await criarVite({ root: raizSite, logLevel: 'silent', appType: 'custom', server: { middlewareMode: true, hmr: false } });
+  const { capitulosDe } = await vite.ssrLoadModule('/src/lib/ambientes/capitulos.ts');
+  const { camerasDoPlano, resumoPlano } = await vite.ssrLoadModule('/src/lib/ambientes/plano.ts');
+  const { estadoCena } = await vite.ssrLoadModule('/src/lib/cenarios.ts');
+  const { mensagemQueroPlano } = await vite.ssrLoadModule('/src/lib/sol.ts');
+  await vite.close();
+  const esperar3D = (p) => p.waitForFunction(() => Number(document.querySelector('[data-maquete]')?.dataset.quadros) > 1, null, { timeout: 90000 });
+  const estado = (p) => p.evaluate(() => window.__maquete());
+  const irPara = async (p, id) => {
+    await p.evaluate((i) => { const el = document.getElementById(i); scrollTo({ top: el.getBoundingClientRect().top + scrollY - 60, behavior: 'instant' }); }, id);
+    await p.waitForTimeout(450);
+  };
+  for (const ambiente of ['casa', 'comercio', 'empresa']) {
+    const nome = { casa: 'Casa', comercio: 'Comércio', empresa: 'Empresa' }[ambiente];
+    const caps = capitulosDe(ambiente);
+    const { pagina, contexto, erros, bytes } = await abrir(1440, { reducedMotion: 'reduce' }, `${ambiente}/`);
+    await esperar3D(pagina);
+    const cores = await pagina.evaluate(() => window.__maquetePixels());
+    const feeds = await pagina.evaluate(() => document.querySelectorAll('[data-monitor-grade] .feed').length);
+    conferir(`${nome}: a maquete 3D desenha (WebGL) e o monitor mostra as 4 câmeras do plano de 4 na abertura`, new Set(cores).size >= 6 && feeds === 4, `${new Set(cores).size} cores; ${feeds} câmeras no monitor`);
+
+    const errados = [];
+    for (const c of caps) {
+      await irPara(pagina, c.id);
+      const e = await estado(pagina);
+      if (e.capitulo !== c.id || e.camadas.slice().sort().join() !== [...c.camadas].sort().join()) errados.push(`${c.id}→${e.capitulo}`);
+    }
+    conferir(`${nome}: cada capítulo, ao rolar, acende as suas camadas (${caps.map((c) => c.id).join(', ')})`, errados.length === 0, errados.join(', '));
+
+    await irPara(pagina, 'cameras');
+    await pagina.focus('[data-camera="6"]');
+    await pagina.keyboard.press('Enter');
+    const tec = await estado(pagina);
+    conferir(`${nome}: escolher uma câmera pelo teclado mostra a imagem dela no monitor`, tec.selecionada === 6 && tec.monitor.join() === '6');
+
+    await irPara(pagina, 'plano');
+    const escolher = async (n) => {
+      await pagina.click(`[data-plano-opcao="${n}"]`);
+      await pagina.waitForTimeout(150);
+      return { e: await estado(pagina), cartao: await pagina.evaluate(() => ({
+        nome: document.querySelector('[data-plano-nome]').textContent, preco: document.querySelector('[data-plano-preco]').textContent,
+        cabo: document.querySelector('[data-plano-cabo-texto]').textContent, cameras: document.querySelectorAll('[data-plano-cameras] li').length,
+        sol: document.querySelector('[data-plano-cta]').dataset.solMensagem, plano: document.querySelector('[data-plano-cta]').dataset.solPlano,
+        orbe: Boolean(document.querySelector('[data-plano-cta] .sol-orbe')), href: document.querySelector('[data-plano-cta]').getAttribute('href'),
+      })) };
+    };
+    const oito = await escolher(8);
+    const um = await escolher(1);
+    const r8 = resumoPlano(ambiente, 8);
+    conferir(`${nome}: escolher o plano instala as câmeras dele na maquete e atualiza preço, cabo e o "Quero este plano" (Sol)`,
+      oito.e.instaladas.join() === camerasDoPlano(ambiente, 8).join() && oito.cartao.nome === 'Plano de 8 câmeras' && oito.cartao.preco.includes(formatarPreco(r8.plano.preco))
+        && oito.cartao.cabo.includes(`${r8.caboEstimado} m`) && oito.cartao.cameras === 8 && oito.cartao.sol === mensagemQueroPlano(8) && oito.cartao.plano === '8'
+        && um.e.instaladas.join() === camerasDoPlano(ambiente, 1).join() && um.cartao.cameras === 1 && um.cartao.orbe && um.cartao.href === '#contato',
+      `${oito.cartao.nome} ${oito.cartao.preco} · ${oito.cartao.cabo} → ${um.cartao.nome}`);
+    await pagina.click('[data-plano-cta]');
+    await pagina.waitForSelector('.sol-painel.sol-painel-visivel', { timeout: 5000 });
+    await pagina.keyboard.press('Escape');
+
+    await irPara(pagina, 'ese');
+    const ese = async (situacao, nobreak) => {
+      await pagina.click(`[data-ese-situacao="${situacao}"]`);
+      if (nobreak) await pagina.click('[data-ese-nobreak]');
+      return { titulo: await pagina.textContent('[data-ese-titulo]'), e: await estado(pagina) };
+    };
+    const semLuz = await ese('energia', false);
+    const comNobreak = await ese('energia', true);
+    const visita = await ese('visita', false);
+    conferir(`${nome}: "E se…?" com os textos da inicial; na visita, o visitante e o acesso acendem`,
+      semLuz.titulo === estadoCena(ambiente, 'energia', false).titulo && comNobreak.titulo === estadoCena(ambiente, 'energia', true).titulo
+        && visita.titulo === estadoCena(ambiente, 'visita', false).titulo && visita.e.visitante && visita.e.camadas.includes('acesso'));
+
+    const q1 = await pagina.$eval('[data-maquete]', (c) => Number(c.dataset.quadros));
+    await pagina.waitForTimeout(1500);
+    const q2 = await pagina.$eval('[data-maquete]', (c) => Number(c.dataset.quadros));
+    const whats = await pagina.evaluate(() => ({ fora: [...document.querySelectorAll('a[href*="wa.me"]')].filter((a) => !a.closest('#contato')).length, dentro: document.querySelectorAll('#contato a[href*="wa.me"]').length }));
+    const texto = await pagina.evaluate(() => document.body.innerText);
+    conferir(`${nome}: "reduzir movimento" sem animação, WhatsApp só em "Fale com a SC", sem condição contratual nem "instalação inclusa", zero erros`,
+      q2 - q1 <= 1 && whats.fora === 0 && whats.dentro > 0 && !/instalação inclu|sem investimento|24 meses|multa|prazo mínimo/i.test(texto) && /aproximadamente 10 dias/.test(texto) && erros.length === 0,
+      `${q2 - q1} quadros parada; WhatsApp ${whats.dentro}/${whats.fora}; erros: ${erros.slice(0, 1).join('') || 0}`);
+    const tamanhos = [...bytes.urls].map((u) => { const f = path.join(dist, u.endsWith('/') ? `${u}index.html` : u); return existsSync(f) && statSync(f).isFile() ? { u, t: statSync(f).size } : null; }).filter(Boolean);
+    const pesoCena = tamanhos.filter((x) => /\/assets\/cena\./.test(x.u)).reduce((a, x) => a + x.t, 0);
+    const inicial = tamanhos.filter((x) => !/\/assets\/cena\./.test(x.u) && !/maquete-celular/.test(x.u)).reduce((a, x) => a + x.t, 0);
+    conferir(`${nome}: primeira visão ≤ 300 KB e maquete 3D ≤ 700 KB (baixada depois)`, inicial <= 300 * 1024 && pesoCena > 0 && pesoCena <= 700 * 1024, `primeira visão ${(inicial / 1024).toFixed(0)} KB; maquete ${(pesoCena / 1024).toFixed(0)} KB`);
+    await contexto.close();
+
+    const cel = await abrir(390, {}, `${ambiente}/`);
+    await esperar3D(cel.pagina);
+    await rolarTudo(cel.pagina);
+    const celInfo = await cel.pagina.evaluate(() => {
+      const palco = document.querySelector('[data-palco]').getBoundingClientRect();
+      const alvo = '.capitulos button, .capitulos a.btn, .capitulos .plano-cartao-links a, .ese-opcao, .ese-nobreak, .plano-opcao';
+      const pequenos = [...document.querySelectorAll(alvo)].filter((el) => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== 'hidden' && r.height < 44; }).map((el) => `${el.className || el.tagName} ${Math.round(el.getBoundingClientRect().height)}`);
+      return { sobra: document.documentElement.scrollWidth - innerWidth, alturaPalco: Math.round(palco.height), pequenos };
+    });
+    conferir(`${nome} no celular: maquete no alto, sem rolagem lateral, toques ≥ 44 px e sem erros`,
+      celInfo.sobra <= 0 && celInfo.alturaPalco > 250 && celInfo.alturaPalco < 500 && celInfo.pequenos.length === 0 && cel.erros.length === 0,
+      JSON.stringify({ ...celInfo, pequenos: celInfo.pequenos.slice(0, 3), erros: cel.erros.slice(0, 1) }));
+    await cel.contexto.close();
+
+    for (const [rotulo, extras, caminho] of [['sem 3D', {}, `${ambiente}/?sem3d`], ['sem JavaScript', { javaScriptEnabled: false }, `${ambiente}/`]]) {
+      const t = await abrir(1440, extras, caminho);
+      const info = await t.pagina.evaluate(() => ({
+        imagem: (() => { const img = document.querySelector('[data-palco-imagem] img'); return img.complete && img.naturalWidth > 0; })(),
+        capitulos: document.querySelectorAll('[data-capitulo] h1, [data-capitulo] h2').length,
+        so3d: [...document.querySelectorAll('[data-so-3d]')].filter((el) => el.getBoundingClientRect().width > 0).length,
+        plano: document.querySelector('[data-plano-nome]')?.textContent,
+        contato: Boolean(document.querySelector('#contato a[href*="wa.me"]')),
+      }));
+      conferir(`${nome} ${rotulo}: imagem da maquete, os ${caps.length} capítulos, o plano de 4 e o contato`,
+        info.imagem && info.capitulos === caps.length && info.so3d === 0 && info.plano === 'Plano de 4 câmeras' && info.contato && t.erros.length === 0, JSON.stringify(info));
+      await t.contexto.close();
+    }
+  }
 }
 
 /* ---------- Acessibilidade automática (axe-core, regras WCAG 2.2 A e AA) ---------- */
@@ -945,7 +1065,7 @@ grupo('Acessibilidade (axe)');
     const r = await new AxeBuilder({ page: pagina }).withTags(regras).analyze();
     for (const v of r.violations) achados.push(`${rotulo}: ${v.id} (${v.nodes.length}) ${v.nodes[0]?.target.join(' ')}`);
   };
-  for (const [caminho, nome] of [['', 'Página inicial'], ['privacidade/', '/privacidade/'], ['condominio/', '/condominio/'], ['nao-existe/', 'Página 404']]) {
+  for (const [caminho, nome] of [['', 'Página inicial'], ['privacidade/', '/privacidade/'], ['condominio/', '/condominio/'], ['nao-existe/', 'Página 404'], ['casa/', '/casa/'], ['comercio/', '/comercio/'], ['empresa/', '/empresa/']]) {
     const achados = [];
     for (const largura of [1440, 390]) {
       const { pagina, contexto } = await abrir(largura, { reducedMotion: 'reduce' });

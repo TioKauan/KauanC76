@@ -38,7 +38,7 @@ const COR = {
   parede: 0x1f3a5a,
   paredeInterna: 0x24425f,
   corte: 0x5f9bd0,
-  telhado: 0x2a3d57,
+  telhado: 0x3a5576,
   muro: 0x1c2f47,
   muroTopo: 0x34506e,
   vidroEscuro: 0x0a1523,
@@ -270,7 +270,11 @@ function construirEdificacao(e: Edificacao, vidros: Vidro[]) {
     if (aoLongoDeX) m.rotation.y = Math.PI / 2;
     m.position.set(r.x0 + w / 2, H + 0.06, r.z0 + d / 2);
     m.castShadow = true;
-    telhado.add(m);
+    // Arestas claras: o telhado se destaca do fundo escuro, como numa maquete de arquitetura.
+    const arestas = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 20), new THREE.LineBasicMaterial({ color: new THREE.Color(COR.corte).multiplyScalar(0.9), transparent: true }));
+    arestas.rotation.copy(m.rotation);
+    arestas.position.copy(m.position);
+    telhado.add(m, arestas);
   } else {
     const matLaje = padrao(COR.laje, { transparent: true });
     telhado.add(caixa(w + 0.3, 0.3, d + 0.3, matLaje, r.x0 + w / 2, H + 0.15, r.z0 + d / 2));
@@ -284,9 +288,9 @@ function construirEdificacao(e: Edificacao, vidros: Vidro[]) {
   telhado.userData.materiais = [...new Set(telhado.children.map((c) => (c as THREE.Mesh).material as THREE.Material))];
 
   // Luz de dentro (sem sombra): ilumina os cômodos e acende as janelas
-  const luz = new THREE.PointLight(0xffc48a, 1, Math.max(w, d) * 1.1, 1.6);
-  luz.position.set(r.x0 + w / 2, H - 0.3, r.z0 + d / 2);
-  luz.userData.base = Math.max(w, d) * 3.2;
+  const luz = new THREE.PointLight(0xffc48a, 1, Math.max(w, d) * 1.3, 1.1);
+  luz.position.set(r.x0 + w / 2, H + 0.6, r.z0 + d / 2);
+  luz.userData.base = Math.max(w, d) * 9;
   luz.intensity = luz.userData.base as number;
   corpo.add(luz);
   return { corpo, telhado, luz };
@@ -932,7 +936,7 @@ export function criarMaquete({ canvas, palco, movimento, maquete: M, camadas: CA
     const dz = Math.cos(a);
     // Câmera de dentro olha mais para baixo (o cômodo é pequeno).
     const longe = cam.interna ? cam.alcance * 0.7 : 12;
-    const frente = cam.interna ? 0.3 : 0.9;
+    const frente = cam.interna ? 0.7 : 0.9;
     c.position.set(cam.x + dx * frente, cam.y + 0.15, cam.z + dz * frente);
     c.lookAt(cam.x + dx * longe, 0.2, cam.z + dz * longe);
     return [cam.id, { camera: c, alvo: null as THREE.WebGLRenderTarget | null }];

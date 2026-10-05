@@ -24,6 +24,16 @@ export function iniciarMoldura(): void {
   });
   matchMedia('(min-width: 901px)').addEventListener('change', (m) => { if (m.matches) abrirMenu(false); });
 
+  // Menu "Soluções" (<details>): fecha ao tocar fora, com Esc ou ao escolher uma página.
+  for (const grupo of todos<HTMLDetailsElement>('[data-nav-grupo]')) {
+    document.addEventListener('click', (e) => { if (grupo.open && !grupo.contains(e.target as Node)) grupo.open = false; });
+    grupo.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape' || !grupo.open) return;
+      grupo.open = false;
+      grupo.querySelector('summary')?.focus();
+    });
+  }
+
   // Revelar ao rolar
   const revelar = new IntersectionObserver((entradas) => {
     for (const e of entradas) {

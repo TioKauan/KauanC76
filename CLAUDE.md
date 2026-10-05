@@ -47,11 +47,17 @@ solução, não a mais simples de entender; nas conversas, explique o porquê da
 - **Botões:** todo botão que abre o WhatsApp mostra o ícone do WhatsApp (`IconeWhatsapp.astro` ou
   `iconeWhatsapp()` de `src/lib/marcas.ts`), em contorno ciano, nunca verde; tudo o que abre a Sol
   mostra o orbe laranja. O validador confere o ícone.
-- **Página do Condomínio Evoluído** (`/condominio/`, aprovada em 30/09/2026): maquete 3D ilustrativa
-  (Three.js, baixado só com WebGL 2) com capítulos por rolagem. Textos em `dados.ts` (`paginaCondominio`);
-  maquete e regras em `src/lib/condominio/` (com testes). Nada de preço, dias de gravação ou quantidade
-  de câmeras nessa página: condomínio é proposta personalizada, pela Sol. Mudou a maquete? Rode
-  `npm run build && npm run imagem-condominio` para refazer a imagem pronta. Plano: `docs/inovacao/condominio/`.
+- **Páginas com maquete 3D**: Condomínio Evoluído (`/condominio/`, aprovada em 30/09/2026) e Casa, Comércio
+  e Empresa (`/casa/`, `/comercio/`, `/empresa/`, pedidas em 05/10/2026 "igual ao do condomínio"). Um motor
+  comum desenha qualquer maquete descrita em dados (`src/lib/maquete/` e `src/scripts/maquete/`, Three.js
+  baixado só com WebGL 2): capítulos por rolagem, câmera que acompanha a rolagem, camadas, pontos cegos,
+  "E se…?" e modo explorar. Condomínio em `src/lib/condominio/` (textos em `paginaCondominio`): nada de
+  preço, dias de gravação ou quantidade de câmeras, é proposta personalizada pela Sol. Casa, Comércio e
+  Empresa em `src/lib/ambientes/` (textos em `paginasAmbiente`): as maquetes saem das plantas do
+  configurador (`configurador-dados.ts`), e "Escolha o plano" instala as câmeras do plano com o mesmo cabo
+  estimado e o mesmo "Quero este plano" da inicial. O menu "Soluções" leva às quatro. Mudou uma maquete?
+  Rode `npm run build && npm run imagens-maquete` para refazer as imagens prontas. Plano do condomínio:
+  `docs/inovacao/condominio/`.
 - **Buscadores** (05/10/2026): os dados da empresa para o Google (schema.org) saem de `dados.ts` em
   `src/lib/buscadores.ts`, sem telefone nem WhatsApp. `src/pages/404.astro` é a página de endereço
   inexistente (fora do Google); para valer no ar, o Nginx precisa da troca descrita em `site/README.md`.

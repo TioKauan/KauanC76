@@ -2,7 +2,7 @@
 import Icone from './Icone.astro';
 import Logo from './Logo.astro';
 import { contato, empresa } from '../lib/dados';
-import { hrefSecao, links } from '../lib/site';
+import { hrefSecao, secoes, solucoes } from '../lib/site';
 
 interface Props {
   /** false nas outras páginas: os links apontam para as seções da inicial (/#planos). */
@@ -16,7 +16,7 @@ const { naInicial = true } = Astro.props;
     <a href={naInicial ? '#inicio' : '/'} class="logo-link" aria-label={naInicial ? 'SC Soluções, voltar ao início' : 'SC Soluções, página inicial'}><Logo grande /></a>
     <p class="rodape-desc">Soluções em<br />Segurança e Tecnologia</p>
     <nav class="rodape-nav" aria-label="Rodapé">
-      {links.slice(1).map((l) => <a href={hrefSecao(l.href, naInicial)}>{l.rotulo}</a>)}
+      {[...secoes.slice(1), ...solucoes].map((l) => <a href={hrefSecao(l.href, naInicial)}>{l.rotulo}</a>)}
     </nav>
     <a class="voltar-topo" href={naInicial ? '#inicio' : '#conteudo'}>{naInicial ? 'Voltar ao início' : 'Voltar ao topo'} <Icone nome="arrow-up" tamanho={16} /></a>
   </div>

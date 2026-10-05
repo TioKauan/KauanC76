@@ -33,8 +33,7 @@ export function iniciarAbertura(): void {
       chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
       cena.dataset.ambienteAtivo = chip.dataset.ambiente;
       todos('.cena-ambiente', cena).forEach((p) => (p.hidden = p.dataset.ambiente !== chip.dataset.ambiente));
-      const linkCondominio = document.querySelector<HTMLElement>('[data-link-condominio]');
-      if (linkCondominio) linkCondominio.hidden = chip.dataset.ambiente !== 'condominio';
+      todos('[data-link-ambiente]').forEach((a) => { a.hidden = a.dataset.linkAmbiente !== chip.dataset.ambiente; });
       aplicar();
     }),
   );

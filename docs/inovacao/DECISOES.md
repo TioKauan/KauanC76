@@ -94,3 +94,18 @@ O Kauan pediu as melhorias rápidas para aparecer melhor no Google.
 | Sem endereço de rua nem preço | Só cidade, estado e região | Não há endereço de atendimento ao público no site; preço fica nos planos |
 | Página 404 | `404.html` com os caminhos para planos, Monte seu sistema, Condomínio e Dúvidas, mais "Fale com a SC" e a Sol; fora do Google (`noindex`) | Quem chega por link antigo continua no site, e o Google para de ver a inicial repetida em endereços que não existem |
 | Servidor | Depende de trocar o `try_files` no Nginx (`site/README.md`, "Página 404") | Mudança no servidor: só com o "sim" do Kauan |
+
+## Páginas de Casa, Comércio e Empresa em 3D (05/10/2026, ainda não publicadas)
+
+Pedido do Kauan: "faça extremamente animado e fluido, igual ao do condomínio".
+
+| Tema | Decisão | Motivo |
+|---|---|---|
+| Motor | Um motor 3D comum (`scripts/maquete/cena.ts`) que desenha qualquer maquete descrita em dados; o condomínio passou a usá-lo sem mudar o visual | Quatro páginas com o mesmo código: uma melhoria vale para todas, e cada maquete nova é só dado (testável) |
+| De onde vêm as maquetes | Das plantas do configurador "Monte seu sistema": câmeras = pontos sugeridos, cômodos = zonas, gravador no mesmo lugar | Nada inventado e tudo coerente com a inicial: a câmera "Garagem e portão" é a mesma no configurador e na maquete |
+| Imóvel em corte | Paredes com portas, janelas e vitrines, móveis e o corte das paredes iluminado; o telhado sobe quando a maquete chega | Mostra câmeras de dentro e de fora ao mesmo tempo, como numa maquete de arquitetura |
+| Escolha o plano | Botões 1, 2, 3, 4 e 8 câmeras: a maquete instala as câmeras do plano (as mesmas que o configurador marca), os pontos cegos mudam e o cartão mostra preço, instalação (1 mensalidade) e cabo estimado com a mesma conta da inicial | A pessoa vê o que ganha a cada plano; "Quero este plano" manda para a Sol o mesmo pedido da inicial |
+| Capítulos | Casa: câmeras, plano, "E se…?", alarme. Comércio e empresa: + redes gerenciadas | Redes gerenciadas são serviço para operação (comércio e empresa) |
+| Fluidez | A câmera segue a rolagem com amortecimento (desliza entre os capítulos), camadas acendem e apagam com transição, campos de visão se abrem a partir da câmera, câmeras aparecem uma a uma, luzes apagam aos poucos, carros e um pedestre passam na rua, textos dos capítulos entram junto | "Extremamente animado e fluido", sem pesar: tudo no mesmo canvas, pausa fora da tela e respeita "reduzir movimento" |
+| Menu | "Condomínio" virou "Soluções", que abre Casa, Comércio, Empresa e Condomínio (no celular, quatro botões) | Quatro páginas não cabem no topo; o condomínio continua a um clique |
+| Inicial | Ao escolher o ambiente na abertura, aparece o convite para a página 3D dele | Leva cada visitante à página certa |

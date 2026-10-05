@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { hrefSecao, links } from '../src/lib/site';
+import { hrefSecao, links, secoes, solucoes } from '../src/lib/site';
 
 describe('links do menu entre páginas', () => {
   it('na inicial, as seções ficam como âncora', () => {
@@ -15,7 +15,9 @@ describe('links do menu entre páginas', () => {
     expect(hrefSecao('/condominio/', false)).toBe('/condominio/');
   });
 
-  it('o menu tem a página do condomínio', () => {
-    expect(links.some((l) => l.href === '/condominio/')).toBe(true);
+  it('o menu "Soluções" leva às quatro páginas com maquete', () => {
+    expect(solucoes.map((s) => s.href)).toEqual(['/casa/', '/comercio/', '/empresa/', '/condominio/']);
+    expect(links.some((l) => 'grupo' in l && l.itens === solucoes)).toBe(true);
+    expect(secoes.every((s) => s.href.startsWith('#'))).toBe(true);
   });
 });

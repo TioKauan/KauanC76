@@ -5,8 +5,9 @@
  * e cenarios.ts (o mesmo "E se…?" da página inicial, versão condomínio).
  */
 import Icone from '../Icone.astro';
+import Ese from '../maquete/Ese.astro';
 import { paginaCondominio, servicosProposta, textoProposta } from '../../lib/dados';
-import { ambientes, situacoes, sistemas, estadoCena, type SistemaId } from '../../lib/cenarios';
+import { ambientes, estadoCena } from '../../lib/cenarios';
 import { CAMADAS, CAPITULOS } from '../../lib/condominio/capitulos';
 import { CAMERAS, rotuloCamera } from '../../lib/condominio/maquete';
 import { mensagemProposta } from '../../lib/condominio/proposta';
@@ -21,14 +22,12 @@ const condominio = servico('condominio');
 const redes = servico('redes');
 const alarme = servico('alarme');
 const visita = estadoCena('condominio', 'visita', false);
-const inicialEse = estadoCena('condominio', 'energia', true);
 const visitaTexto = ambientes.find((a) => a.id === 'condominio')!.visita;
 const total = CAPITULOS.filter((c) => c.numero).length;
 const numero = (id: string) => CAPITULOS.find((c) => c.id === id)?.numero;
 // Marcados de início no formulário (os mesmos da imagem aprovada).
 const marcados = ['cameras', 'facial', 'interfonia', 'nobreak'];
 const mensagemInicial = mensagemProposta({ sistemas: marcados });
-const ordemSistemas: SistemaId[] = ['rede', 'cameras', 'acesso', 'energia', 'internet'];
 ---
 
 <div class="capitulos">
@@ -106,36 +105,7 @@ const ordemSistemas: SistemaId[] = ['rede', 'cameras', 'acesso', 'energia', 'int
     <div class="capitulo-caixa">
       <p class="sobretitulo">{t.energia.sobre} <span class="capitulo-num">{numero('energia')} de {total}</span></p>
       <h2 id="cap-energia">{t.energia.titulo}</h2>
-      <div class="ese" role="group" aria-labelledby="cap-energia" data-ese data-situacao="energia" data-reserva="sim">
-        <div class="ese-opcoes" role="group" aria-label="Situações para simular">
-          {
-            situacoes.map((s) => (
-              <button type="button" class="ese-opcao" data-ese-situacao={s.id} aria-pressed={s.id === 'energia' ? 'true' : 'false'}>
-                <Icone nome={s.icone} tamanho={18} /> {s.nome}
-              </button>
-            ))
-          }
-        </div>
-        <button type="button" class="ese-nobreak" data-ese-nobreak aria-pressed="true">
-          <span class="interruptor" aria-hidden="true"></span>
-          <span><b>Com nobreak</b><small>Para câmeras, rede, gravador e acesso</small></span>
-        </button>
-        <div aria-live="polite">
-          <p class="ese-titulo" data-ese-titulo>{inicialEse.titulo}</p>
-          <p class="ese-texto" data-ese-explicacao>{inicialEse.explicacao}</p>
-          <p class="ese-cond" data-ese-condicao>{inicialEse.condicao}</p>
-        </div>
-        <div class="ese-sistemas">
-          {
-            ordemSistemas.map((id) => (
-              <div data-ese-sistema={id} data-estado={inicialEse.estados[id]}>
-                <b>{sistemas[id].nome}</b>
-                <span data-ese-texto>{inicialEse.textos[id]}</span>
-              </div>
-            ))
-          }
-        </div>
-      </div>
+      <Ese ambiente="condominio" rotulo="cap-energia" nobreak="Para câmeras, rede, gravador e acesso" />
     </div>
   </article>
 

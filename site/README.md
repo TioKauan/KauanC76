@@ -19,7 +19,8 @@ npm run preview    # serve o dist/ em http://localhost:4173
 npm run validar    # tipos, build, testes, acessibilidade (axe) e conferências em navegador → docs/inovacao/RELATORIO-VALIDACAO.md
 npm run validar -- --fotos   # + fotos em docs/inovacao/site-final/ e lado a lado com os mockups em comparacao/
                              #   (e as do condomínio em docs/inovacao/condominio/site-final/ e comparacao/)
-npm run imagem-condominio    # depois de npm run build: refaz a imagem pronta da maquete (public/condominio/)
+npm run imagens-maquete      # depois de npm run build: refaz as imagens prontas das maquetes (public/<página>/)
+                             #   (ou só algumas: npm run imagens-maquete -- casa comercio)
 ```
 
 ## Arquitetura
@@ -28,12 +29,15 @@ npm run imagem-condominio    # depois de npm run build: refaz a imagem pronta da
 src/
   pages/index.astro        página inicial (compõe as seções; importa os estilos e o script dela)
   pages/condominio.astro   Condomínio Evoluído: capítulos + maquete 3D (plano em docs/inovacao/condominio/)
+  pages/[ambiente].astro   Casa, Comércio e Empresa (/casa/, /comercio/, /empresa/): mesma maquete 3D, com "Escolha o plano"
   pages/privacidade.astro  política de privacidade
   pages/robots.txt.ts      robots.txt gerado no build (aponta o sitemap)
   pages/404.astro          endereço que não existe: caminhos para o site (fora do Google; ver Publicação)
   layouts/Base.astro       <head>, fonte e estilos-base comuns a todas as páginas
   components/*.astro       uma seção por componente (Abertura, Planos, Configurador, ComoFunciona…)
-  components/condominio/   Palco (maquete, monitor, camadas) e Capitulos (todo o texto da página)
+  components/maquete/      Palco (maquete, monitor, camadas), Trilho (capítulos) e Ese ("E se…?"), comuns às páginas 3D
+  components/condominio/   Capitulos do condomínio (todo o texto da página)
+  components/ambiente/     Capitulos de casa, comércio e empresa (com o seletor de plano)
   lib/                     dados e regras, sem DOM (rodam no build e no navegador)
     dados.ts               conteúdo comercial: planos, preços, condições, dúvidas, contato
     cenarios.ts            estados do "E se…?" por ambiente e situação
@@ -44,16 +48,22 @@ src/
     buscadores.ts          dados da empresa para o Google (schema.org), tirados de dados.ts
     plantas-svg.ts         desenho das plantas do configurador
     icones.ts              subconjunto do Lucide
-    condominio/            maquete.ts (lote, prédios, câmeras), cobertura.ts (campo de visão e pontos
-                           cegos), capitulos.ts (camadas e enquadramentos), proposta.ts (mensagem para a Sol)
+    maquete/               tipos.ts (como se descreve uma maquete: prédios, imóveis em corte, móveis, camadas)
+                           e cobertura.ts (campo de visão e pontos cegos de qualquer maquete)
+    condominio/            maquete.ts (lote, prédios, câmeras), cobertura.ts, capitulos.ts (camadas e
+                           enquadramentos), proposta.ts (mensagem para a Sol)
+    ambientes/             maquetes.ts (casa, loja e empresa tiradas das plantas do configurador),
+                           capitulos.ts, plano.ts (câmeras de cada plano e cabo estimado)
   scripts/*.ts             interação no navegador (sem framework de cliente)
-  scripts/condominio/      pagina.ts (capítulos, E se…?, proposta) e cena.ts (Three.js, baixado só se
-                           o aparelho tiver WebGL 2 e não estiver economizando dados)
+  scripts/maquete/         cena.ts (o motor Three.js, baixado só se o aparelho tiver WebGL 2 e não estiver
+                           economizando dados) e roteiro.ts (capítulos por rolagem, camadas, E se…?, explorar)
+  scripts/condominio/      pagina.ts (formulário da proposta) e etiquetas.ts
+  scripts/ambiente/        pagina.ts (Escolha o plano) e etiquetas.ts
   styles/*.css             estilos por seção; tokens de cor da logo em base.css
 tests/*.test.ts            Vitest (regras de negócio)
 scripts/validar.mjs        validador de ponta a ponta (Playwright)
 scripts/gerar-marca.mjs    favicon, ícone e imagem Open Graph a partir da logo oficial
-scripts/gerar-imagem-condominio.mjs  imagem pronta da maquete (aparece antes do 3D e no lugar dele)
+scripts/gerar-imagens-maquete.mjs    imagens prontas das maquetes (aparecem antes do 3D e no lugar dele)
 ```
 
 Princípios:
@@ -76,7 +86,10 @@ Princípios:
 | Editar as dúvidas frequentes | `src/lib/dados.ts` → `duvidas` (e sinônimos em `src/lib/busca.ts`) |
 | Mudar pontos sugeridos do configurador | `src/lib/configurador-dados.ts` |
 | Mudar textos da página do condomínio | `src/lib/dados.ts` → `paginaCondominio` (os sistemas vêm de `servicosProposta` e do configurador) |
-| Mudar prédios ou câmeras da maquete | `src/lib/condominio/maquete.ts`; depois `npm run build && npm run imagem-condominio` |
+| Mudar prédios ou câmeras da maquete do condomínio | `src/lib/condominio/maquete.ts`; depois `npm run build && npm run imagens-maquete -- condominio` |
+| Mudar paredes, móveis ou detalhes da casa, loja ou empresa | `src/lib/ambientes/maquetes.ts` (câmeras e cômodos vêm das plantas do configurador); depois `npm run build && npm run imagens-maquete` |
+| Mudar textos das páginas Casa, Comércio e Empresa | `src/lib/dados.ts` → `paginasAmbiente` |
+| Mudar o enquadramento de um capítulo de casa, comércio ou empresa | `src/lib/ambientes/capitulos.ts` |
 | Mudar o enquadramento de um capítulo | `src/lib/condominio/capitulos.ts` (`vista` e `vistaCelular`) |
 | Mudar a taxa de instalação (hoje, 1 mensalidade) | `src/lib/dados.ts` → `taxaInstalacaoMensalidades` |
 | Mudar o que aparece em "Simples de contratar" | `src/lib/dados.ts` → `condicoes` |

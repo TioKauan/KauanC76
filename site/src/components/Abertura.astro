@@ -38,6 +38,13 @@ const servicos = [
   { aba: 'alarme', icone: 'bell-ring', titulo: 'Alarme pelo app', sub: 'Integrado às câmeras' },
   { aba: 'nobreak', icone: 'battery-charging', titulo: 'Energia e nobreak', sub: 'Continuidade dos sistemas' },
 ] as const;
+// Convites para as páginas com maquete 3D (o primeiro chip, "Casa", vem escolhido).
+const convites = [
+  { id: 'casa', href: '/casa/', titulo: 'Veja uma casa em 3D, câmera por câmera', sub: 'O que cada câmera enxerga, do portão ao quintal, e o plano ideal' },
+  { id: 'comercio', href: '/comercio/', titulo: 'Veja uma loja em 3D, câmera por câmera', sub: 'Caixa, estoque e entrada, com rede Wi-Fi e alarme' },
+  { id: 'condominio', href: '/condominio/', titulo: 'Para mais soluções, conheça o Condomínio Evoluído em 3D', sub: 'Câmeras, acesso facial, interfonia, rede, nobreak e alarme' },
+  { id: 'empresa', href: '/empresa/', titulo: 'Veja uma empresa em 3D, câmera por câmera', sub: 'Câmeras, rede e alarme no mesmo projeto' },
+];
 ---
 
 <section class="abertura" id="inicio" aria-labelledby="abertura-titulo">
@@ -67,11 +74,15 @@ const servicos = [
           ))
         }
       </div>
-      <!-- Aparece quando "Condomínio" está escolhido (src/scripts/abertura.ts). -->
-      <a class="link-condominio" href="/condominio/" data-link-condominio hidden>
-        <Icone nome="layers" tamanho={20} />
-        <span><b>Para mais soluções, conheça o Condomínio Evoluído em 3D</b><small>Câmeras, acesso facial, interfonia, rede, nobreak e alarme</small></span>
-      </a>
+      <!-- Um convite por ambiente: aparece o do ambiente escolhido (src/scripts/abertura.ts). -->
+      {
+        convites.map((c, i) => (
+          <a class="link-condominio" href={c.href} data-link-ambiente={c.id} hidden={i !== 0}>
+            <Icone nome="layers" tamanho={20} />
+            <span><b>{c.titulo}</b><small>{c.sub}</small></span>
+          </a>
+        ))
+      }
       <a class="preco-chamada" href="#planos">
         <Icone nome="cctv" tamanho={30} traco={1.4} />
         <span>
