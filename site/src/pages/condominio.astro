@@ -6,13 +6,18 @@
  */
 import Base from '../layouts/Base.astro';
 import Cabecalho from '../components/Cabecalho.astro';
-import Palco from '../components/condominio/Palco.astro';
+import Palco from '../components/maquete/Palco.astro';
 import Capitulos from '../components/condominio/Capitulos.astro';
+import Trilho from '../components/maquete/Trilho.astro';
 import ContatoFinal from '../components/ContatoFinal.astro';
 import Rodape from '../components/Rodape.astro';
 import BarraFixa from '../components/BarraFixa.astro';
-import '../styles/condominio.css';
+import '../styles/maquete.css';
+import { CAMADAS, CAPITULOS } from '../lib/condominio/capitulos';
+import { paginaCondominio } from '../lib/dados';
 import Sol from '../components/Sol.astro';
+
+const rotulos: Record<string, string> = { abertura: 'Início', cameras: 'Câmeras', acesso: 'Acesso facial', interfonia: 'Interfonia', rede: 'Rede', energia: 'E se…?', alarme: 'Alarme', proposta: 'Proposta' };
 ---
 
 <Base
@@ -24,7 +29,14 @@ import Sol from '../components/Sol.astro';
   <Cabecalho naInicial={false} />
   <main id="conteudo">
     <section class="tour" aria-label="Condomínio Evoluído, capítulo por capítulo" data-tour>
-      <Palco />
+      <Palco
+        pasta="/condominio/"
+        alt="Maquete ilustrativa de um condomínio à noite: dois blocos, portaria, garagem, piscina e playground, com o campo de visão das câmeras."
+        rotulo="Maquete 3D ilustrativa do condomínio. As mesmas informações estão no texto da página."
+        camadas={CAMADAS}
+        nota={paginaCondominio.nota}
+      />
+      <Trilho itens={CAPITULOS.map((c) => ({ id: c.id, rotulo: rotulos[c.id] ?? c.id }))} />
       <Capitulos />
     </section>
     <ContatoFinal />

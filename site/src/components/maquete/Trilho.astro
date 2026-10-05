@@ -1,0 +1,19 @@
+---
+/** Trilho dos capítulos: mostra onde a leitura está e leva direto a um capítulo (computador). */
+interface Props { itens: readonly { id: string; rotulo: string }[] }
+const { itens } = Astro.props;
+---
+
+<nav class="trilho" aria-label="Capítulos da página">
+  <ol>
+    {
+      itens.map((i, n) => (
+        <li>
+          <a href={`#${i.id}`} data-trilho-item={i.id} aria-current={n === 0 ? 'step' : undefined}>
+            <span class="trilho-ponto" aria-hidden="true"></span><span class="trilho-rotulo">{i.rotulo}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ol>
+</nav>

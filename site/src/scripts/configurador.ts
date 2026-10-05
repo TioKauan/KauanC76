@@ -1,7 +1,7 @@
 import { formatarPreco, mostrarPrecos, type Upgrade } from '../lib/dados';
 import { ambientesConfig, sistemasCondominio, LOTE, MAX_CAMERAS, nomeEm, type AmbienteConfigId, type Planta } from '../lib/configurador-dados';
 import {
-  anguloPara, caboDe, dentro, mensagemWhatsapp, nomeAmbiente, nomeDaZona, plantaDe, resumir,
+  anguloPara, avisoCabo, caboDe, dentro, mensagemWhatsapp, nomeAmbiente, nomeDaZona, plantaDe, resumir,
   type Camera, type EstadoConfigurador,
 } from '../lib/configurador-logica';
 import { exigir, todos } from './dom';
@@ -165,7 +165,7 @@ export function iniciarConfigurador(): void {
         <div class="cabo-medidor${caboExcedente ? ' excede' : ''}">
           <div class="cabo-linha"><span>Cabo estimado</span><span><b>≈ ${total} m</b> de ${p.caboMetros} m inclusos</span></div>
           <div class="cabo-trilho" role="progressbar" aria-label="Cabo estimado em relação ao incluso no plano" aria-valuemin="0" aria-valuemax="${p.caboMetros}" aria-valuenow="${Math.min(total, p.caboMetros)}"><i style="width:${pct}%"></i></div>
-          <small>${caboExcedente ? `Passa cerca de ${caboExcedente} m do limite: o excedente é orçado à parte, na visita técnica.` : 'Dentro do limite do plano: sem cobrança de cabo extra.'}</small>
+          <small>${avisoCabo(caboExcedente)}</small>
         </div>`;
     }
 

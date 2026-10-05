@@ -1,4 +1,4 @@
-/* Página do Condomínio Evoluído (/condominio/). Tokens de cor em base.css. */
+/* Páginas com maquete 3D (condomínio, casa, comércio, empresa). Tokens de cor em base.css. */
 
 .tour { position: relative; --palco-alto: calc(100svh - var(--cab-altura)); }
 
@@ -54,6 +54,7 @@ html:not([data-3d]) [data-so-3d] { display: none !important; }
 .camadas { padding: 2px 2px 12px; margin-bottom: 12px; border-bottom: 1px solid #1c3044; }
 .camadas p { font-size: 12.5px; color: var(--texto-3); margin: 0 2px 8px; }
 .camadas-lista { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.camadas-lista.camadas-4 { grid-template-columns: repeat(2, 1fr); }
 .camada { display: inline-flex; align-items: center; gap: 7px; min-height: 40px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--linha-2); background: #07111c; font-size: 13px; color: #cfdae6; white-space: nowrap; }
 .camada .ic { color: var(--cor); opacity: 0.55; flex-shrink: 0; }
 .camada[aria-pressed='true'] { border-color: color-mix(in srgb, var(--cor) 70%, transparent); background: color-mix(in srgb, var(--cor) 14%, #07111c); color: #fff; }
@@ -148,6 +149,65 @@ html:not([data-3d]) .camera-botao { pointer-events: none; }
 .proposta-enviar { width: 100%; margin-top: 12px; }
 .proposta-miuda { margin-top: 12px; font-size: 12.5px; color: var(--texto-3); line-height: 1.55; }
 
+/* ---------- Entrada dos capítulos: o texto chega com a maquete ---------- */
+html[data-movimento] .capitulo .capitulo-caixa > * { transition: opacity 0.7s var(--suave), transform 0.8s var(--suave); }
+html[data-movimento][data-3d] .capitulo:not([data-ativo]) .capitulo-caixa > * { opacity: 0.25; transform: translateY(18px); }
+html[data-movimento] .capitulo[data-ativo] .capitulo-caixa > :nth-child(2) { transition-delay: 0.06s; }
+html[data-movimento] .capitulo[data-ativo] .capitulo-caixa > :nth-child(3) { transition-delay: 0.12s; }
+html[data-movimento] .capitulo[data-ativo] .capitulo-caixa > :nth-child(n + 4) { transition-delay: 0.18s; }
+
+/* ---------- Trilho dos capítulos (computador) ---------- */
+.trilho { position: absolute; left: 0; top: 0; height: 100%; z-index: 3; pointer-events: none; }
+.trilho ol { position: sticky; top: calc(var(--cab-altura) + 50svh - 120px); list-style: none; margin: 0; padding: 0 0 0 14px; display: grid; gap: 4px; pointer-events: auto; }
+.trilho a { display: flex; align-items: center; gap: 10px; min-height: 30px; font-size: 12.5px; color: var(--texto-3); }
+.trilho-ponto { width: 8px; height: 8px; border-radius: 50%; background: #2b4358; box-shadow: 0 0 0 3px transparent; transition: background-color 0.3s, box-shadow 0.3s, transform 0.3s var(--suave); }
+.trilho-rotulo { opacity: 0; transform: translateX(-6px); transition: opacity 0.25s, transform 0.3s var(--suave); white-space: nowrap; }
+.trilho a:hover .trilho-rotulo, .trilho a:focus-visible .trilho-rotulo { opacity: 1; transform: none; }
+.trilho-rotulo { padding: 3px 8px; border-radius: 6px; background: #081421ee; border: 1px solid var(--linha-2); }
+.trilho a[aria-current] { color: var(--texto); }
+.trilho a[aria-current] .trilho-ponto { background: var(--laranja); box-shadow: 0 0 0 3px #ff6a0033, 0 0 12px #ff6a00aa; transform: scale(1.25); }
+.tour[data-explorar] .trilho { display: none; }
+
+/* ---------- Escolha o plano ---------- */
+.capitulo-plano { align-items: flex-start; }
+.plano-escolha { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 20px; }
+.plano-escolha[hidden] { display: none; }
+.plano-opcao { display: grid; place-items: center; gap: 0; min-height: 60px; padding: 6px 4px; border-radius: 12px; border: 1px solid var(--linha-2); background: #07111c; color: #cfdae6; transition: border-color 0.2s, background-color 0.2s, transform 0.2s var(--suave); }
+.plano-opcao b { font-size: 22px; line-height: 1; }
+.plano-opcao span { font-size: 11.5px; color: var(--texto-3); }
+.plano-opcao:hover { border-color: #2d6f84; transform: translateY(-1px); }
+.plano-opcao[aria-pressed='true'] { border-color: var(--laranja); background: linear-gradient(180deg, #ff6a0024, #ff6a000a); color: #fff; box-shadow: 0 8px 24px -14px #ff6a00; }
+.plano-opcao[aria-pressed='true'] span { color: #ffc08f; }
+.plano-cartao { margin-top: 12px; padding: 18px; border-radius: 18px; background: #081320f2; border: 1px solid var(--linha-2); }
+.plano-cartao-topo { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; }
+.plano-cartao h3 { font-size: 21px; }
+.plano-cartao-uso { margin-top: 4px; font-size: 13.5px; color: var(--texto-2); line-height: 1.5; }
+.plano-cartao-preco { font-size: 22px; font-weight: 800; color: var(--laranja-claro); white-space: nowrap; }
+.plano-cartao-taxa { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 13.5px; color: #cfdae6; }
+.plano-cartao-taxa .ic { color: var(--ciano); }
+.plano-cameras { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.plano-cameras li { display: inline-flex; align-items: center; gap: 7px; padding: 4px 10px 4px 4px; border-radius: 99px; background: #6de9f60d; border: 1px solid #6de9f633; font-size: 12.5px; color: #dbe6f1; animation: plano-chega 0.45s var(--suave) both; }
+.plano-cameras li:nth-child(2) { animation-delay: 0.05s; } .plano-cameras li:nth-child(3) { animation-delay: 0.1s; } .plano-cameras li:nth-child(4) { animation-delay: 0.15s; } .plano-cameras li:nth-child(n + 5) { animation-delay: 0.2s; }
+.plano-cameras b { font-size: 10.5px; color: #031017; background: var(--ciano); border-radius: 99px; padding: 2px 6px; }
+@keyframes plano-chega { from { opacity: 0; transform: translateY(6px) scale(0.96); } }
+.cabo-medidor { margin-top: 14px; }
+.cabo-linha { display: flex; justify-content: space-between; gap: 10px; font-size: 12.5px; color: #c7d3de; margin-bottom: 6px; }
+.cabo-trilho { height: 8px; border-radius: 99px; background: #1b2735; overflow: hidden; }
+.cabo-trilho i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--azul), var(--ciano)); transition: width 0.6s var(--suave); }
+.cabo-medidor small { display: block; font-size: 11.5px; color: #8fa3b6; margin-top: 6px; line-height: 1.5; }
+.cabo-medidor.excede .cabo-trilho i { background: linear-gradient(90deg, var(--laranja-2), #ffc233); }
+.cabo-medidor.excede small { color: #ffc98f; }
+.plano-cartao-lista { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 4px; font-size: 13.5px; color: #cfdae6; }
+.plano-cartao-lista li { display: flex; gap: 8px; align-items: center; }
+.plano-cartao-lista .ic { color: var(--verde); }
+.plano-cartao-cta { width: 100%; margin-top: 14px; }
+.plano-cartao-links { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; margin-top: 8px; font-size: 13.5px; }
+.plano-cartao-links a { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; color: var(--ciano); font-weight: 600; }
+.plano-extra { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 12px; padding: 12px 14px; border-radius: 14px; border: 1px solid #2d6f8466; background: #6de9f60a; font-size: 13.5px; color: var(--texto-2); }
+.plano-extra .btn { flex-shrink: 0; }
+.plano-upgrades, .capitulo-nota { margin-top: 12px; font-size: 12.5px; color: var(--texto-3); line-height: 1.55; }
+.plano-upgrades b { color: var(--texto-2); }
+
 /* ---------- Tablet e celular: a maquete no alto, o texto rola embaixo ---------- */
 @media (max-width: 1100px) {
   .capitulo-caixa { width: min(460px, 46vw); }
@@ -157,6 +217,9 @@ html:not([data-3d]) .camera-botao { pointer-events: none; }
 
 @media (max-width: 800px) {
   .tour { --palco-alto: 42svh; }
+  .trilho { display: none; }
+  .plano-escolha { gap: 6px; }
+  .plano-extra { flex-direction: column; align-items: stretch; }
   .palco { z-index: 3; box-shadow: 0 12px 24px -12px #000; }
   .palco-veu { background: linear-gradient(0deg, #020710 0%, transparent 22%); }
   .palco-veu::after, .camadas, .palco-nota { display: none; }
@@ -184,4 +247,5 @@ html:not([data-3d]) .camera-botao { pointer-events: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .palco-canvas, .palco-imagem { transition: none !important; }
+  .plano-cameras li { animation: none; }
 }

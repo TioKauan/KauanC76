@@ -1,37 +1,20 @@
 /**
  * Maquete do Condomínio Evoluído: o que existe no lote e onde.
- * Só dados (sem DOM e sem Three.js): a cena 3D, a cobertura das câmeras e os testes leem daqui.
+ * Só dados (sem DOM e sem Three.js): a cena 3D (motor comum em src/scripts/maquete/), a cobertura
+ * das câmeras e os testes leem daqui. No fim do arquivo, MAQUETE_CONDOMINIO junta tudo no formato
+ * comum das maquetes (src/lib/maquete/tipos.ts).
  * Condomínio ILUSTRATIVO: não representa um cliente nem a quantidade de câmeras de uma proposta.
  *
  * Unidades em metros. Planta vista de cima: x para a direita, z para a frente (rua em z > 22).
  * "rumo" das câmeras em graus: 0 = para a rua (+z), 90 = para a direita (+x), 180 = para os fundos.
  */
+import type { CameraMaquete, ElementoCamada, Maquete, Ponto2, Ponto3, Predio as PredioComum, Retangulo, Segmento } from '../maquete/tipos';
 
-export interface Retangulo { x0: number; x1: number; z0: number; z1: number }
-export type Ponto2 = readonly [x: number, z: number];
-export type Ponto3 = readonly [x: number, y: number, z: number];
+export type { CameraMaquete, Ponto2, Ponto3, Retangulo } from '../maquete/tipos';
+export { dentro, centro, rotuloCamera } from '../maquete/tipos';
 
-export interface Predio extends Retangulo {
+export interface Predio extends PredioComum {
   id: 'bloco-a' | 'bloco-b' | 'salao' | 'portaria' | 'tecnico';
-  nome: string;
-  andares: number;
-  /** Pé-direito de cada andar. */
-  pe: number;
-}
-
-export interface CameraMaquete {
-  id: number;
-  nome: string;
-  x: number;
-  y: number;
-  z: number;
-  rumo: number;
-  /** Abertura horizontal da lente, em graus. */
-  abertura: number;
-  /** Até onde a imagem é útil na maquete, em metros. */
-  alcance: number;
-  /** Presa num poste (e não numa parede). */
-  poste?: boolean;
 }
 
 /** Área murada do condomínio. */
@@ -145,7 +128,112 @@ export const CABOS_ENERGIA: readonly Ponto3[][] = [
 
 /* ------------------------------------------------ utilidades */
 
-export const dentro = (r: Retangulo, x: number, z: number): boolean => x >= r.x0 && x <= r.x1 && z >= r.z0 && z <= r.z1;
-export const centro = (r: Retangulo): Ponto2 => [(r.x0 + r.x1) / 2, (r.z0 + r.z1) / 2];
 export const cameraPorId = (id: number): CameraMaquete | undefined => CAMERAS.find((c) => c.id === id);
-export const rotuloCamera = (id: number): string => `CAM ${String(id).padStart(2, '0')}`;
+
+/* ------------------------------------------------ no formato comum das maquetes */
+
+/** Alarme: sensores no alto do muro a cada 10 m (menos na frente dos portões) e a zona tracejada do perímetro. */
+function alarmePerimetro(): ElementoCamada[] {
+  const cantos = [[LOTE.x0, LOTE.z0], [LOTE.x1, LOTE.z0], [LOTE.x1, LOTE.z1], [LOTE.x0, LOTE.z1]] as const;
+  const elementos: ElementoCamada[] = [];
+  const tracos: Ponto3[] = [];
+  cantos.forEach(([ax, az], k) => {
+    const [bx, bz] = cantos[(k + 1) % 4]!;
+    const l = Math.hypot(bx - ax, bz - az);
+    for (let d = 5; d < l - 2; d += 10) {
+      const x = ax + ((bx - ax) * d) / l;
+      const z = az + ((bz - az) * d) / l;
+      if (k === 2 && x > -9 && x < 10) continue;
+      elementos.push({ tipo: 'sensor', pos: [x, 2.35, z] });
+    }
+    for (let d = 0; d < l; d += 2.2) {
+      const t0 = d / l;
+      const t1 = Math.min(l, d + 1.2) / l;
+      tracos.push([ax + (bx - ax) * t0, 2.05, az + (bz - az) * t0], [ax + (bx - ax) * t1, 2.05, az + (bz - az) * t1]);
+    }
+  });
+  elementos.push({ tipo: 'tracejado', pontos: tracos });
+  return elementos;
+}
+
+const contornoPortao = (x0: number, x1: number, alt: number): ElementoCamada => ({
+  tipo: 'contorno', pontos: [[x0, 0.1, LOTE.z1 + 0.05], [x0, alt, LOTE.z1 + 0.05], [x1, alt, LOTE.z1 + 0.05], [x1, 0.1, LOTE.z1 + 0.05]],
+});
+
+const muro = (x0: number, z0: number, x1: number, z1: number) => ({ seg: [x0, z0, x1, z1] as Segmento, altura: 1.8 });
+
+export const MAQUETE_CONDOMINIO: Maquete = {
+  tabuleiro: TABULEIRO,
+  lote: LOTE,
+  calcada: CALCADA,
+  rua: RUA,
+  superficies: [
+    { r: LOTE, tipo: 'gramado' },
+    ...PISOS.map((r) => ({ r, tipo: 'piso' as const })),
+    { r: LAZER.deck, tipo: 'deck' },
+    { r: LAZER.piscina, tipo: 'agua' },
+    { r: LAZER.playground, tipo: 'areia' },
+  ],
+  faixas: Array.from({ length: VAGAS.quantidade }, (_, i) => VAGAS.x0 + i * VAGAS.largura)
+    .flatMap((x) => VAGAS.fileiras.map(([z0, z1]) => ({ x0: x, x1: x + 0.08, z0, z1 }))),
+  muros: [
+    muro(LOTE.x0, LOTE.z0, LOTE.x1, LOTE.z0),
+    muro(LOTE.x0, LOTE.z0, LOTE.x0, LOTE.z1),
+    muro(LOTE.x1, LOTE.z0, LOTE.x1, LOTE.z1),
+    muro(LOTE.x0, LOTE.z1, -8, LOTE.z1),
+    muro(PORTAO_PEDESTRES.x1, LOTE.z1, PORTAO_VEICULOS.x0, LOTE.z1),
+    muro(PORTAO_VEICULOS.x1, LOTE.z1, LOTE.x1, LOTE.z1),
+  ],
+  grades: [
+    { ...PORTAO_VEICULOS, z: LOTE.z1, altura: 1.9 },
+    { ...PORTAO_PEDESTRES, z: LOTE.z1, altura: 2.1 },
+  ],
+  predios: PREDIOS.map((p) => ({ ...p, acesas: p.id === 'portaria' || p.id === 'tecnico' || p.id === 'salao' ? 0.9 : 0.46 })),
+  edificacoes: [],
+  moveis: [],
+  enfeites: [
+    { tipo: 'playground', r: LAZER.playground },
+    { tipo: 'guarda-sol', x: -10.3, z: -3.6 },
+    { tipo: 'guarda-sol', x: 4.3, z: 3.7 },
+    { tipo: 'guarda-sol', x: 4.3, z: -3.7 },
+  ],
+  arvores: ARVORES,
+  carros: CARROS.map(([x, z, cor]) => ({ x, z, cor })),
+  postes: POSTES_DE_LUZ,
+  pessoas: [
+    { x: VISITANTE[0], z: VISITANTE[1], cor: 0x9fc3e6, papel: 'visitante' },
+    { x: -6, z: 3.4, cor: 0xcfd8e3, papel: 'morador' },
+    { x: 0.8, z: -3.6, cor: 0xe0b27a, papel: 'morador' },
+    { x: 20, z: -1, cor: 0xd98c6a, papel: 'morador' },
+  ],
+  cameras: CAMERAS,
+  areasDeCirculacao: AREAS_DE_CIRCULACAO,
+  camadas: {
+    acesso: [
+      { tipo: 'leitor', pos: LEITOR_FACIAL },
+      contornoPortao(PORTAO_PEDESTRES.x0, PORTAO_PEDESTRES.x1, 2.2),
+      contornoPortao(PORTAO_VEICULOS.x0, PORTAO_VEICULOS.x1, 2),
+    ],
+    interfonia: [
+      ...INTERFONIA.blocos.map((b): ElementoCamada => ({ tipo: 'arco', de: INTERFONIA.portaria, para: b.ponto, altura: b.altura })),
+      ...[INTERFONIA.portaria, ...INTERFONIA.blocos.map((b) => b.ponto)].map((pos): ElementoCamada => ({ tipo: 'ponto', pos })),
+    ],
+    rede: [
+      ...CABOS_REDE.map((pontos): ElementoCamada => ({ tipo: 'cabo', pontos, raio: 0.07, forca: 2.8, vel: 1.2 })),
+      ...PONTOS_WIFI.map((pos): ElementoCamada => ({ tipo: 'wifi', pos, altura: 3.2 })),
+    ],
+    energia: [
+      { tipo: 'nobreak', pos: NOBREAK },
+      { tipo: 'rack', pos: RACK },
+      ...CABOS_ENERGIA.map((pontos): ElementoCamada => ({ tipo: 'cabo', pontos, raio: 0.08, forca: 3.4, vel: 0.7 })),
+    ],
+    alarme: alarmePerimetro(),
+  },
+  zonas: [
+    ...PREDIOS.filter((p) => p.id !== 'tecnico').map((p) => ({ nome: p.nome, pos: [(p.x0 + p.x1) / 2, p.andares * p.pe + (p.andares > 1 ? 2.6 : 1), (p.z0 + p.z1) / 2] as Ponto3 })),
+    { nome: 'Garagem', pos: [19, 2.6, 10.5] as Ponto3 },
+    { nome: 'Piscina', pos: [-3, 1, 0] as Ponto3 },
+    { nome: 'Playground', pos: [21.8, 4.4, -0.8] as Ponto3 },
+  ],
+  maos: [26.2, 29.2],
+};

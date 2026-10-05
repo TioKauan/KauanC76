@@ -3,22 +3,15 @@
  * Os textos ficam em dados.ts (paginaCondominio); aqui só o enquadramento e o que acende.
  */
 import { sistemasCondominio } from '../configurador-dados';
-import type { NomeIcone } from '../icones';
-import type { Ponto3 } from './maquete';
+import type { Camada as CamadaComum, Capitulo as CapituloComum } from '../maquete/tipos';
+
+export type { Vista } from '../maquete/tipos';
 
 export type CamadaId = 'cameras' | 'acesso' | 'interfonia' | 'rede' | 'energia' | 'alarme';
 
-export interface Camada {
-  id: CamadaId;
+export interface Camada extends CamadaComum<CamadaId> {
   /** Id do sistema em `sistemasCondominio` (o mesmo do configurador e da mensagem). */
   sistema: string;
-  /** Nome curto no botão da camada. */
-  curto: string;
-  /** Nome completo (o do configurador). */
-  nome: string;
-  icone: NomeIcone;
-  /** Cor da camada na maquete e nos botões (tokens do site). */
-  cor: string;
 }
 
 const curto: Record<CamadaId, [sistema: string, rotulo: string, cor: string]> = {
@@ -39,36 +32,9 @@ export const CAMADAS: readonly Camada[] = (Object.keys(curto) as CamadaId[]).map
 
 export const camadaPorSistema = (sistema: string): Camada | undefined => CAMADAS.find((c) => c.sistema === sistema);
 
-/** Enquadramento da câmera principal: gira em volta do alvo. */
-export interface Vista {
-  alvo: Ponto3;
-  raio: number;
-  /** Graus a partir da frente (rua), girando para a direita. */
-  azimute: number;
-  /** Graus acima do chão. */
-  elevacao: number;
-  /** Fração da largura: empurra a maquete para a direita (deixa a coluna de texto livre). */
-  deslocar?: number;
-}
-
 export type CapituloId = 'abertura' | 'cameras' | 'acesso' | 'interfonia' | 'rede' | 'energia' | 'alarme' | 'proposta';
 
-export interface Capitulo {
-  id: CapituloId;
-  /** Número no roteiro (1 a 6) quando é um dos sistemas. */
-  numero?: number;
-  vista: Vista;
-  vistaCelular: Vista;
-  camadas: readonly CamadaId[];
-  /** Camada em destaque; as outras ficam mais fracas. */
-  realce?: CamadaId;
-  pontosCegos?: boolean;
-  visitante?: boolean;
-  /** Câmera em destaque (no monitor e na maquete). */
-  selecionada?: number;
-  /** Câmeras no monitor (vazio = sem monitor). */
-  monitor: readonly number[];
-}
+export type Capitulo = CapituloComum<CapituloId, CamadaId>;
 
 export const CAPITULOS: readonly Capitulo[] = [
   {
@@ -77,6 +43,7 @@ export const CAPITULOS: readonly Capitulo[] = [
     vistaCelular: { alvo: [0, 3, 3], raio: 172, azimute: 36, elevacao: 38 },
     camadas: ['cameras', 'rede', 'energia', 'interfonia', 'acesso'],
     monitor: [1, 3, 5, 7],
+    zonas: true,
   },
   {
     id: 'cameras',
@@ -85,6 +52,7 @@ export const CAPITULOS: readonly Capitulo[] = [
     vistaCelular: { alvo: [2, 0, 3], raio: 168, azimute: 20, elevacao: 60 },
     camadas: ['cameras'],
     pontosCegos: true,
+    numeros: true,
     selecionada: 3,
     monitor: [3],
   },
@@ -125,6 +93,7 @@ export const CAPITULOS: readonly Capitulo[] = [
     vistaCelular: { alvo: [0, 3, 6], raio: 162, azimute: 40, elevacao: 38 },
     camadas: ['cameras', 'rede', 'energia', 'acesso'],
     realce: 'energia',
+    ese: true,
     monitor: [3, 7],
   },
   {
@@ -142,6 +111,8 @@ export const CAPITULOS: readonly Capitulo[] = [
     vistaCelular: { alvo: [0, 3, 3], raio: 180, azimute: 36, elevacao: 38 },
     camadas: ['cameras', 'acesso', 'interfonia', 'energia'],
     monitor: [],
+    zonas: true,
+    semPainel: true,
   },
 ];
 

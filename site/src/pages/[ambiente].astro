@@ -1,0 +1,56 @@
+---
+/**
+ * Casa, Comércio e Empresa (/casa/, /comercio/, /empresa/): a maquete 3D do imóvel, no mesmo
+ * padrão da página do condomínio (pedido do Kauan em 05/10/2026). Uma página por ambiente,
+ * gerada no build. Textos em dados.ts (paginasAmbiente); maquete em src/lib/ambientes/.
+ */
+import Base from '../layouts/Base.astro';
+import Cabecalho from '../components/Cabecalho.astro';
+import Palco from '../components/maquete/Palco.astro';
+import Trilho from '../components/maquete/Trilho.astro';
+import Capitulos from '../components/ambiente/Capitulos.astro';
+import ContatoFinal from '../components/ContatoFinal.astro';
+import Rodape from '../components/Rodape.astro';
+import BarraFixa from '../components/BarraFixa.astro';
+import '../styles/maquete.css';
+import Sol from '../components/Sol.astro';
+import { paginasAmbiente, empresa } from '../lib/dados';
+import { camadasDe, capitulosDe } from '../lib/ambientes/capitulos';
+import type { AmbienteMaquete } from '../lib/ambientes/maquetes';
+
+export function getStaticPaths() {
+  return (['casa', 'comercio', 'empresa'] as const).map((ambiente) => ({ params: { ambiente } }));
+}
+
+const ambiente = Astro.params.ambiente as AmbienteMaquete;
+const t = paginasAmbiente[ambiente];
+const rotulos: Record<string, string> = { abertura: 'Início', cameras: 'Câmeras', plano: 'Plano', rede: 'Rede', ese: 'E se…?', alarme: 'Alarme' };
+const alt = {
+  casa: 'Maquete ilustrativa de uma casa à noite, com garagem, quintal e o campo de visão das câmeras.',
+  comercio: 'Maquete ilustrativa de uma loja à noite, com salão, caixa, estoque, estacionamento e o campo de visão das câmeras.',
+  empresa: 'Maquete ilustrativa de uma empresa à noite, com recepção, escritórios, estacionamento e o campo de visão das câmeras.',
+}[ambiente];
+---
+
+<Base
+  titulo={`${t.sobre}: câmeras em locação vistas em 3D | ${empresa.nome}`}
+  descricao={t.descricao}
+  tituloSocial={`${t.sobre} em 3D | ${empresa.nome}`}
+  descricaoSocial={t.lead}
+>
+  <Cabecalho naInicial={false} />
+  <main id="conteudo">
+    <section class="tour" aria-label={`${t.sobre}, capítulo por capítulo`} data-tour data-ambiente={ambiente}>
+      <Palco pasta={`/${ambiente}/`} alt={alt} rotulo={`Maquete 3D ilustrativa: ${t.sobre.toLowerCase()}. As mesmas informações estão no texto da página.`} camadas={camadasDe(ambiente)} nota={paginasAmbiente.nota} />
+      <Trilho itens={capitulosDe(ambiente).map((c) => ({ id: c.id, rotulo: rotulos[c.id] ?? c.id }))} />
+      <Capitulos ambiente={ambiente} />
+    </section>
+    <ContatoFinal />
+  </main>
+  <Rodape naInicial={false} />
+  <BarraFixa sub="Escolha o plano com a Sol" />
+  <Sol />
+  <script>
+    import '../scripts/ambiente/pagina';
+  </script>
+</Base>

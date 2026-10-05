@@ -168,15 +168,16 @@
   .abertura-texto .sobretitulo { order: 1; letter-spacing: 0.14em; margin-bottom: 12px; }
   .abertura h1 { order: 2; }
   .cena { order: 3; margin: 0 -14px -18px; }
-  .link-condominio { order: 4; }
+  /* O convite para a página 3D vem depois dos botões: o preço continua visível sem rolar. */
+  .link-condominio { order: 6; }
   .ambientes { order: 4; flex-wrap: nowrap; overflow-x: auto; margin: 0 -16px; padding: 4px 16px; scrollbar-width: none; }
   .ambientes::-webkit-scrollbar { display: none; }
   .ambientes .chip { flex-shrink: 0; }
   .ambientes-rotulo { display: none; }
   .abertura-acoes { order: 5; margin-top: 14px; }
-  .abertura-lead { order: 6; margin: 22px 0 0; }
-  .preco-chamada { order: 7; }
-  .ese { order: 8; margin-top: 20px; }
+  .abertura-lead { order: 7; margin: 22px 0 0; }
+  .preco-chamada { order: 8; }
+  .ese { order: 9; margin-top: 20px; }
   .abertura h1 { font-size: clamp(30px, 8vw, 38px); }
   .abertura-lead { font-size: 16px; margin: 16px 0 20px; }
   .abertura-acoes .btn { width: 100%; }

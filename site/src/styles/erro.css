@@ -1,0 +1,23 @@
+/* Página 404 (src/pages/404.astro) */
+.erro { padding-block: calc(var(--cab-altura) + 72px) 56px; max-width: 880px; }
+.erro .titulo-secao { max-width: 18ch; }
+.erro-texto { margin-top: 18px; color: var(--texto-2); font-size: 17px; line-height: 1.7; }
+.erro-caminhos { list-style: none; margin: 32px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.erro-caminhos a { display: flex; align-items: center; gap: 16px; height: 100%; padding: 18px 20px; border: 1px solid var(--linha); border-radius: var(--raio); background: var(--cartao); transition: border-color 0.2s, transform 0.2s var(--suave); }
+.erro-caminhos a:hover { border-color: var(--linha-2); transform: translateY(-2px); }
+.erro-caminhos a:hover .erro-seta { transform: translateX(3px); color: var(--ciano); }
+.erro-icone { display: grid; place-items: center; width: 44px; height: 44px; flex-shrink: 0; border-radius: 12px; color: var(--ciano); background: #6de9f612; border: 1px solid #6de9f630; }
+.erro-rotulo { display: grid; gap: 2px; flex: 1; }
+.erro-rotulo b { font-size: 16px; }
+.erro-rotulo small { color: var(--texto-3); font-size: 14px; line-height: 1.5; }
+.erro-seta { color: var(--texto-3); transition: transform 0.25s var(--suave), color 0.2s; }
+.erro-inicio { margin-top: 24px; }
+
+@media (max-width: 800px) {
+  .erro { padding-block: calc(var(--cab-altura) + 40px) 32px; }
+  .erro-caminhos { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .erro-caminhos a, .erro-seta { transition: none; }
+  .erro-caminhos a:hover { transform: none; }
+}

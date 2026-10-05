@@ -15,6 +15,7 @@ import '../styles/como-funciona.css';
 // Depois dos estilos das seções, na mesma ordem de antes (o sol.css vem com o componente).
 import Sol from '../components/Sol.astro';
 import { formatarPreco, menorPreco, mostrarPrecos } from '../lib/dados';
+import { dadosEstruturados } from '../lib/buscadores';
 
 const aPartir = mostrarPrecos ? ` a partir de R$ ${formatarPreco(menorPreco)}/mês` : '';
 ---
@@ -24,6 +25,7 @@ const aPartir = mostrarPrecos ? ` a partir de R$ ${formatarPreco(menorPreco)}/m�
   descricao={`Planos de locação de câmeras${aPartir}, com instalação, gravação local e imagens no celular. Segurança, redes, acesso e energia integrados pela SC Soluções.`}
   tituloSocial="SC Soluções | Tecnologia que precisa funcionar"
   descricaoSocial="Planos de locação de câmeras com instalação, gravação local e imagens no celular."
+  dadosEstruturados={dadosEstruturados()}
 >
   <Cabecalho />
   <main id="conteudo">

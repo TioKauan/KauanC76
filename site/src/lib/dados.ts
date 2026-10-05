@@ -260,6 +260,81 @@ export const paginaCondominio = {
   },
 } as const;
 
+/**
+ * Páginas de Casa, Comércio e Empresa (/casa/, /comercio/, /empresa/), pedidas pelo Kauan em
+ * 05/10/2026 "igual ao do condomínio". Maquete 3D ilustrativa, tirada das plantas do configurador.
+ * Os fatos vêm daqui mesmo: planos, gravação de aproximadamente 10 dias, recursos premium sob
+ * orçamento e proposta personalizada para infraestrutura especial. Sem condições contratuais.
+ */
+export interface TextosAmbiente {
+  sobre: string;
+  titulo: string;
+  lead: string;
+  /** Descrição para o Google. */
+  descricao: string;
+  /** Título curto para redes sociais e para o menu. */
+  curto: string;
+  /** Lista curta abaixo dos botões da abertura. */
+  destaques: readonly string[];
+  cameras: { titulo: string; texto: string };
+  plano: { titulo: string; texto: string; extra?: string };
+  rede?: { titulo: string; texto: string };
+  ese: { titulo: string; texto: string };
+  alarme: { texto: string };
+}
+
+const textoCameras = (onde: string) =>
+  `${onde}, com gravação no próprio local por aproximadamente 10 dias e imagens no celular. Toque numa câmera para ver a imagem dela.`;
+
+export const paginasAmbiente = {
+  nota: paginaCondominio.nota,
+  noturna: paginaCondominio.noturna,
+  pontosCegos: 'As áreas listradas ficam fora do alcance das câmeras desta maquete. Na visita técnica, a SC define onde cada câmera fica.',
+  celular: 'Ver as imagens pelo celular depende de energia e de internet no local.',
+  casa: {
+    sobre: 'Sua casa',
+    curto: 'Casa',
+    titulo: 'Sua casa protegida, do portão ao quintal.',
+    lead: 'Gire a maquete, escolha o plano e veja o que cada câmera enxerga, por dentro e por fora.',
+    descricao: 'Veja numa maquete 3D o que cada câmera enxerga numa casa e escolha o plano de locação de câmeras da SC Soluções, com gravação local e imagens no celular. Francisco Beltrão e região.',
+    destaques: ['Planos de 1 a 8 câmeras', 'Gravação local', 'Imagens no celular', 'Revisão semestral e manutenção'],
+    cameras: { titulo: 'Veja o que cada câmera enxerga. E o que fica de fora.', texto: textoCameras('Entrada, garagem, laterais, fundos e dentro de casa') },
+    plano: { titulo: 'Escolha o plano e veja a cobertura na hora.', texto: 'A maquete mostra onde ficam as câmeras de cada plano, o cabo até o gravador e o que ainda fica sem câmera.' },
+    ese: { titulo: 'E se faltar energia ou a internet cair?', texto: 'Teste as situações e veja o que continua funcionando na sua casa.' },
+    alarme: { texto: 'Avisos de eventos no aplicativo: você acompanha e comanda pelo celular. Os sensores seguem o projeto de cada casa.' },
+  },
+  comercio: {
+    sobre: 'Comércio',
+    curto: 'Comércio',
+    titulo: 'Caixa, estoque e entrada à vista, de onde você estiver.',
+    lead: 'Gire a maquete da loja, escolha o plano e veja o que cada câmera enxerga.',
+    descricao: 'Veja numa maquete 3D o que cada câmera enxerga numa loja: caixa, salão, estoque e entrada. Planos de locação de câmeras da SC Soluções, rede Wi-Fi e alarme. Francisco Beltrão e região.',
+    destaques: ['Planos de 1 a 8 câmeras', 'Gravação local', 'Rede Wi-Fi sob medida', 'Alarme monitorado pelo app'],
+    cameras: { titulo: 'Veja o que cada câmera enxerga. E o que fica de fora.', texto: textoCameras('Fachada, caixa, salão, estoque e carga e descarga') },
+    plano: { titulo: 'Escolha o plano e veja a cobertura da loja.', texto: 'A maquete mostra onde ficam as câmeras de cada plano, o cabo até o gravador e o que ainda fica sem câmera.' },
+    rede: { titulo: 'Wi-Fi para a equipe e para os clientes, cada um na sua rede.', texto: 'Câmeras e Wi-Fi ligados ao mesmo rack, com a rede dos clientes separada da rede da loja. Proposta personalizada.' },
+    ese: { titulo: 'E se faltar energia ou a internet cair?', texto: 'Teste as situações e veja o que continua funcionando na loja.' },
+    alarme: { texto: 'Avisos de eventos no aplicativo: você acompanha e comanda pelo celular. Os sensores seguem o projeto de cada loja.' },
+  },
+  empresa: {
+    sobre: 'Empresa',
+    curto: 'Empresa',
+    titulo: 'Segurança e rede da sua empresa no mesmo projeto.',
+    lead: 'Gire a maquete, veja o que cada câmera enxerga e como a rede liga tudo.',
+    descricao: 'Veja numa maquete 3D as câmeras, a rede e o alarme de uma empresa. Planos de locação de câmeras ou proposta personalizada da SC Soluções. Francisco Beltrão e região.',
+    destaques: ['Planos de 1 a 8 câmeras', 'Redes gerenciadas', 'Nobreak para o essencial', 'Proposta personalizada'],
+    cameras: { titulo: 'Veja o que cada câmera enxerga. E o que fica de fora.', texto: textoCameras('Entrada, recepção, áreas de trabalho e estacionamento') },
+    plano: {
+      titulo: 'Comece por um plano e veja a cobertura.',
+      texto: 'A maquete mostra onde ficam as câmeras de cada plano, o cabo até o gravador e o que ainda fica sem câmera.',
+      extra: 'Mais câmeras ou infraestrutura especial? A SC monta uma proposta personalizada.',
+    },
+    rede: { titulo: 'Uma rede para a equipe, as câmeras e os visitantes.', texto: 'Câmeras e Wi-Fi ligados à sala técnica, com a rede dos visitantes separada da rede da empresa. Proposta personalizada.' },
+    ese: { titulo: 'E se faltar energia ou a internet cair?', texto: 'Teste as situações e veja o que continua funcionando na empresa.' },
+    alarme: { texto: 'Avisos de eventos no aplicativo: você acompanha e comanda pelo celular. Os sensores seguem o projeto de cada empresa.' },
+  },
+} as const satisfies Record<'casa' | 'comercio' | 'empresa', TextosAmbiente> & Record<string, unknown>;
+
 /* ---------- utilidades usadas no site ---------- */
 
 export function formatarPreco(valor: number): string {

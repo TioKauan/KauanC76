@@ -2,7 +2,7 @@
 import Icone from './Icone.astro';
 import Logo from './Logo.astro';
 import { contato, empresa } from '../lib/dados';
-import { hrefSecao, links } from '../lib/site';
+import { hrefSecao, links, secoes, solucoes } from '../lib/site';
 
 interface Props {
   /** false nas outras páginas: o menu aponta para as seções da inicial (/#planos). */
@@ -10,6 +10,7 @@ interface Props {
 }
 const { naInicial = true } = Astro.props;
 const atual = (href: string) => (href === Astro.url.pathname ? 'page' : undefined);
+const naSolucao = solucoes.some((s) => s.href === Astro.url.pathname);
 ---
 
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -18,7 +19,25 @@ const atual = (href: string) => (href === Astro.url.pathname ? 'page' : undefine
   <div class="wrap cabecalho-linha">
     <a href={naInicial ? '#inicio' : '/'} class="logo-link" aria-label={naInicial ? 'SC Soluções, voltar ao início' : 'SC Soluções, página inicial'}><Logo /></a>
     <nav class="nav" aria-label="Navegação principal">
-      {links.map((l) => <a href={hrefSecao(l.href, naInicial)} aria-current={atual(l.href)}>{l.rotulo}</a>)}
+      {
+        links.map((l) =>
+          'grupo' in l ? (
+            <details class="nav-grupo" data-nav-grupo>
+              <summary aria-current={naSolucao ? 'page' : undefined}>{l.grupo} <Icone nome="chevron-down" tamanho={15} /></summary>
+              <div class="nav-menu">
+                {l.itens.map((s) => (
+                  <a href={s.href} aria-current={atual(s.href)}>
+                    <span class="nav-menu-icone"><Icone nome={s.icone} tamanho={18} /></span>
+                    <span><b>{s.rotulo}</b><small>{s.sub}</small></span>
+                  </a>
+                ))}
+              </div>
+            </details>
+          ) : (
+            <a href={hrefSecao(l.href, naInicial)} aria-current={atual(l.href)}>{l.rotulo}</a>
+          ),
+        )
+      }
     </nav>
     <!-- 28/09/2026: o WhatsApp da equipe fica só na seção "Fale com a SC" (decisão do Kauan). -->
     <a class="btn btn-contorno btn-p cabecalho-cta" href="#contato">Fale com a SC</a>
@@ -28,8 +47,12 @@ const atual = (href: string) => (href === Astro.url.pathname ? 'page' : undefine
   </div>
   <div class="menu-celular" id="menu-celular" hidden>
     <nav aria-label="Navegação no celular">
-      {links.map((l, i) => <a href={hrefSecao(l.href, naInicial)} aria-current={atual(l.href)}><span>0{i + 1}</span>{l.rotulo}<Icone nome="arrow-right" tamanho={18} /></a>)}
+      {secoes.map((l, i) => <a href={hrefSecao(l.href, naInicial)} aria-current={atual(l.href)}><span>0{i + 1}</span>{l.rotulo}<Icone nome="arrow-right" tamanho={18} /></a>)}
     </nav>
+    <p class="menu-celular-titulo">Soluções em 3D</p>
+    <div class="menu-celular-solucoes">
+      {solucoes.map((s) => <a href={s.href} aria-current={atual(s.href)}><Icone nome={s.icone} tamanho={18} />{s.rotulo}</a>)}
+    </div>
     <a class="btn btn-primario" href="#contato">Fale com a SC</a>
     <p class="menu-nota">{contato.atendimento} · {empresa.regiao}</p>
   </div>
