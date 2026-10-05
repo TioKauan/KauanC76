@@ -14,7 +14,8 @@
     "build": "astro check && astro build",
     "preview": "astro preview --port 4173",
     "validar": "node scripts/validar.mjs",
-    "imagens-maquete": "node scripts/gerar-imagens-maquete.mjs"
+    "imagens-maquete": "node scripts/gerar-imagens-maquete.mjs",
+    "empacotar": "node scripts/empacotar.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

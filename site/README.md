@@ -140,6 +140,23 @@ confira de fora: `https://somoscella.online/qualquer-coisa` responde **404** e m
 versões anteriores continuam valendo (passo 4): sem eles, o CSS antigo agora daria 404 em vez da
 inicial no lugar, e a página antiga em cache continuaria sem estilo.
 
+**Com os scripts (desde 05/10/2026), os passos 2 a 5 viram dois comandos:**
+
+```bash
+# na máquina com o projeto
+cd site && npm install && npm run validar && npm run empacotar   # → ../publicar/somoscella-<data>.tar.gz
+scp ../publicar/somoscella-<data>.tar.gz scripts/publicar-no-vps.sh root@<vps>:/tmp/
+# no VPS, como root
+bash /tmp/publicar-no-vps.sh /tmp/somoscella-<data>.tar.gz
+# se precisar voltar atrás (a data aparece no fim da publicação)
+bash /tmp/publicar-no-vps.sh --voltar <data>
+```
+
+O script confere o pacote antes de mexer em qualquer coisa, guarda a versão no ar em
+`/opt/somoscella/backups/`, publica nos dois endereços, mantém os `assets/` antigos, troca as pastas
+com `mv` e confere que os arquivos no ar são idênticos ao pacote. Depois, conferir de fora (passo 5)
+e marcar a tag (passo 6).
+
 O histórico das publicações está em `docs/ALTERACOES.md`.
 
 ## Licenças de terceiros
