@@ -786,7 +786,7 @@ grupo('Condomínio · maquete 3D');
   const { estadoCena } = await vite.ssrLoadModule('/src/lib/cenarios.ts');
   await vite.close();
   const esperar3D = (p) => p.waitForFunction(() => Number(document.querySelector('[data-maquete]')?.dataset.quadros) > 1, null, { timeout: 90000 });
-  const estado = (p) => p.evaluate(() => window.__condominio());
+  const estado = (p) => p.evaluate(() => window.__maquete());
   const irPara = async (p, id) => {
     await p.evaluate((i) => { const el = document.getElementById(i); scrollTo({ top: el.getBoundingClientRect().top + scrollY - 60, behavior: 'instant' }); }, id);
     await p.waitForTimeout(500);
