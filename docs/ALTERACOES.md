@@ -5,6 +5,37 @@ Cada publicação tem uma tag `publicado-<data>` no Git, apontando para o commit
 
 ---
 
+## 05/10/2026, 12:42 (Brasília) — Casa, Comércio e Empresa em 3D, menu "Soluções" e página 404
+
+Tag `publicado-2026-10-05-154247` (código do commit `e078391`; a data da tag é UTC, como a do script).
+
+### O que mudou para quem visita o site
+
+| Onde | Antes | Agora |
+|---|---|---|
+| `/casa/`, `/comercio/`, `/empresa/` | Não existiam | Uma página por ambiente com maquete 3D, capítulos por rolagem, "E se…?" e o plano sugerido |
+| Menu | "Condomínio" | "Soluções", com Casa, Comércio, Empresa e Condomínio |
+| `/404.html` | Não existia | Página "Este endereço não existe" (o Nginx ainda não a usa: ver abaixo) |
+| Inicial | — | Dados da empresa para o Google (schema.org), sem telefone |
+
+O WhatsApp continua (46) 99133-1306 em todas as páginas.
+
+### Técnico
+
+- Juntou o trabalho enviado ao GitHub por outra sessão (commits `6c9071b` a `e8e9c6d`) com a
+  troca do número. Validador: 138/138.
+- Publicado pela primeira vez com `npm run empacotar` + `scripts/publicar-no-vps.sh`. Dois
+  consertos para funcionar a partir do Windows: o `empacotar` passa o nome do pacote relativo (o
+  tar do Git lia `C:\…` como servidor) e o `.gitattributes` mantém os `.sh` com fim de linha LF
+  (com CRLF o bash do VPS para na 1ª linha, sem mexer em nada).
+- Conferido de fora: os 10 arquivos (HTML, sitemap, robots) nos 3 endereços respondem 200 e são
+  idênticos ao build; os 22 recursos respondem 200; zero erros no console em Casa, Comércio e Empresa.
+- Anterior guardada em `index.antigo-20261005-154247` e em `/opt/somoscella/backups/`.
+- **Pendente:** a troca do `try_files` no Nginx (README, "Página 404"). Até lá, endereço que não
+  existe ainda devolve a inicial com 200.
+
+---
+
 ## 05/10/2026, 12:19 (Brasília) — WhatsApp de volta para (46) 99133-1306
 
 Tag `publicado-2026-10-05-121935` (código do commit `ba5ff3c`).

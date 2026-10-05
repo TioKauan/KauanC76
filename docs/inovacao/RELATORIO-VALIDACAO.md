@@ -1,6 +1,6 @@
 # Relatório de validação do site
 
-Gerado por `npm run validar` em 05/10/2026, 07:38:20.
+Gerado por `npm run validar` em 05/10/2026, 12:40:31.
 Resultado: **138 de 138 itens ✅** — checklist completa.
 
 ## Geral
@@ -9,9 +9,9 @@ Resultado: **138 de 138 itens ✅** — checklist completa.
 |---|---|---|
 | ✅ | Tipos conferidos (astro check) e build sem erro |  |
 | ✅ | Testes unitários das regras (Vitest) passam | 174 testes |
-| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 406 KB em 10 arquivos; maiores: / 204 KB, /marca/sc-logo.webp 52 KB, /assets/sol.DcpuAmai.js 44 KB |
+| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 406 KB em 10 arquivos; maiores: / 204 KB, /marca/sc-logo.webp 52 KB, /assets/sol.CJgAvoiE.js 44 KB |
 | ✅ | Todo link interno leva a uma seção que existe | 7 destinos conferidos |
-| ✅ | Todo WhatsApp usa wa.me/5549998325623 com mensagem preenchida | 1 links |
+| ✅ | Todo WhatsApp usa wa.me/5546991331306 com mensagem preenchida | 1 links |
 | ✅ | Todo botão de WhatsApp mostra o ícone do WhatsApp |  |
 | ✅ | WhatsApp da equipe só na seção "Fale com a SC" |  |
 | ✅ | Topo e menu do celular: "Fale com a SC" leva à seção de contato | [{"href":"#contato","texto":"Fale com a SC"},{"href":"#contato","texto":"Fale com a SC"}] |
@@ -84,7 +84,7 @@ Resultado: **138 de 138 itens ✅** — checklist completa.
 
 | | Item | Detalhe |
 |---|---|---|
-| ✅ | Linha do tempo acende etapa por etapa | 0 → 1 → 2 → 3 → 3 → 4 → 5 |
+| ✅ | Linha do tempo acende etapa por etapa | 0 → 1 → 2 → 3 → 4 → 4 → 5 |
 | ✅ | 7 perguntas; a busca "celular" mostra a resposta certa | Consigo ver as câmeras pelo celular? |
 | ✅ | Busca sem resultado oferece perguntar para a Sol (sem WhatsApp) |  |
 | ✅ | Área do cliente identificada como exemplo ("em breve") |  |
@@ -103,7 +103,7 @@ Resultado: **138 de 138 itens ✅** — checklist completa.
 | | Item | Detalhe |
 |---|---|---|
 | ✅ | Chat abre com a Sol pedindo o nome, sem botão fixo de WhatsApp (nada vai ao servidor ainda) | {"dica":"Seu nome","pedidos":0} |
-| ✅ | Pedir o WhatsApp no roteiro mostra o botão da equipe e continua na mesma pergunta (nada vai ao servidor) | {"fala":"Claro! É só tocar no botão abaixo para falar com a equipe da SC no WhatsApp. Se preferir seguir por aqui, como posso te chamar?","whats":[{"href":"https://wa.me/5549998325623?text=Ol%C3%A1!%20Vim%20pelo%20chat%20do%20site%20e%20quero%20falar%20com%20a%20equipe%20da%20SC.","icone":true}],"dica":"Seu nome"} |
+| ✅ | Pedir o WhatsApp no roteiro mostra o botão da equipe e continua na mesma pergunta (nada vai ao servidor) | {"fala":"Claro! É só tocar no botão abaixo para falar com a equipe da SC no WhatsApp. Se preferir seguir por aqui, como posso te chamar?","whats":[{"href":"https://wa.me/5546991331306?text=Ol%C3%A1!%20Vim%20pelo%20chat%20do%20site%20e%20quero%20falar%20com%20a%20equipe%20da%20SC.","icone":true}],"dica":"Seu nome"} |
 | ✅ | Depois do nome, pede o WhatsApp com teclado numérico e o aviso de autorização com a política | {"teclado":"numeric","aviso":"Ao enviar, você autoriza a SC Soluções a"} |
 | ✅ | WhatsApp é conferido antes de seguir, ganha a máscara e nada vai ao servidor | máscara (46) 99123-4567 |
 | ✅ | Cidade com um toque (a da loja) e o aviso some |  |

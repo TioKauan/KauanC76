@@ -18,6 +18,7 @@ const data = new Date().toISOString().replace(/[-:]/g, '').replace('T', '-').sli
 const saida = path.resolve(raiz, '..', 'publicar');
 mkdirSync(saida, { recursive: true });
 const arquivo = path.join(saida, `somoscella-${data}.tar.gz`);
-execFileSync('tar', ['-czf', arquivo, '-C', temp, '.']);
+// Nome relativo (com cwd na pasta de saída): no Windows, o tar do Git lê "C:\…" como "servidor C".
+execFileSync('tar', ['-czf', path.basename(arquivo), '-C', temp, '.'], { cwd: saida });
 rmSync(temp, { recursive: true, force: true });
 console.log(`ok ${path.relative(path.resolve(raiz, '..'), arquivo)} (${(statSync(arquivo).size / 1024).toFixed(0)} KB)`);
