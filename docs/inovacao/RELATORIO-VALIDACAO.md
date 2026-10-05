@@ -1,15 +1,15 @@
 # Relatório de validação do site
 
-Gerado por `npm run validar` em 04/10/2026, 23:09:43.
-Resultado: **105 de 105 itens ✅** — checklist completa.
+Gerado por `npm run validar` em 05/10/2026, 07:32:02.
+Resultado: **136 de 139 itens ✅**.
 
 ## Geral
 
 | | Item | Detalhe |
 |---|---|---|
 | ✅ | Tipos conferidos (astro check) e build sem erro |  |
-| ✅ | Testes unitários das regras (Vitest) passam | 150 testes |
-| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 393 KB em 9 arquivos; maiores: / 197 KB, /marca/sc-logo.webp 52 KB, /assets/sol.Bs4nQpMj.js 40 KB |
+| ✅ | Testes unitários das regras (Vitest) passam | 174 testes |
+| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 406 KB em 10 arquivos; maiores: / 204 KB, /marca/sc-logo.webp 52 KB, /assets/sol.DcpuAmai.js 44 KB |
 | ✅ | Todo link interno leva a uma seção que existe | 7 destinos conferidos |
 | ✅ | Todo WhatsApp usa wa.me/5549998325623 com mensagem preenchida | 1 links |
 | ✅ | Todo botão de WhatsApp mostra o ícone do WhatsApp |  |
@@ -29,14 +29,14 @@ Resultado: **105 de 105 itens ✅** — checklist completa.
 | ✅ | Zero erros no console (celular) |  |
 | ✅ | Celular: botões e controles com área de toque ≥ 44 px |  |
 | ✅ | Sem rolagem horizontal em 768 px |  |
-| ✅ | Sem rolagem horizontal em 1024 px |  |
+| ❌ | Sem rolagem horizontal em 1024 px | 37 px sobrando |
 | ✅ | Sem rolagem horizontal em 1440 px |  |
 | ✅ | "Reduzir movimento": nenhuma animação contínua roda | 0 animações contínuas |
 | ✅ | "Reduzir movimento": todo conteúdo aparece sem animação | 0 blocos escondidos |
 | ✅ | Sem JavaScript o conteúdo aparece e os contatos funcionam (botões de venda levam a "Fale com a SC") | {"planos":5,"duvidas":7,"escondidos":0,"vendas":10,"whatsContato":true,"solEscondida":true} |
 | ✅ | Rodapé tem link para a Política de privacidade |  |
 | ✅ | /privacidade/ abre com as 9 seções, sem erro no console e sem rolagem lateral | 9 seções; erros: 0; sobra 0 px |
-| ✅ | Buscadores: robots.txt aponta o sitemap, e o sitemap lista todas as páginas | páginas: /, /condominio/, /privacidade/; no sitemap: /, /condominio/, /privacidade/ |
+| ✅ | Buscadores: robots.txt aponta o sitemap, e o sitemap lista todas as páginas | páginas: /, /casa/, /comercio/, /condominio/, /empresa/, /privacidade/; no sitemap: /, /casa/, /comercio/, /condominio/, /empresa/, /privacidade/ |
 
 ## Buscadores
 
@@ -54,8 +54,8 @@ Resultado: **105 de 105 itens ✅** — checklist completa.
 | ✅ | Os 4 ambientes trocam a cena e os rótulos | 4/4 |
 | ✅ | Os 4 cenários do "E se…?" mudam a cena e o texto |  |
 | ✅ | Em "Faltou energia" o nobreak pode ser ligado | off → reserva |
-| ✅ | "A partir de R$ 49,90/mês" visível sem rolar em 1440 px | fim do bloco em 838 de 900 px |
-| ✅ | "A partir de R$ 49,90/mês" visível sem rolar em 390 px | fim do bloco em 683 de 768 px |
+| ✅ | "A partir de R$ 49,90/mês" visível sem rolar em 1440 px | fim do bloco em 883 de 900 px |
+| ❌ | "A partir de R$ 49,90/mês" visível sem rolar em 390 px | fim do bloco em 778 de 768 px |
 
 ## Tela 2 · Planos
 
@@ -138,15 +138,51 @@ Resultado: **105 de 105 itens ✅** — checklist completa.
 | ✅ | Proposta: marcar sistemas muda a maquete e a mensagem vai pronta para a Sol (orbe; sem JavaScript leva a "Fale com a SC") | Olá! Quero uma proposta de Condomínio Evoluído. / Sistemas de interesse: câmeras nas áreas comuns, controle de acesso facial, rede e wi-fi, nobreak e quadro técnico. / O condomínio tem 3 blocos e 72 apartamentos. / Podemos conversar? |
 | ✅ | "Enviar para a SC pela Sol" abre o chat |  |
 | ✅ | "Explorar a maquete" abre em tela cheia e Esc volta ao roteiro (com o foco no botão) | {"explorando":{"modo":true,"foco":true,"fixo":"fixed"},"saiu":{"modo":false,"foco":true}} |
-| ✅ | "Reduzir movimento": a maquete não anima sozinha (desenha só quando algo muda) | 1 quadros em 1,5 s parada |
+| ✅ | "Reduzir movimento": a maquete não anima sozinha (desenha só quando algo muda) | 0 quadros em 1,5 s parada |
 | ✅ | WhatsApp da equipe só em "Fale com a SC" também nesta página | 1 no contato, 0 fora |
 | ✅ | Sem preço, prazo de contrato nem "instalação inclusa" na página do condomínio |  |
 | ✅ | Zero erros no console (maquete 3D, computador) |  |
-| ✅ | Peso: primeira visão ≤ 300 KB e maquete 3D ≤ 700 KB (baixada depois, sem compactação) | primeira visão 249 KB; maquete 616 KB |
+| ✅ | Peso: primeira visão ≤ 300 KB e maquete 3D ≤ 700 KB (baixada depois, sem compactação) | primeira visão 276 KB; maquete 640 KB |
 | ✅ | Celular: maquete no alto da tela, sem rolagem lateral, toques ≥ 44 px e sem erros | {"sobra":0,"alturaPalco":354,"pequenos":[],"erros":[]} |
+| ❌ | Condomínio sem rolagem horizontal em 1024 px | 37 px |
 | ✅ | Condomínio sem 3D: imagem da maquete, os 8 capítulos e o contato; controles da maquete escondidos | {"imagem":true,"capitulos":8,"so3d":0,"canvas":false,"contato":true} |
 | ✅ | Condomínio sem JavaScript: imagem da maquete, os 8 capítulos e o contato; controles da maquete escondidos | {"imagem":true,"capitulos":8,"so3d":0,"canvas":false,"contato":true} |
-| ✅ | Inicial leva ao condomínio: abertura (ao escolher "Condomínio"), aba dos planos, configurador e menu | {"escondidoAntes":true,"linkAbertura":"/condominio/","planos":true,"configurador":true,"menu":true} |
+| ✅ | Inicial leva às páginas 3D: convite na abertura (um por ambiente), aba dos planos, configurador e menu "Soluções" | {"escondidoAntes":true,"linkAbertura":"/condominio/","planos":true,"configurador":true,"menu":true} |
+
+## Casa, Comércio e Empresa · maquetes 3D
+
+| | Item | Detalhe |
+|---|---|---|
+| ✅ | Casa: a maquete 3D desenha (WebGL) e o monitor mostra as 4 câmeras do plano de 4 na abertura | 15 cores; 4 câmeras no monitor |
+| ✅ | Casa: cada capítulo, ao rolar, acende as suas camadas (abertura, cameras, plano, ese, alarme) |  |
+| ✅ | Casa: escolher uma câmera pelo teclado mostra a imagem dela no monitor |  |
+| ✅ | Casa: escolher o plano instala as câmeras dele na maquete e atualiza preço, cabo e o "Quero este plano" (Sol) | Plano de 8 câmeras R$ 159,90/mês · ≈ 121 m de 100 m inclusos → Plano de 1 câmera |
+| ✅ | Casa: "E se…?" com os textos da inicial; na visita, o visitante e o acesso acendem |  |
+| ✅ | Casa: "reduzir movimento" sem animação, WhatsApp só em "Fale com a SC", sem condição contratual nem "instalação inclusa", zero erros | 0 quadros parada; WhatsApp 1/0; erros: 0 |
+| ✅ | Casa: primeira visão ≤ 300 KB e maquete 3D ≤ 700 KB (baixada depois) | primeira visão 269 KB; maquete 640 KB |
+| ✅ | Casa no celular: maquete no alto, sem rolagem lateral, toques ≥ 44 px e sem erros | {"sobra":0,"alturaPalco":354,"pequenos":[],"erros":[]} |
+| ✅ | Casa sem 3D: imagem da maquete, os 5 capítulos, o plano de 4 e o contato | {"imagem":true,"capitulos":5,"so3d":0,"plano":"Plano de 4 câmeras","contato":true} |
+| ✅ | Casa sem JavaScript: imagem da maquete, os 5 capítulos, o plano de 4 e o contato | {"imagem":true,"capitulos":5,"so3d":0,"plano":"Plano de 4 câmeras","contato":true} |
+| ✅ | Comércio: a maquete 3D desenha (WebGL) e o monitor mostra as 4 câmeras do plano de 4 na abertura | 14 cores; 4 câmeras no monitor |
+| ✅ | Comércio: cada capítulo, ao rolar, acende as suas camadas (abertura, cameras, plano, rede, ese, alarme) |  |
+| ✅ | Comércio: escolher uma câmera pelo teclado mostra a imagem dela no monitor |  |
+| ✅ | Comércio: escolher o plano instala as câmeras dele na maquete e atualiza preço, cabo e o "Quero este plano" (Sol) | Plano de 8 câmeras R$ 159,90/mês · ≈ 158 m de 100 m inclusos → Plano de 1 câmera |
+| ✅ | Comércio: "E se…?" com os textos da inicial; na visita, o visitante e o acesso acendem |  |
+| ✅ | Comércio: "reduzir movimento" sem animação, WhatsApp só em "Fale com a SC", sem condição contratual nem "instalação inclusa", zero erros | 0 quadros parada; WhatsApp 1/0; erros: 0 |
+| ✅ | Comércio: primeira visão ≤ 300 KB e maquete 3D ≤ 700 KB (baixada depois) | primeira visão 270 KB; maquete 640 KB |
+| ✅ | Comércio no celular: maquete no alto, sem rolagem lateral, toques ≥ 44 px e sem erros | {"sobra":0,"alturaPalco":354,"pequenos":[],"erros":[]} |
+| ✅ | Comércio sem 3D: imagem da maquete, os 6 capítulos, o plano de 4 e o contato | {"imagem":true,"capitulos":6,"so3d":0,"plano":"Plano de 4 câmeras","contato":true} |
+| ✅ | Comércio sem JavaScript: imagem da maquete, os 6 capítulos, o plano de 4 e o contato | {"imagem":true,"capitulos":6,"so3d":0,"plano":"Plano de 4 câmeras","contato":true} |
+| ✅ | Empresa: a maquete 3D desenha (WebGL) e o monitor mostra as 4 câmeras do plano de 4 na abertura | 14 cores; 4 câmeras no monitor |
+| ✅ | Empresa: cada capítulo, ao rolar, acende as suas camadas (abertura, cameras, plano, rede, ese, alarme) |  |
+| ✅ | Empresa: escolher uma câmera pelo teclado mostra a imagem dela no monitor |  |
+| ✅ | Empresa: escolher o plano instala as câmeras dele na maquete e atualiza preço, cabo e o "Quero este plano" (Sol) | Plano de 8 câmeras R$ 159,90/mês · ≈ 158 m de 100 m inclusos → Plano de 1 câmera |
+| ✅ | Empresa: "E se…?" com os textos da inicial; na visita, o visitante e o acesso acendem |  |
+| ✅ | Empresa: "reduzir movimento" sem animação, WhatsApp só em "Fale com a SC", sem condição contratual nem "instalação inclusa", zero erros | 0 quadros parada; WhatsApp 1/0; erros: 0 |
+| ✅ | Empresa: primeira visão ≤ 300 KB e maquete 3D ≤ 700 KB (baixada depois) | primeira visão 268 KB; maquete 640 KB |
+| ✅ | Empresa no celular: maquete no alto, sem rolagem lateral, toques ≥ 44 px e sem erros | {"sobra":0,"alturaPalco":354,"pequenos":[],"erros":[]} |
+| ✅ | Empresa sem 3D: imagem da maquete, os 6 capítulos, o plano de 4 e o contato | {"imagem":true,"capitulos":6,"so3d":0,"plano":"Plano de 4 câmeras","contato":true} |
+| ✅ | Empresa sem JavaScript: imagem da maquete, os 6 capítulos, o plano de 4 e o contato | {"imagem":true,"capitulos":6,"so3d":0,"plano":"Plano de 4 câmeras","contato":true} |
 
 ## Acessibilidade (axe)
 
@@ -156,4 +192,7 @@ Resultado: **105 de 105 itens ✅** — checklist completa.
 | ✅ | /privacidade/: nenhuma violação de acessibilidade (computador e celular) |  |
 | ✅ | /condominio/: nenhuma violação de acessibilidade (computador e celular) |  |
 | ✅ | Página 404: nenhuma violação de acessibilidade (computador e celular) |  |
+| ✅ | /casa/: nenhuma violação de acessibilidade (computador e celular) |  |
+| ✅ | /comercio/: nenhuma violação de acessibilidade (computador e celular) |  |
+| ✅ | /empresa/: nenhuma violação de acessibilidade (computador e celular) |  |
 | ✅ | Chat da Sol aberto: nenhuma violação de acessibilidade (computador e celular) |  |
