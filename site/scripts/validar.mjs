@@ -13,7 +13,7 @@ import { execSync } from 'node:child_process';
 import { readFileSync, writeFileSync, existsSync, statSync, mkdirSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { planos, contato, empresa, formatarPreco } from '../src/lib/dados.ts';
+import { planos, contato, empresa, formatarPreco, duvidas } from '../src/lib/dados.ts';
 
 const aqui = path.dirname(fileURLToPath(import.meta.url));
 const raizSite = path.resolve(aqui, '..');
@@ -257,6 +257,30 @@ grupo('Buscadores');
       && `${negocio.address?.addressLocality} - ${negocio.address?.addressRegion}` === cidade && siteLd.publisher?.['@id'] === negocio['@id']
       && !/telephone|wa\.me/.test(blocos.join('')) && !blocos.join('').replace(/\D/g, '').includes(contato.whatsapp.slice(-8)),
     negocio ? `${negocio.name} · ${negocio.taxID} · ${negocio.address?.addressLocality} · ${negocio.email}` : `${blocos.length} bloco(s) JSON-LD`);
+
+  // As dúvidas que o Google lê são as da tela; a descrição da inicial e os títulos das páginas citam a cidade.
+  const faq = grafo.find((g) => g['@type'] === 'FAQPage');
+  const perguntasNoJson = (faq?.mainEntity ?? []).map((q) => q.name);
+  const perguntasNaTela = [...html.matchAll(/<details[^>]*class="pergunta"[^>]*>\s*<summary[^>]*>([\s\S]*?)<\/summary>/g)]
+    .map((m) => m[1].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim());
+  conferir('FAQPage (Google) tem as mesmas dúvidas do site, na mesma ordem',
+    perguntasNoJson.join('|') === duvidas.map((d) => d.pergunta).join('|') && perguntasNoJson.join('|') === perguntasNaTela.join('|') && perguntasNoJson.length > 0,
+    `${perguntasNoJson.length} no JSON; ${perguntasNaTela.length} <details> reconhecidos na tela`);
+  const cidadeNome = empresa.cidade.replace(/\s+/g, ' ').split(' - ')[0];
+  const metaDe = (arquivo) => {
+    const h = readFileSync(path.join(dist, arquivo), 'utf8');
+    return { t: h.match(/<title>([^<]*)<\/title>/)?.[1] ?? '', d: h.match(/<meta name="description" content="([^"]*)"/)?.[1] ?? '' };
+  };
+  const semCidade = ['index.html', 'casa/index.html', 'comercio/index.html', 'empresa/index.html', 'condominio/index.html']
+    .filter((f) => { const m = metaDe(f); return !m.t.includes(cidadeNome) && !m.d.includes(cidadeNome); });
+  const semCidadeNoTitulo = ['index.html', 'casa/index.html', 'comercio/index.html', 'empresa/index.html']
+    .filter((f) => !metaDe(f).t.includes(cidadeNome));
+  conferir(`Título das páginas de venda cita ${cidadeNome}; todas citam a cidade no título ou na descrição`,
+    semCidade.length === 0 && semCidadeNoTitulo.length === 0, `sem cidade: ${[...semCidade, ...semCidadeNoTitulo].join(', ') || 'nenhuma'}`);
+  const chaveIndexNow = JSON.parse(readFileSync(path.join(raizSite, 'src/lib/indexnow.json'), 'utf8')).chave;
+  conferir('IndexNow: o arquivo da chave sai no build, com só a chave, e não está no sitemap',
+    existsSync(path.join(dist, `${chaveIndexNow}.txt`)) && readFileSync(path.join(dist, `${chaveIndexNow}.txt`), 'utf8') === chaveIndexNow
+      && !readFileSync(path.join(dist, 'sitemap-0.xml'), 'utf8').includes(chaveIndexNow), chaveIndexNow);
 
   // Página 404: endereço que não existe responde 404 (não a inicial com 200) e mostra por onde continuar.
   const naoIndexadas = ['condominio/index.html', 'privacidade/index.html', 'index.html']

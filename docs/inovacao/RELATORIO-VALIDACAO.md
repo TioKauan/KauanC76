@@ -1,15 +1,15 @@
 # Relatório de validação do site
 
-Gerado por `npm run validar` em 13/10/2026, 03:29:06.
-Resultado: **139 de 139 itens ✅** — checklist completa.
+Gerado por `npm run validar` em 13/10/2026, 19:50:14.
+Resultado: **142 de 142 itens ✅** — checklist completa.
 
 ## Geral
 
 | | Item | Detalhe |
 |---|---|---|
 | ✅ | Tipos conferidos (astro check) e build sem erro |  |
-| ✅ | Testes unitários das regras (Vitest) passam | 174 testes |
-| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 406 KB em 10 arquivos; maiores: / 204 KB, /marca/sc-logo.webp 52 KB, /assets/sol.CJgAvoiE.js 44 KB |
+| ✅ | Testes unitários das regras (Vitest) passam | 177 testes |
+| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 408 KB em 10 arquivos; maiores: / 206 KB, /marca/sc-logo.webp 52 KB, /assets/sol.CJgAvoiE.js 44 KB |
 | ✅ | Todo link interno leva a uma seção que existe | 7 destinos conferidos |
 | ✅ | Todo WhatsApp usa wa.me/5546991331306 com mensagem preenchida | 1 links |
 | ✅ | Todo botão de WhatsApp mostra o ícone do WhatsApp |  |
@@ -44,6 +44,9 @@ Resultado: **139 de 139 itens ✅** — checklist completa.
 | | Item | Detalhe |
 |---|---|---|
 | ✅ | Inicial tem os dados da empresa para o Google (schema.org): nome, CNPJ, cidade e e-mail iguais aos do rodapé | SC Soluções · 62.768.829/0001-96 · Francisco Beltrão · somoscella@gmail.com |
+| ✅ | FAQPage (Google) tem as mesmas dúvidas do site, na mesma ordem | 7 no JSON; 7 <details> reconhecidos na tela |
+| ✅ | Título das páginas de venda cita Francisco Beltrão; todas citam a cidade no título ou na descrição | sem cidade: nenhuma |
+| ✅ | IndexNow: o arquivo da chave sai no build, com só a chave, e não está no sitemap | 91de491704f9e409970a313cb9196254 |
 | ✅ | Só a página 404 fica fora do Google (noindex); as outras são indexadas |  |
 | ✅ | Endereço inexistente: responde 404 com a página "não encontrada" e caminhos para o site (1440 px) | status 404; relativos: 0; âncoras quebradas: 0; WhatsApp fora do contato: 0; sobra 0 px; arquivos que falharam: 0; erros: 0 |
 | ✅ | Endereço inexistente: responde 404 com a página "não encontrada" e caminhos para o site (390 px) | status 404; relativos: 0; âncoras quebradas: 0; WhatsApp fora do contato: 0; sobra 0 px; arquivos que falharam: 0; erros: 0 |

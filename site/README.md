@@ -120,6 +120,9 @@ Passo a passo (25/09/2026, revisto em 01/10/2026):
 5. Conferir de fora: HTTPS 200 **e o conteúdo** idêntico ao gerado. Endereço que não existe também
    responde 200 (com a inicial), então só o código não prova nada.
 6. Marcar o commit publicado com a tag `publicado-<data>` e enviar ao GitHub.
+7. Avisar o Bing das páginas (IndexNow), com o site já no ar: `node scripts/indexnow.mjs` mostra o
+   que seria enviado e `node scripts/indexnow.mjs --enviar` envia. A chave fica em
+   `src/lib/indexnow.json` e o arquivo dela em `public/<chave>.txt` (o teste confere os dois).
 
 ### Página 404 (configuração do Nginx, uma vez só)
 

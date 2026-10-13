@@ -17,6 +17,7 @@ import Sol from '../components/Sol.astro';
 import { paginasAmbiente, empresa } from '../lib/dados';
 import { camadasDe, capitulosDe } from '../lib/ambientes/capitulos';
 import type { AmbienteMaquete } from '../lib/ambientes/maquetes';
+import { separarCidade } from '../lib/buscadores';
 
 export function getStaticPaths() {
   return (['casa', 'comercio', 'empresa'] as const).map((ambiente) => ({ params: { ambiente } }));
@@ -33,7 +34,7 @@ const alt = {
 ---
 
 <Base
-  titulo={`${t.sobre}: câmeras em locação vistas em 3D | ${empresa.nome}`}
+  titulo={`${t.sobre}: câmeras em locação em 3D | ${empresa.nome}, ${separarCidade(empresa.cidade).municipio}`}
   descricao={t.descricao}
   tituloSocial={`${t.sobre} em 3D | ${empresa.nome}`}
   descricaoSocial={t.lead}

@@ -50,6 +50,12 @@ export const contato = {
   atendimento: 'Atendimento pela equipe da SC',
 };
 
+// Perfis oficiais da empresa. Vão só para os dados do Google (schema.org, `sameAs`), que assim
+// ligam o site ao Instagram como a mesma empresa. Não aparecem na tela.
+export const perfis = {
+  instagram: 'https://www.instagram.com/scsolucoes.oficial/',
+};
+
 // false = troca todos os valores por "Sob consulta".
 export const mostrarPrecos: boolean = true;
 

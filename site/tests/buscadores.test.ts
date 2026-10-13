@@ -1,8 +1,10 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { dadosEstruturados, jsonParaScript, separarCidade } from '../src/lib/buscadores';
-import { contato, empresa } from '../src/lib/dados';
+import { contato, duvidas, empresa, perfis } from '../src/lib/dados';
+import { chave } from '../src/lib/indexnow.json';
 
-const [negocio, site] = dadosEstruturados()['@graph'];
+const [negocio, site, faq] = dadosEstruturados()['@graph'];
 
 describe('dados estruturados para o Google', () => {
   it('a empresa tem os mesmos dados do rodapé (CNPJ, cidade, e-mail)', () => {
@@ -31,6 +33,17 @@ describe('dados estruturados para o Google', () => {
     expect(site).toMatchObject({ '@type': 'WebSite', name: 'SC Soluções', url: 'https://somoscella.online/', publisher: { '@id': negocio!['@id'] } });
   });
 
+  it('liga a empresa ao Instagram oficial (sameAs)', () => {
+    expect(negocio!.sameAs).toEqual([perfis.instagram]);
+    expect(perfis.instagram).toBe('https://www.instagram.com/scsolucoes.oficial/');
+  });
+
+  it('as dúvidas do Google são exatamente as da tela (mesmo texto, mesma ordem)', () => {
+    expect(faq).toMatchObject({ '@type': 'FAQPage' });
+    const itens = (faq as { mainEntity: { name: string; acceptedAnswer: { text: string } }[] }).mainEntity;
+    expect(itens.map((q) => [q.name, q.acceptedAnswer.text])).toEqual(duvidas.map((d) => [d.pergunta, d.resposta]));
+  });
+
   it('sem telefone nem WhatsApp (o WhatsApp da equipe fica só em "Fale com a SC")', () => {
     const json = JSON.stringify(dadosEstruturados());
     expect(json).not.toMatch(/telephone|wa\.me|contactPoint/);
@@ -40,6 +53,13 @@ describe('dados estruturados para o Google', () => {
 
   it('nada de condição contratual ou instalação grátis', () => {
     expect(JSON.stringify(dadosEstruturados())).not.toMatch(/prazo mínimo|multa|instalação inclu|sem investimento|R\$/i);
+  });
+});
+
+describe('IndexNow (aviso ao Bing)', () => {
+  it('o arquivo da chave existe em public/ e tem só a chave', () => {
+    expect(chave).toMatch(/^[0-9a-f]{32}$/);
+    expect(readFileSync(new URL(`../public/${chave}.txt`, import.meta.url), 'utf8')).toBe(chave);
   });
 });
 

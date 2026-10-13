@@ -9,7 +9,7 @@
  * equipe fica só na seção "Fale com a SC" (decisão do Kauan, 28/09/2026), e o Google mostraria
  * um botão "Ligar" no resultado da busca.
  */
-import { contato, empresa, servicosProposta } from './dados';
+import { contato, duvidas, empresa, perfis, servicosProposta } from './dados';
 
 /** "Francisco Beltrão - PR" (com espaços que não quebram) → cidade e estado separados. */
 export function separarCidade(cidade: string): { municipio: string; uf: string } {
@@ -42,6 +42,7 @@ export function dadosEstruturados() {
         taxID: empresa.cnpj,
         address: { '@type': 'PostalAddress', addressLocality: municipio, addressRegion: uf, addressCountry: 'BR' },
         areaServed: empresa.regiao,
+        sameAs: [perfis.instagram],
       },
       {
         '@type': 'WebSite',
@@ -51,6 +52,19 @@ export function dadosEstruturados() {
         alternateName: `${empresa.nome} em ${empresa.descricao}`,
         inLanguage: 'pt-BR',
         publisher: { '@id': `${site}/#empresa` },
+      },
+      // As dúvidas da inicial, com o mesmo texto da tela (vêm do mesmo `duvidas`). Servem a
+      // buscadores e assistentes de IA; o Google quase só mostra esse resultado destacado
+      // para sites de governo e de saúde, então não conte com isso na busca.
+      {
+        '@type': 'FAQPage',
+        '@id': `${site}/#duvidas`,
+        inLanguage: 'pt-BR',
+        mainEntity: duvidas.map((d) => ({
+          '@type': 'Question',
+          name: d.pergunta,
+          acceptedAnswer: { '@type': 'Answer', text: d.resposta },
+        })),
       },
     ],
   };
