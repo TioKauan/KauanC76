@@ -5,6 +5,27 @@ Cada publicação tem uma tag `publicado-<data>` no Git, apontando para o commit
 
 ---
 
+## 13/10/2026, 08:15 (Brasília) — Mapa do site também em /sitemap.xml
+
+Tag `publicado-2026-10-13-111554` (código do commit `c2ff4f2`; a data da tag é UTC, como a do script).
+
+### O que mudou para quem visita o site
+
+Nada na tela. Para os buscadores, o mapa do site passa a responder também em `/sitemap.xml`
+(antes dava 404), o endereço que o Google Search Console e o Bing sugerem. `/sitemap-index.xml`
+continua igual, e o `robots.txt` segue apontando para ele.
+
+### Técnico
+
+- `astro.config.mjs`: depois do build, copia `sitemap-0.xml` para `sitemap.xml` (conteúdo sempre
+  idêntico). O validador confere: 139/139.
+- Publicado com `npm run empacotar` + `scripts/publicar-no-vps.sh`, nos dois endereços. Conferido de
+  fora: sitemaps, `robots.txt` e as páginas respondem 200 e são idênticos ao build; endereço
+  inexistente segue 404.
+- Anterior guardada em `index.antigo-20261013-111554` e em `/opt/somoscella/backups/`.
+
+---
+
 ## 05/10/2026, 12:42 (Brasília) — Casa, Comércio e Empresa em 3D, menu "Soluções" e página 404
 
 Tag `publicado-2026-10-05-154247` (código do commit `e078391`; a data da tag é UTC, como a do script).
