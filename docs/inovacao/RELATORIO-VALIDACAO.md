@@ -1,7 +1,7 @@
 # Relatório de validação do site
 
-Gerado por `npm run validar` em 05/10/2026, 12:40:31.
-Resultado: **138 de 138 itens ✅** — checklist completa.
+Gerado por `npm run validar` em 13/10/2026, 03:29:06.
+Resultado: **139 de 139 itens ✅** — checklist completa.
 
 ## Geral
 
@@ -37,6 +37,7 @@ Resultado: **138 de 138 itens ✅** — checklist completa.
 | ✅ | Rodapé tem link para a Política de privacidade |  |
 | ✅ | /privacidade/ abre com as 9 seções, sem erro no console e sem rolagem lateral | 9 seções; erros: 0; sobra 0 px |
 | ✅ | Buscadores: robots.txt aponta o sitemap, e o sitemap lista todas as páginas | páginas: /, /casa/, /comercio/, /condominio/, /empresa/, /privacidade/; no sitemap: /, /casa/, /comercio/, /condominio/, /empresa/, /privacidade/ |
+| ✅ | Buscadores: /sitemap.xml existe e é igual ao sitemap-0.xml (endereço que o Search Console sugere) | 667 bytes |
 
 ## Buscadores
 

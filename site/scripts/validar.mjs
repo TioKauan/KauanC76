@@ -235,6 +235,10 @@ for (const largura of [360, 390, 768, 1024, 1440]) {
   conferir('Buscadores: robots.txt aponta o sitemap, e o sitemap lista todas as páginas',
     /User-agent: \*/.test(robots) && robots.includes('Sitemap: https://somoscella.online/sitemap-index.xml') && noSitemap.join(' ') === paginasGeradas.join(' '),
     `páginas: ${paginasGeradas.join(', ')}; no sitemap: ${noSitemap.join(', ')}`);
+  const sitemapXml = existsSync(path.join(dist, 'sitemap.xml')) ? readFileSync(path.join(dist, 'sitemap.xml'), 'utf8') : '';
+  conferir('Buscadores: /sitemap.xml existe e é igual ao sitemap-0.xml (endereço que o Search Console sugere)',
+    sitemapXml !== '' && sitemapXml === readFileSync(path.join(dist, 'sitemap-0.xml'), 'utf8'),
+    sitemapXml ? `${sitemapXml.length} bytes` : 'sitemap.xml não foi gerado');
 }
 
 /* ---------- Buscadores: dados da empresa e página 404 ---------- */
