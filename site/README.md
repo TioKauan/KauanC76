@@ -32,6 +32,8 @@ src/
   pages/[ambiente].astro   Casa, Comércio e Empresa (/casa/, /comercio/, /empresa/): mesma maquete 3D, com "Escolha o plano"
   pages/privacidade.astro  política de privacidade
   pages/robots.txt.ts      robots.txt gerado no build (aponta o sitemap)
+                           (sitemap: @astrojs/sitemap gera sitemap-index.xml e sitemap-0.xml; o astro.config.mjs copia
+                           sitemap-0.xml para sitemap.xml depois do build)
   pages/404.astro          endereço que não existe: caminhos para o site (fora do Google; ver Publicação)
   layouts/Base.astro       <head>, fonte e estilos-base comuns a todas as páginas
   components/*.astro       uma seção por componente (Abertura, Planos, Configurador, ComoFunciona…)

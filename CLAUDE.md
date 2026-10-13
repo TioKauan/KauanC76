@@ -62,6 +62,9 @@ solução, não a mais simples de entender; nas conversas, explique o porquê da
 - **Buscadores** (05/10/2026): os dados da empresa para o Google (schema.org) saem de `dados.ts` em
   `src/lib/buscadores.ts`, sem telefone nem WhatsApp. `src/pages/404.astro` é a página de endereço
   inexistente (fora do Google); para valer no ar, o Nginx precisa da troca descrita em `site/README.md`.
+  O mapa do site sai em `/sitemap-index.xml` (que o `robots.txt` aponta), `/sitemap-0.xml` e, desde
+  13/10/2026, também em `/sitemap.xml` (cópia feita no build por `astro.config.mjs`, conferida pelo
+  validador): é o endereço que o Search Console e o Bing sugerem.
 - Logo: só os arquivos oficiais (`site/public/marca/`); nunca redesenhe. O Claude não gera foto.
 - **Publicar é ação externa: só com pedido explícito do Kauan** (Nginx do VPS, guardando antes a versão no ar).
 
