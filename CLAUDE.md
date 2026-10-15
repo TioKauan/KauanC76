@@ -60,7 +60,9 @@ solução, não a mais simples de entender; nas conversas, explique o porquê da
   Rode `npm run build && npm run imagens-maquete` para refazer as imagens prontas. Plano do condomínio:
   `docs/inovacao/condominio/`.
 - **Buscadores** (05/10/2026): os dados da empresa para o Google (schema.org) saem de `dados.ts` em
-  `src/lib/buscadores.ts`, sem telefone nem WhatsApp. `src/pages/404.astro` é a página de endereço
+  `src/lib/buscadores.ts`, com o telefone da equipe e as cidades de `empresa.cidadesAtendidas`
+  (desde 14/10/2026), sem link de WhatsApp. `www` redireciona para o domínio sem `www` por uma
+  regra no Nginx do servidor, fora deste repositório. `src/pages/404.astro` é a página de endereço
   inexistente (fora do Google); para valer no ar, o Nginx precisa da troca descrita em `site/README.md`.
   O mapa do site sai em `/sitemap-index.xml` (que o `robots.txt` aponta), `/sitemap-0.xml` e, desde
   13/10/2026, também em `/sitemap.xml` (cópia feita no build por `astro.config.mjs`, conferida pelo
