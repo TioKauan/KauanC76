@@ -5,6 +5,23 @@ Cada publicação tem uma tag `publicado-<data>` no Git, apontando para o commit
 
 ---
 
+## 15/10/2026, 00:56 (Brasília) — Perfil do Google nos dados para buscadores
+
+Tag `publicado-2026-10-15-035631` (a data da tag é UTC, como a do script).
+
+### O que mudou para quem visita o site
+
+Nada na tela. Os dados da empresa para os buscadores passam a ligar o site também ao Perfil da
+Empresa no Google (`sameAs` e `hasMap`, pelo endereço fixo do perfil no Maps), além do Instagram.
+
+### Técnico
+
+- Validador 142/142 e 177 testes. Conferido de fora: páginas, sitemaps e `robots.txt` idênticos
+  ao build; inexistente 404; `www` segue com 301. IndexNow: 200.
+- Anterior guardada em `index.antigo-20261015-035631` e em `/opt/somoscella/backups/`.
+
+---
+
 ## 14/10/2026, 22:02 (Brasília) — SEO regional: títulos, dados para buscadores e `www`
 
 Tag `publicado-2026-10-15-010226` (a data da tag é UTC, como a do script).
