@@ -36,6 +36,8 @@ export const empresa = {
   descricao: 'Segurança e Tecnologia',
   site: 'https://somoscella.online',
   regiao: 'Francisco Beltrão e região',
+  // Cidades atendidas (Kauan, 14/10/2026). Vão para os dados do Google (areaServed).
+  cidadesAtendidas: ['Francisco Beltrão', 'Dois Vizinhos', 'Realeza', 'Campo Erê'],
   // Identificação no rodapé: só o CNPJ, sem o nome do titular (decisão do Kauan, 25/09/2026).
   cnpj: '62.768.829/0001-96',
   cidade: 'Francisco Beltrão - PR', // espaços que não quebram: "PR" não fica sozinho na linha

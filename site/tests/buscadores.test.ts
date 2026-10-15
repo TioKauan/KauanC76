@@ -14,7 +14,7 @@ describe('dados estruturados para o Google', () => {
       taxID: empresa.cnpj,
       email: contato.email,
       address: { addressLocality: 'Francisco Beltrão', addressRegion: 'PR', addressCountry: 'BR' },
-      areaServed: empresa.regiao,
+      telephone: '+5546991331306',
     });
   });
 
@@ -44,11 +44,11 @@ describe('dados estruturados para o Google', () => {
     expect(itens.map((q) => [q.name, q.acceptedAnswer.text])).toEqual(duvidas.map((d) => [d.pergunta, d.resposta]));
   });
 
-  it('sem telefone nem WhatsApp (o WhatsApp da equipe fica só em "Fale com a SC")', () => {
-    const json = JSON.stringify(dadosEstruturados());
-    expect(json).not.toMatch(/telephone|wa\.me|contactPoint/);
-    expect(json).not.toContain(contato.whatsapp);
-    expect(json).not.toContain(contato.whatsappExibicao);
+  it('leva o telefone da equipe e as cidades atendidas, sem link de WhatsApp', () => {
+    expect(negocio!.telephone).toBe(`+${contato.whatsapp}`);
+    expect(negocio!.areaServed).toEqual(empresa.cidadesAtendidas.map((nome) => ({ '@type': 'City', name: `${nome}, PR` })));
+    expect(empresa.cidadesAtendidas).toEqual(['Francisco Beltrão', 'Dois Vizinhos', 'Realeza', 'Campo Erê']);
+    expect(JSON.stringify(dadosEstruturados())).not.toMatch(/wa\.me|contactPoint/);
   });
 
   it('nada de condição contratual ou instalação grátis', () => {

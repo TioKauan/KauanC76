@@ -1,6 +1,6 @@
 # Relatório de validação do site
 
-Gerado por `npm run validar` em 13/10/2026, 19:50:14.
+Gerado por `npm run validar` em 14/10/2026, 21:51:31.
 Resultado: **142 de 142 itens ✅** — checklist completa.
 
 ## Geral
@@ -161,7 +161,7 @@ Resultado: **142 de 142 itens ✅** — checklist completa.
 | ✅ | Casa: escolher uma câmera pelo teclado mostra a imagem dela no monitor |  |
 | ✅ | Casa: escolher o plano instala as câmeras dele na maquete e atualiza preço, cabo e o "Quero este plano" (Sol) | Plano de 8 câmeras R$ 159,90/mês · ≈ 121 m de 100 m inclusos → Plano de 1 câmera |
 | ✅ | Casa: "E se…?" com os textos da inicial; na visita, o visitante e o acesso acendem |  |
-| ✅ | Casa: "reduzir movimento" sem animação, WhatsApp só em "Fale com a SC", sem condição contratual nem "instalação inclusa", zero erros | 0 quadros parada; WhatsApp 1/0; erros: 0 |
+| ✅ | Casa: "reduzir movimento" sem animação, WhatsApp só em "Fale com a SC", sem condição contratual nem "instalação inclusa", zero erros | 1 quadros parada; WhatsApp 1/0; erros: 0 |
 | ✅ | Casa: primeira visão ≤ 300 KB e maquete 3D ≤ 700 KB (baixada depois) | primeira visão 269 KB; maquete 640 KB |
 | ✅ | Casa no celular: maquete no alto, sem rolagem lateral, toques ≥ 44 px e sem erros | {"sobra":0,"alturaPalco":354,"pequenos":[],"erros":[]} |
 | ✅ | Casa sem 3D: imagem da maquete, os 5 capítulos, o plano de 4 e o contato | {"imagem":true,"capitulos":5,"so3d":0,"plano":"Plano de 4 câmeras","contato":true} |

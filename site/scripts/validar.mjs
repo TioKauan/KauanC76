@@ -244,7 +244,7 @@ for (const largura of [360, 390, 768, 1024, 1440]) {
 /* ---------- Buscadores: dados da empresa e página 404 ---------- */
 grupo('Buscadores');
 {
-  // Dados estruturados (schema.org) na inicial: os mesmos do rodapé, sem telefone nem WhatsApp.
+  // Dados estruturados (schema.org) na inicial: os mesmos do rodapé, com o telefone da equipe (sem link de WhatsApp).
   const html = readFileSync(path.join(dist, 'index.html'), 'utf8');
   const blocos = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => m[1]);
   let grafo = [];
@@ -255,7 +255,7 @@ grupo('Buscadores');
   conferir('Inicial tem os dados da empresa para o Google (schema.org): nome, CNPJ, cidade e e-mail iguais aos do rodapé',
     negocio && siteLd && negocio.name === empresa.nome && negocio.taxID === empresa.cnpj && negocio.email === contato.email
       && `${negocio.address?.addressLocality} - ${negocio.address?.addressRegion}` === cidade && siteLd.publisher?.['@id'] === negocio['@id']
-      && !/telephone|wa\.me/.test(blocos.join('')) && !blocos.join('').replace(/\D/g, '').includes(contato.whatsapp.slice(-8)),
+      && negocio.telephone === `+${contato.whatsapp}` && !/wa\.me/.test(blocos.join('')),
     negocio ? `${negocio.name} · ${negocio.taxID} · ${negocio.address?.addressLocality} · ${negocio.email}` : `${blocos.length} bloco(s) JSON-LD`);
 
   // As dúvidas que o Google lê são as da tela; a descrição da inicial e os títulos das páginas citam a cidade.

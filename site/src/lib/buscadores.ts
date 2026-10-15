@@ -5,9 +5,9 @@
  * nome, cidade, CNPJ, e-mail, região atendida e logo. Ajuda o Google a mostrar a SC nas buscas
  * locais ("câmera de segurança Francisco Beltrão") e a usar "SC Soluções" como nome do site.
  *
- * Tudo vem de dados.ts: mudou o rodapé, muda aqui junto. Sem telefone nem WhatsApp: o WhatsApp da
- * equipe fica só na seção "Fale com a SC" (decisão do Kauan, 28/09/2026), e o Google mostraria
- * um botão "Ligar" no resultado da busca.
+ * Tudo vem de dados.ts: mudou o rodapé, muda aqui junto. Leva o telefone da equipe (o mesmo número
+ * do WhatsApp): em 14/10/2026 o Kauan decidiu incluí-lo, para o Google conferir nome, endereço e
+ * telefone com o Perfil da Empresa. O Google pode mostrar um botão "Ligar" no resultado.
  */
 import { contato, duvidas, empresa, perfis, servicosProposta } from './dados';
 
@@ -39,9 +39,10 @@ export function dadosEstruturados() {
         logo: `${site}/marca/sc-logo.webp`,
         image: `${site}/marca/og-imagem.png`,
         email: contato.email,
+        telephone: `+${contato.whatsapp}`,
         taxID: empresa.cnpj,
         address: { '@type': 'PostalAddress', addressLocality: municipio, addressRegion: uf, addressCountry: 'BR' },
-        areaServed: empresa.regiao,
+        areaServed: empresa.cidadesAtendidas.map((nome) => ({ '@type': 'City', name: `${nome}, ${uf}` })),
         sameAs: [perfis.instagram],
       },
       {
