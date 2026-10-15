@@ -43,7 +43,8 @@ export function dadosEstruturados() {
         taxID: empresa.cnpj,
         address: { '@type': 'PostalAddress', addressLocality: municipio, addressRegion: uf, addressCountry: 'BR' },
         areaServed: empresa.cidadesAtendidas.map((name) => ({ '@type': 'City', name })),
-        sameAs: [perfis.instagram],
+        hasMap: perfis.googleMaps,
+        sameAs: [perfis.instagram, perfis.googleMaps],
       },
       {
         '@type': 'WebSite',

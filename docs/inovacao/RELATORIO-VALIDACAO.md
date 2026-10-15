@@ -1,6 +1,6 @@
 # Relatório de validação do site
 
-Gerado por `npm run validar` em 14/10/2026, 22:01:29.
+Gerado por `npm run validar` em 15/10/2026, 00:49:39.
 Resultado: **142 de 142 itens ✅** — checklist completa.
 
 ## Geral

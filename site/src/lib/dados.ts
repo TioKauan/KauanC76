@@ -53,9 +53,11 @@ export const contato = {
 };
 
 // Perfis oficiais da empresa. Vão só para os dados do Google (schema.org, `sameAs`), que assim
-// ligam o site ao Instagram como a mesma empresa. Não aparecem na tela.
+// ligam o site ao Instagram e ao Perfil da Empresa no Google como a mesma empresa. Não aparecem na tela.
 export const perfis = {
   instagram: 'https://www.instagram.com/scsolucoes.oficial/',
+  // Perfil da Empresa no Google (Maps), pelo número fixo do perfil (cid), não pelo link curto.
+  googleMaps: 'https://maps.google.com/?cid=5706617023540447846',
 };
 
 // false = troca todos os valores por "Sob consulta".

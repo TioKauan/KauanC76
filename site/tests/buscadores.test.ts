@@ -33,8 +33,9 @@ describe('dados estruturados para o Google', () => {
     expect(site).toMatchObject({ '@type': 'WebSite', name: 'SC Soluções', url: 'https://somoscella.online/', publisher: { '@id': negocio!['@id'] } });
   });
 
-  it('liga a empresa ao Instagram oficial (sameAs)', () => {
-    expect(negocio!.sameAs).toEqual([perfis.instagram]);
+  it('liga a empresa ao Instagram oficial e ao Perfil do Google (sameAs)', () => {
+    expect(negocio!.sameAs).toEqual([perfis.instagram, perfis.googleMaps]);
+    expect(negocio!.hasMap).toBe('https://maps.google.com/?cid=5706617023540447846');
     expect(perfis.instagram).toBe('https://www.instagram.com/scsolucoes.oficial/');
   });
 
