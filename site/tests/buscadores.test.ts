@@ -46,8 +46,9 @@ describe('dados estruturados para o Google', () => {
 
   it('leva o telefone da equipe e as cidades atendidas, sem link de WhatsApp', () => {
     expect(negocio!.telephone).toBe(`+${contato.whatsapp}`);
-    expect(negocio!.areaServed).toEqual(empresa.cidadesAtendidas.map((nome) => ({ '@type': 'City', name: `${nome}, PR` })));
-    expect(empresa.cidadesAtendidas).toEqual(['Francisco Beltrão', 'Dois Vizinhos', 'Realeza', 'Campo Erê']);
+    expect(negocio!.areaServed).toEqual(empresa.cidadesAtendidas.map((name) => ({ '@type': 'City', name })));
+    // Campo Erê fica em Santa Catarina; as outras, no Paraná.
+    expect(empresa.cidadesAtendidas).toEqual(['Francisco Beltrão, PR', 'Dois Vizinhos, PR', 'Realeza, PR', 'Campo Erê, SC']);
     expect(JSON.stringify(dadosEstruturados())).not.toMatch(/wa\.me|contactPoint/);
   });
 

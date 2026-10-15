@@ -42,7 +42,7 @@ export function dadosEstruturados() {
         telephone: `+${contato.whatsapp}`,
         taxID: empresa.cnpj,
         address: { '@type': 'PostalAddress', addressLocality: municipio, addressRegion: uf, addressCountry: 'BR' },
-        areaServed: empresa.cidadesAtendidas.map((nome) => ({ '@type': 'City', name: `${nome}, ${uf}` })),
+        areaServed: empresa.cidadesAtendidas.map((name) => ({ '@type': 'City', name })),
         sameAs: [perfis.instagram],
       },
       {

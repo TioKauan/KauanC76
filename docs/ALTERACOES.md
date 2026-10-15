@@ -5,6 +5,36 @@ Cada publicação tem uma tag `publicado-<data>` no Git, apontando para o commit
 
 ---
 
+## 14/10/2026, 22:02 (Brasília) — SEO regional: títulos, dados para buscadores e `www`
+
+Tag `publicado-2026-10-15-010226` (a data da tag é UTC, como a do script).
+
+### O que mudou para quem visita o site
+
+- Os títulos das páginas citam Francisco Beltrão.
+- `www.somoscella.online` agora redireciona (301) para `somoscella.online`, com o mesmo caminho.
+  Antes respondia com uma cópia do site.
+
+### Para os buscadores
+
+- Dados estruturados da inicial: telefone da equipe, cidades atendidas (Francisco Beltrão, Dois
+  Vizinhos e Realeza, no PR; Campo Erê, em SC), ligação com o Instagram oficial e as dúvidas da
+  página (mesmo texto da tela).
+- Aviso ao Bing pelo IndexNow (`scripts/indexnow.mjs`), com o arquivo da chave em `public/`.
+  Resposta: 202 (recebido).
+
+### Técnico
+
+- Validador 142/142 e 177 testes.
+- Publicado duas vezes seguidas: a primeira (`20261015-005551`) trazia Campo Erê como PR; corrigido
+  em `20261015-010226`. Conferido de fora: páginas, sitemaps, `robots.txt` e arquivo da chave
+  idênticos ao build; endereço inexistente segue 404.
+- Nginx (`conf.d/somoscella.online.conf`): regra de redirecionamento do `www` antes da regra de
+  `http`; `nginx -t` ok e recarregado. Configuração anterior guardada em
+  `/opt/somoscella/backups/nginx-www-20261014-215623/`.
+
+---
+
 ## 13/10/2026, 08:15 (Brasília) — Mapa do site também em /sitemap.xml
 
 Tag `publicado-2026-10-13-111554` (código do commit `c2ff4f2`; a data da tag é UTC, como a do script).
