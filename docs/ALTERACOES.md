@@ -5,6 +5,34 @@ Cada publicação tem uma tag `publicado-<data>` no Git, apontando para o commit
 
 ---
 
+## 17/10/2026, 14:10 (Brasília) — Inicial mais enxuta; "Monte seu sistema" em página própria
+
+Tag `publicado-2026-10-17-171017` (a data da tag é UTC, como a do script).
+
+### O que mudou para quem visita o site
+
+- A página inicial ficou mais curta e direta: 1.330 → 827 palavras; no celular, de cerca de 14
+  para 8 telas de rolagem.
+- Saíram da inicial: o "E se…?" da abertura (continua nas páginas 3D de Casa, Comércio e Empresa),
+  a faixa de serviços abaixo da abertura (Redes, Alarme, Condomínio e Nobreak seguem nas abas dos
+  planos), o "Personalize seu sistema" (os recursos extras ficam no configurador) e a "Área do
+  cliente" de exemplo.
+- "Por que locar" e "Simples de contratar" viraram um bloco só de 4 itens.
+- O configurador "Monte seu sistema" tem página própria: `/monte-seu-sistema/`. "Ver no
+  configurador" já chega com as câmeras do plano marcadas; links antigos para `/#monte` vão para lá.
+
+### Técnico
+
+- Validador 146/146 e 177 testes. As conferências da inicial que dependiam do configurador e do
+  "E se…?" foram para a página nova; entraram conferências da inicial enxuta, de `?cameras=`,
+  `?ambiente=`, do endereço antigo `/#monte` e de acessibilidade da página nova.
+- Conferido de fora: `/`, `/monte-seu-sistema/`, `/casa/`, `/condominio/`, `/privacidade/` e
+  `/sitemap.xml` idênticos ao build; inexistente 404; sem erros no console.
+- Anterior guardada em `index.antigo-20261017-171017` e em `/opt/somoscella/backups/`.
+  Para voltar: `bash /tmp/publicar-no-vps.sh --voltar 20261017-171017`.
+
+---
+
 ## 15/10/2026, 00:56 (Brasília) — Perfil do Google nos dados para buscadores
 
 Tag `publicado-2026-10-15-035631` (a data da tag é UTC, como a do script).
