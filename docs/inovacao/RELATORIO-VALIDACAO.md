@@ -1,7 +1,7 @@
 # Relatório de validação do site
 
-Gerado por `npm run validar` em 15/10/2026, 00:49:39.
-Resultado: **142 de 142 itens ✅** — checklist completa.
+Gerado por `npm run validar` em 17/10/2026, 14:03:17.
+Resultado: **146 de 146 itens ✅** — checklist completa.
 
 ## Geral
 
@@ -9,8 +9,8 @@ Resultado: **142 de 142 itens ✅** — checklist completa.
 |---|---|---|
 | ✅ | Tipos conferidos (astro check) e build sem erro |  |
 | ✅ | Testes unitários das regras (Vitest) passam | 177 testes |
-| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 408 KB em 10 arquivos; maiores: / 206 KB, /marca/sc-logo.webp 52 KB, /assets/sol.CJgAvoiE.js 44 KB |
-| ✅ | Todo link interno leva a uma seção que existe | 7 destinos conferidos |
+| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 346 KB em 11 arquivos; maiores: / 165 KB, /marca/sc-logo.webp 52 KB, /assets/sol.CJgAvoiE.js 44 KB |
+| ✅ | Todo link interno leva a uma seção que existe | 6 destinos conferidos |
 | ✅ | Todo WhatsApp usa wa.me/5546991331306 com mensagem preenchida | 1 links |
 | ✅ | Todo botão de WhatsApp mostra o ícone do WhatsApp |  |
 | ✅ | WhatsApp da equipe só na seção "Fale com a SC" |  |
@@ -33,11 +33,11 @@ Resultado: **142 de 142 itens ✅** — checklist completa.
 | ✅ | Sem rolagem horizontal em 1440 px |  |
 | ✅ | "Reduzir movimento": nenhuma animação contínua roda | 0 animações contínuas |
 | ✅ | "Reduzir movimento": todo conteúdo aparece sem animação | 0 blocos escondidos |
-| ✅ | Sem JavaScript o conteúdo aparece e os contatos funcionam (botões de venda levam a "Fale com a SC") | {"planos":5,"duvidas":7,"escondidos":0,"vendas":10,"whatsContato":true,"solEscondida":true} |
+| ✅ | Sem JavaScript o conteúdo aparece e os contatos funcionam (botões de venda levam a "Fale com a SC") | {"planos":5,"duvidas":7,"escondidos":0,"vendas":9,"whatsContato":true,"solEscondida":true} |
 | ✅ | Rodapé tem link para a Política de privacidade |  |
 | ✅ | /privacidade/ abre com as 9 seções, sem erro no console e sem rolagem lateral | 9 seções; erros: 0; sobra 0 px |
-| ✅ | Buscadores: robots.txt aponta o sitemap, e o sitemap lista todas as páginas | páginas: /, /casa/, /comercio/, /condominio/, /empresa/, /privacidade/; no sitemap: /, /casa/, /comercio/, /condominio/, /empresa/, /privacidade/ |
-| ✅ | Buscadores: /sitemap.xml existe e é igual ao sitemap-0.xml (endereço que o Search Console sugere) | 667 bytes |
+| ✅ | Buscadores: robots.txt aponta o sitemap, e o sitemap lista todas as páginas | páginas: /, /casa/, /comercio/, /condominio/, /empresa/, /monte-seu-sistema/, /privacidade/; no sitemap: /, /casa/, /comercio/, /condominio/, /empresa/, /monte-seu-sistema/, /privacidade/ |
+| ✅ | Buscadores: /sitemap.xml existe e é igual ao sitemap-0.xml (endereço que o Search Console sugere) | 733 bytes |
 
 ## Buscadores
 
@@ -56,8 +56,7 @@ Resultado: **142 de 142 itens ✅** — checklist completa.
 | | Item | Detalhe |
 |---|---|---|
 | ✅ | Os 4 ambientes trocam a cena e os rótulos | 4/4 |
-| ✅ | Os 4 cenários do "E se…?" mudam a cena e o texto |  |
-| ✅ | Em "Faltou energia" o nobreak pode ser ligado | off → reserva |
+| ✅ | Inicial enxuta: sem "E se…?", faixa de serviços, configurador, "Personalize" e Área do cliente; botão leva a /monte-seu-sistema/ | {"ese":false,"faixa":false,"monte":false,"cliente":false,"personalize":false,"botaoMonte":"/monte-seu-sistema/"} |
 | ✅ | "A partir de R$ 49,90/mês" visível sem rolar em 1440 px | fim do bloco em 883 de 900 px |
 | ✅ | "A partir de R$ 49,90/mês" visível sem rolar em 390 px | fim do bloco em 683 de 768 px |
 
@@ -71,18 +70,23 @@ Resultado: **142 de 142 itens ✅** — checklist completa.
 | ✅ | Cada plano mostra a taxa de instalação (1 mensalidade) e nada diz que a instalação é grátis | 5/5 |
 | ✅ | Condições contratuais ficam no contrato (sem prazo mínimo, multa ou cobranças extras no site) |  |
 | ✅ | "Quero este plano" abre a Sol com o plano (orbe, sem WhatsApp; sem JavaScript leva a "Fale com a SC") | 5/5 |
+| ✅ | "Ver no configurador" leva à página /monte-seu-sistema/ com a quantidade de câmeras do plano | 5/5 |
 | ✅ | Abas de proposta funcionam (clique e setas do teclado) |  |
 
-## Tela 3 · Configurador
+## Tela 3 · Configurador (/monte-seu-sistema/)
 
 | | Item | Detalhe |
 |---|---|---|
+| ✅ | Página do configurador: um título principal, WhatsApp só em "Fale com a SC", sem âncora quebrada, sem erro e sem condição contratual ou "instalação inclusa" | {"h1":1,"whatsFora":0,"whatsDentro":1,"ancorasQuebradas":[],"erros":[]} |
 | ✅ | Tocar na planta adiciona câmera; tocar na câmera remove |  |
 | ✅ | Pontos sugeridos funcionam no teclado |  |
 | ✅ | Plano calculado: 1-4 exato, 5-7 → 8 com proposta, 8 exato, 9+ proposta |  |
+| ✅ | ?cameras=4 já chega com as 4 câmeras do plano marcadas | 4 câmeras; exato:4 |
 | ✅ | Cabo estimado × incluso atualiza e avisa quando passa do limite | Cabo estimado≈ 61 m de 80 m inclusos |
 | ✅ | Mensagem para a Sol leva ambiente, quantidade, pontos, plano, valor e recursos | Olá! Montei meu sistema no site da SC. / Ambiente: Casa / Câmeras: 8 (entrada principal, garagem e portão, fundos / quintal, lateral esquerda, fundos / quintal  |
 | ✅ | Condomínio vai para proposta personalizada |  |
+| ✅ | ?ambiente=condominio abre o configurador no condomínio (link da aba Condomínio) | true |
+| ✅ | Link antigo /#monte leva a /monte-seu-sistema/ | http://127.0.0.1:56738/monte-seu-sistema/ |
 
 ## Tela 4 · Como funciona
 
@@ -91,14 +95,13 @@ Resultado: **142 de 142 itens ✅** — checklist completa.
 | ✅ | Linha do tempo acende etapa por etapa | 0 → 1 → 2 → 3 → 4 → 4 → 5 |
 | ✅ | 7 perguntas; a busca "celular" mostra a resposta certa | Consigo ver as câmeras pelo celular? |
 | ✅ | Busca sem resultado oferece perguntar para a Sol (sem WhatsApp) |  |
-| ✅ | Área do cliente identificada como exemplo ("em breve") |  |
 
 ## Tela 5 · Celular
 
 | | Item | Detalhe |
 |---|---|---|
 | ✅ | Planos em carrossel com encaixe e indicador que acompanha | x mandatory; indicador 4 → 8 |
-| ✅ | Barra fixa muda conforme a seção | contato → plano → configurador → contato (escondida) |
+| ✅ | Barra fixa muda conforme a seção (inicial e configurador) | contato → plano → contato (escondida) → configurador |
 | ✅ | Barra fixa sem WhatsApp: fica a Sol |  |
 | ✅ | Menu do celular abre e fecha (também com Esc) |  |
 
@@ -150,7 +153,7 @@ Resultado: **142 de 142 itens ✅** — checklist completa.
 | ✅ | Celular: maquete no alto da tela, sem rolagem lateral, toques ≥ 44 px e sem erros | {"sobra":0,"alturaPalco":354,"pequenos":[],"erros":[]} |
 | ✅ | Condomínio sem 3D: imagem da maquete, os 8 capítulos e o contato; controles da maquete escondidos | {"imagem":true,"capitulos":8,"so3d":0,"canvas":false,"contato":true} |
 | ✅ | Condomínio sem JavaScript: imagem da maquete, os 8 capítulos e o contato; controles da maquete escondidos | {"imagem":true,"capitulos":8,"so3d":0,"canvas":false,"contato":true} |
-| ✅ | Inicial leva às páginas 3D: convite na abertura (um por ambiente), aba dos planos, configurador e menu "Soluções" | {"escondidoAntes":true,"linkAbertura":"/condominio/","planos":true,"configurador":true,"menu":true} |
+| ✅ | Inicial leva às páginas 3D: convite na abertura (um por ambiente), aba dos planos e menu "Soluções"; o configurador também | {"escondidoAntes":true,"linkAbertura":"/condominio/","planos":true,"menu":true,"configurador":true} |
 
 ## Casa, Comércio e Empresa · maquetes 3D
 
@@ -195,6 +198,7 @@ Resultado: **142 de 142 itens ✅** — checklist completa.
 | ✅ | /privacidade/: nenhuma violação de acessibilidade (computador e celular) |  |
 | ✅ | /condominio/: nenhuma violação de acessibilidade (computador e celular) |  |
 | ✅ | Página 404: nenhuma violação de acessibilidade (computador e celular) |  |
+| ✅ | /monte-seu-sistema/: nenhuma violação de acessibilidade (computador e celular) |  |
 | ✅ | /casa/: nenhuma violação de acessibilidade (computador e celular) |  |
 | ✅ | /comercio/: nenhuma violação de acessibilidade (computador e celular) |  |
 | ✅ | /empresa/: nenhuma violação de acessibilidade (computador e celular) |  |

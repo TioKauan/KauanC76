@@ -1,5 +1,5 @@
 ---
-/** Tela 3: configurador "Monte seu sistema". Interação em src/scripts/configurador.ts; regras em src/lib/configurador-logica.ts. */
+/** Configurador "Monte seu sistema" (página /monte-seu-sistema/ desde 17/10/2026). Interação em src/scripts/configurador.ts; regras em src/lib/configurador-logica.ts. */
 import Icone from './Icone.astro';
 import { upgrades } from '../lib/dados';
 import { ambientesConfig, sistemasCondominio } from '../lib/configurador-dados';
@@ -15,7 +15,7 @@ const msgInicial = mensagemInicial('casa');
     <div class="cabeca-secao" data-revelar>
       <div>
         <p class="sobretitulo">Monte seu sistema</p>
-        <h2 class="titulo-secao" id="monte-titulo">Marque o que você quer proteger.<br /><span class="destaque">A SC dimensiona o resto.</span></h2>
+        <h1 class="titulo-secao" id="monte-titulo">Marque o que você quer proteger.<br /><span class="destaque">A SC dimensiona o resto.</span></h1>
       </div>
       <ol class="passos" aria-label="Etapas">
         <li data-passo="ambiente" data-estado="feito"><span>1</span>Ambiente</li>

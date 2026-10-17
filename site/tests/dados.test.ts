@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { planos, contato, empresa, planoParaCameras, formatarPreco, linkWhatsapp, mensagemPlano, nomePlano, menorPreco, duvidas, condicoes, porQueLocar, servicosProposta, textoProposta, etapas, taxaInstalacao, textoTaxaInstalacao } from '../src/lib/dados';
+import { planos, contato, empresa, planoParaCameras, formatarPreco, linkWhatsapp, mensagemPlano, nomePlano, menorPreco, duvidas, condicoes, servicosProposta, textoProposta, etapas, taxaInstalacao, textoTaxaInstalacao } from '../src/lib/dados';
 
 describe('planos de locação', () => {
   it('são os planos fixos de 1, 2, 3, 4 e 8 câmeras, em ordem', () => {
@@ -78,9 +78,9 @@ describe('textos e contato', () => {
   });
 
   it('condições contratuais (prazo, multa, cobranças extras, reajuste) ficam no contrato, não no site', () => {
-    const tudo = JSON.stringify({ condicoes, duvidas, porQueLocar, servicosProposta, textoProposta });
+    const tudo = JSON.stringify({ condicoes, duvidas, servicosProposta, textoProposta });
     expect(tudo).not.toMatch(/prazo mínimo|24 meses|multa|IPCA|valor de reposição|desistência|central de monitoramento/i);
-    expect(condicoes.map((c) => c.titulo)).toEqual(['Assinatura eletrônica', 'Taxa de instalação', 'Mensalidades na ativação', 'Pagamento mensal']);
+    expect(condicoes.map((c) => c.titulo)).toEqual(['Sem comprar equipamentos', 'Defeito natural? A SC resolve', 'Taxa de instalação', 'Contrato e pagamento pelo celular']);
   });
 
   it('taxa de instalação = 1 mensalidade do plano, e nenhum texto diz que a instalação é grátis', () => {
@@ -88,7 +88,7 @@ describe('textos e contato', () => {
       expect(taxaInstalacao(p)).toBe(p.preco);
       expect(textoTaxaInstalacao(p)).toBe(`R$ ${formatarPreco(p.preco)}`);
     }
-    const tudo = JSON.stringify({ condicoes, duvidas, porQueLocar, etapas });
+    const tudo = JSON.stringify({ condicoes, duvidas, etapas });
     expect(tudo).not.toMatch(/instalação (padrão )?(está )?inclu[sí]|sem investimento inicial|sem pagar antes/i);
     expect(tudo).toMatch(/Valor de 1 mensalidade do plano, pago antecipadamente/);
   });

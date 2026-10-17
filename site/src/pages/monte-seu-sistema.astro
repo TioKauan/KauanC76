@@ -1,0 +1,36 @@
+---
+/**
+ * "Monte seu sistema" em página própria (17/10/2026, pedido do Kauan para deixar a inicial
+ * mais curta). Os planos levam a quantidade de câmeras (?cameras=4) e a aba Condomínio leva
+ * ?ambiente=condominio; quem lê é src/scripts/configurador.ts.
+ */
+import Base from '../layouts/Base.astro';
+import Cabecalho from '../components/Cabecalho.astro';
+import Configurador from '../components/Configurador.astro';
+import ContatoFinal from '../components/ContatoFinal.astro';
+import Rodape from '../components/Rodape.astro';
+import BarraFixa from '../components/BarraFixa.astro';
+import '../styles/configurador.css';
+import Sol from '../components/Sol.astro';
+import { empresa } from '../lib/dados';
+import { separarCidade } from '../lib/buscadores';
+---
+
+<Base
+  titulo={`Monte seu sistema de câmeras | ${empresa.nome}, ${separarCidade(empresa.cidade).municipio}`}
+  descricao="Marque na planta da casa, do comércio ou da empresa onde quer as câmeras e veja o plano de locação indicado. A SC confirma os pontos na visita técnica."
+  tituloSocial={`Monte seu sistema | ${empresa.nome}`}
+  descricaoSocial="Marque onde quer as câmeras e veja o plano indicado."
+>
+  <Cabecalho naInicial={false} />
+  <main id="conteudo">
+    <Configurador />
+    <ContatoFinal />
+  </main>
+  <Rodape naInicial={false} />
+  <BarraFixa />
+  <Sol />
+  <script>
+    import '../scripts/main';
+  </script>
+</Base>

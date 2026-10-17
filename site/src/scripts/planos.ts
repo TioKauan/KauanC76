@@ -1,6 +1,4 @@
 import { exigir, todos } from './dom';
-import type { PedidoConfigurar } from './configurador';
-import type { AmbienteConfigId } from '../lib/configurador-dados';
 
 /** Abas de solução, carrossel do celular e atalhos para o configurador. */
 export function iniciarPlanos(): void {
@@ -25,10 +23,6 @@ export function iniciarPlanos(): void {
         selecionar(destino, true);
       }
     });
-  });
-  document.addEventListener('sc:abrir-aba', (e) => {
-    const guia = document.getElementById(`guia-${(e as CustomEvent<string>).detail}`);
-    if (guia instanceof HTMLButtonElement) selecionar(guia);
   });
 
   // Carrossel: o plano "visível" é o mais perto do centro; pontos e barra fixa acompanham.
@@ -66,11 +60,4 @@ export function iniciarPlanos(): void {
     if (destaque) centralizar(destaque, 'instant');
     conferirCentro();
   }
-
-  // "Ver no configurador" leva a quantidade de câmeras (ou o condomínio) para a Tela 3.
-  const configurar = (pedido: PedidoConfigurar) => document.dispatchEvent(new CustomEvent<PedidoConfigurar>('sc:configurar', { detail: pedido }));
-  todos<HTMLAnchorElement>('[data-configurar]').forEach((link) => link.addEventListener('click', () => configurar({ cameras: Number(link.dataset.configurar) })));
-  todos<HTMLAnchorElement>('[data-configurar-ambiente]').forEach((link) =>
-    link.addEventListener('click', () => configurar({ ambiente: link.dataset.configurarAmbiente as AmbienteConfigId })),
-  );
 }

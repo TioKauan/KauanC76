@@ -1,12 +1,15 @@
 ---
-/** Tela 1: abertura com a cena viva de cada ambiente e o "E se…?". Interação em src/scripts/abertura.ts. */
+/**
+ * Tela 1: abertura com a cena viva de cada ambiente. Interação em src/scripts/abertura.ts.
+ * Desde 17/10/2026 a inicial ficou mais enxuta: o "E se…?" mora nas páginas 3D e a faixa de
+ * serviços saiu (as abas dos planos já levam a Redes, Alarme, Condomínio e Nobreak).
+ */
 import Icone from './Icone.astro';
 import { cenas } from '../lib/cenas';
-import { ambientes, situacoes, sistemas, estadoCena, type SistemaId } from '../lib/cenarios';
+import { ambientes, sistemas, estadoCena, type SistemaId } from '../lib/cenarios';
 import { formatarPreco, menorPreco, mostrarPrecos, rotuloTaxa } from '../lib/dados';
 
 const f = (n: number) => n.toFixed(2);
-const inicial = estadoCena('casa', 'normal', false);
 const precoMenor = `R$ ${formatarPreco(menorPreco)}`;
 
 // Cada ambiente: SVG gerado no build + posição dos rótulos em % do desenho (760 × 600).
@@ -31,13 +34,6 @@ const palcos = ambientes.map((a) => {
   return { id: a.id, svg: cena.svg, rotulos };
 });
 
-const servicos = [
-  { aba: null, icone: 'cctv', titulo: 'Locação de câmeras', sub: 'Planos de 1 a 8 câmeras' },
-  { aba: 'redes', icone: 'network', titulo: 'Redes gerenciadas', sub: 'Wi-Fi e cabeamento' },
-  { aba: 'condominio', icone: 'scan-face', titulo: 'Controle de acesso', sub: 'Facial, biometria, vídeo porteiro' },
-  { aba: 'alarme', icone: 'bell-ring', titulo: 'Alarme pelo app', sub: 'Integrado às câmeras' },
-  { aba: 'nobreak', icone: 'battery-charging', titulo: 'Energia e nobreak', sub: 'Continuidade dos sistemas' },
-] as const;
 // Convites para as páginas com maquete 3D (o primeiro chip, "Casa", vem escolhido).
 const convites = [
   { id: 'casa', href: '/casa/', titulo: 'Veja uma casa em 3D, câmera por câmera', sub: 'O que cada câmera enxerga, do portão ao quintal, e o plano ideal' },
@@ -62,7 +58,7 @@ const convites = [
           <span class="so-celular">{mostrarPrecos ? `Ver planos a partir de ${precoMenor}` : 'Ver planos de locação'}</span>
           <Icone nome="arrow-right" tamanho={18} traco={2} />
         </a>
-        <a class="btn btn-contorno btn-g" href="#monte"><Icone nome="mouse-pointer-click" tamanho={18} /> Monte seu sistema</a>
+        <a class="btn btn-contorno btn-g" href="/monte-seu-sistema/"><Icone nome="mouse-pointer-click" tamanho={18} /> Monte seu sistema</a>
       </div>
       <div class="ambientes" role="group" aria-label="Veja no seu ambiente">
         <span class="ambientes-rotulo">Veja no seu ambiente:</span>
@@ -116,44 +112,7 @@ const convites = [
         }
       </div>
 
-      <div class="ese" role="group" aria-labelledby="ese-titulo">
-        <div class="ese-cabeca">
-          <div class="ese-topo"><h2 id="ese-titulo">E se…?</h2><span class="ese-selo">Simulação</span></div>
-          <div class="ese-opcoes" role="group" aria-label="Situações para simular">
-            {
-              situacoes.map((s, i) => (
-                <button type="button" class="ese-opcao" data-situacao={s.id} aria-pressed={i === 0 ? 'true' : 'false'}>
-                  <Icone nome={s.icone} tamanho={18} /><span>{s.nome}</span>
-                </button>
-              ))
-            }
-          </div>
-        </div>
-        <div class="ese-corpo">
-          <div class="ese-resultado" aria-live="polite">
-            <p class="ese-titulo-resultado" data-ese-titulo>{inicial.titulo}</p>
-            <p class="ese-explicacao" data-ese-explicacao>{inicial.explicacao}</p>
-            <p class="ese-condicao" data-ese-condicao>{inicial.condicao}</p>
-          </div>
-          <label class="ese-reserva" hidden>
-            <input type="checkbox" data-reserva />
-            <span class="interruptor" aria-hidden="true"></span>
-            <span><b>Com nobreak</b><small>Para câmeras, rede, gravador e acesso</small></span>
-          </label>
-        </div>
-      </div>
     </div>
-  </div>
-
-  <div class="wrap faixa-servicos" data-revelar>
-    {
-      servicos.map((s) => (
-        <a href="#planos" data-abrir-aba={s.aba ?? undefined}>
-          <Icone nome={s.icone} tamanho={26} traco={1.4} />
-          <span>{s.titulo}<small>{s.sub}</small></span>
-        </a>
-      ))
-    }
   </div>
 </section>
 <div class="fio" aria-hidden="true"></div>

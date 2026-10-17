@@ -1,16 +1,10 @@
 ---
-/** Tela 4: linha do tempo, dúvidas com busca e área do cliente (exemplo). Interação em src/scripts/como-funciona.ts. */
+/** Tela 4: linha do tempo e dúvidas com busca. Interação em src/scripts/como-funciona.ts. (A "Área do cliente" de exemplo saiu em 17/10/2026.) */
 import Icone from './Icone.astro';
 import { etapas, duvidas } from '../lib/dados';
 
 // A dúvida mais comum começa aberta (mesma do mockup).
 const abertaNoInicio = duvidas.findIndex((d) => d.pergunta.startsWith('Quantos dias'));
-const acompanhamento = [
-  { estado: 'feito', icone: 'check', titulo: 'Avaliação do local', sub: 'Pontos e cabeamento confirmados', rotulo: 'concluído' },
-  { estado: 'feito', icone: 'check', titulo: 'Contrato assinado', sub: 'Pela ZapSign', rotulo: 'concluído' },
-  { estado: 'agora', icone: 'calendar-check', titulo: 'Instalação agendada', sub: 'Data e horário combinados', rotulo: 'próximo' },
-  { estado: null, icone: 'smartphone', titulo: 'Sistema ativado', sub: 'App configurado no seu celular', rotulo: '' },
-] as const;
 ---
 
 <section class="secao como-funciona" id="como-funciona" aria-labelledby="como-titulo">
@@ -64,35 +58,6 @@ const acompanhamento = [
             <span class="sol-orbe sol-orbe-p" aria-hidden="true"></span> Perguntar para a Sol
           </button>
         </div>
-      </div>
-
-      <div class="cartao cliente" role="group" aria-labelledby="cliente-titulo">
-        <span class="selo selo-ciano cliente-selo">Em breve · exemplo</span>
-        <p class="cliente-k">Área do cliente</p>
-        <h3 id="cliente-titulo">Acompanhe seu pedido pelo celular.</h3>
-        <p class="cliente-sub">Um link pessoal, enviado pelo WhatsApp, vai mostrar em que etapa está a sua instalação. Veja como vai ficar:</p>
-        <div class="cliente-previa" role="group" aria-label="Exemplo ilustrativo da área do cliente">
-          <p class="cliente-plano">Plano de 4 câmeras</p>
-          <ol class="acompanha">
-            {
-              acompanhamento.map((a) => (
-                <li data-estado={a.estado ?? undefined}>
-                  <span class="bolinha"><Icone nome={a.icone} tamanho={13} traco={a.icone === 'check' ? 3 : 1.75} /></span>
-                  <div><b>{a.titulo}</b><small>{a.sub}</small></div>
-                  <em>{a.rotulo}</em>
-                </li>
-              ))
-            }
-          </ol>
-          <div class="cliente-equip">
-            <span><Icone nome="cctv" tamanho={15} /> 4 câmeras</span>
-            <span><Icone nome="hard-drive" tamanho={15} /> Gravador 4 canais</span>
-            <span><Icone nome="shield-check" tamanho={15} /> Manutenção ativa</span>
-          </div>
-        </div>
-        <a class="btn btn-contorno cliente-cta" href="#contato">
-          <Icone nome="headset" tamanho={17} /> Já é cliente? Peça suporte
-        </a>
       </div>
     </div>
   </div>

@@ -108,7 +108,7 @@ const onde = ambiente === 'casa' ? 'a minha casa' : ambiente === 'comercio' ? 'o
           <span class="sol-orbe sol-orbe-p" aria-hidden="true"></span> Quero este plano<span class="sr" data-plano-cta-sr> ({nomePlano(inicial.plano)}, abre o chat da Sol)</span>
         </a>
         <div class="plano-cartao-links">
-          <a href="/#monte"><Icone nome="mouse-pointer-click" tamanho={15} /> Marcar os pontos no Monte seu sistema</a>
+          <a href={`/monte-seu-sistema/?ambiente=${ambiente}`}><Icone nome="mouse-pointer-click" tamanho={15} /> Marcar os pontos no Monte seu sistema</a>
           <a href="/#planos" data-sem-js-planos>Ver todos os planos <Icone nome="arrow-right" tamanho={14} /></a>
         </div>
       </div>

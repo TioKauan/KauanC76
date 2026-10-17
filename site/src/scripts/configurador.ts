@@ -271,9 +271,8 @@ export function iniciarConfigurador(): void {
     }
   });
 
-  // Vindo de um plano ("Ver no configurador") ou da aba Condomínio.
-  document.addEventListener('sc:configurar', (e) => {
-    const { cameras, ambiente } = (e as CustomEvent<PedidoConfigurar>).detail;
+  // Vindo de um plano ("Ver no configurador", ?cameras=4) ou da aba Condomínio (?ambiente=condominio).
+  const configurar = ({ cameras, ambiente }: PedidoConfigurar) => {
     if (ambiente) return trocarAmbiente(ambiente);
     if (estado.ambiente === 'condominio') trocarAmbiente('casa');
     const p = planta();
@@ -283,9 +282,14 @@ export function iniciarConfigurador(): void {
       if (s) estado.cameras.push({ id: proximoId++, x: s.x, y: s.y, angulo: s.angulo, nome: nomeEm(s.nome, estado.ambiente), sugestao: s.id });
     }
     desenhar();
-  });
+  };
 
   desenhar();
+  const pedido = new URLSearchParams(location.search);
+  const ambientePedido = ambientesConfig.find((a) => a.id === pedido.get('ambiente'))?.id;
+  const camerasPedidas = Number(pedido.get('cameras'));
+  if (ambientePedido) configurar({ ambiente: ambientePedido });
+  if (camerasPedidas > 0) configurar({ cameras: camerasPedidas });
   // No celular a planta fica maior que a tela: começa centralizada.
   const caixaPlanta = el('[data-planta-caixa]');
   if (caixaPlanta.scrollWidth > caixaPlanta.clientWidth) caixaPlanta.scrollLeft = (caixaPlanta.scrollWidth - caixaPlanta.clientWidth) / 2;

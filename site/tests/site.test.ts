@@ -18,6 +18,7 @@ describe('links do menu entre páginas', () => {
   it('o menu "Soluções" leva às quatro páginas com maquete', () => {
     expect(solucoes.map((s) => s.href)).toEqual(['/casa/', '/comercio/', '/empresa/', '/condominio/']);
     expect(links.some((l) => 'grupo' in l && l.itens === solucoes)).toBe(true);
-    expect(secoes.every((s) => s.href.startsWith('#'))).toBe(true);
+    // Fora do grupo, só seções da inicial e o configurador, que tem página própria desde 17/10/2026.
+    expect(secoes.every((s) => s.href.startsWith('#') || s.href === '/monte-seu-sistema/')).toBe(true);
   });
 });

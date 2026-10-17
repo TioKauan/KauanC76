@@ -3,14 +3,12 @@ import Base from '../layouts/Base.astro';
 import Cabecalho from '../components/Cabecalho.astro';
 import Abertura from '../components/Abertura.astro';
 import Planos from '../components/Planos.astro';
-import Configurador from '../components/Configurador.astro';
 import ComoFunciona from '../components/ComoFunciona.astro';
 import ContatoFinal from '../components/ContatoFinal.astro';
 import Rodape from '../components/Rodape.astro';
 import BarraFixa from '../components/BarraFixa.astro';
 import '../styles/abertura.css';
 import '../styles/planos.css';
-import '../styles/configurador.css';
 import '../styles/como-funciona.css';
 // Depois dos estilos das seções, na mesma ordem de antes (o sol.css vem com o componente).
 import Sol from '../components/Sol.astro';
@@ -27,11 +25,12 @@ const aPartir = mostrarPrecos ? ` a partir de R$ ${formatarPreco(menorPreco)}/m�
   descricaoSocial="Planos de locação de câmeras com instalação, gravação local e imagens no celular."
   dadosEstruturados={dadosEstruturados()}
 >
+  <!-- O configurador virou página própria em 17/10/2026: links antigos para /#monte vão para lá. -->
+  <script is:inline>if (location.hash === '#monte') location.replace('/monte-seu-sistema/');</script>
   <Cabecalho />
   <main id="conteudo">
     <Abertura />
     <Planos />
-    <Configurador />
     <ComoFunciona />
     <ContatoFinal />
   </main>

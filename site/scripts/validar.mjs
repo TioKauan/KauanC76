@@ -196,14 +196,14 @@ for (const largura of [360, 390, 768, 1024, 1440]) {
     planos: document.querySelectorAll('.plano').length,
     duvidas: document.querySelectorAll('[data-pergunta]').length,
     escondidos: [...document.querySelectorAll('[data-revelar]')].filter((el) => getComputedStyle(el).opacity !== '1').length,
-    // Os botões de venda (planos, propostas, configurador) abrem a Sol; sem JavaScript, levam a "Fale com a SC".
+    // Os botões de venda (planos e propostas; o configurador tem página própria desde 17/10/2026) abrem a Sol; sem JavaScript, levam a "Fale com a SC".
     vendas: [...document.querySelectorAll('a[data-sol-abrir]')].filter((a) => a.getAttribute('href') === '#contato' && getComputedStyle(a).display !== 'none').length,
     whatsContato: Boolean(document.querySelector('#contato a[href*="wa.me"]')),
     // O chat depende de JavaScript: sem ele, nem o botão da Sol aparece.
     solEscondida: document.querySelector('[data-sol]').hidden && [...document.querySelectorAll('button[data-sol-abrir]')].every((b) => b.hidden && getComputedStyle(b).display === 'none'),
   }));
   conferir('Sem JavaScript o conteúdo aparece e os contatos funcionam (botões de venda levam a "Fale com a SC")',
-    semJs.planos === 5 && semJs.duvidas === 7 && semJs.escondidos === 0 && semJs.vendas === 10 && semJs.whatsContato && semJs.solEscondida, JSON.stringify(semJs));
+    semJs.planos === 5 && semJs.duvidas === 7 && semJs.escondidos === 0 && semJs.vendas === 9 && semJs.whatsContato && semJs.solEscondida, JSON.stringify(semJs));
   await contexto.close();
 }
 
@@ -306,7 +306,7 @@ grupo('Buscadores');
       sol: Boolean(document.querySelector('.sol[data-chegou], [data-sol]')),
     }));
     conferir(`Endereço inexistente: responde 404 com a página "não encontrada" e caminhos para o site (${largura} px)`,
-      resposta.status() === 404 && r.titulo?.includes('não existe') && r.caminhos.join(' ') === '/#planos /#monte /condominio/ /#duvidas'
+      resposta.status() === 404 && r.titulo?.includes('não existe') && r.caminhos.join(' ') === '/#planos /monte-seu-sistema/ /condominio/ /#duvidas'
         && r.relativos.length === 0 && r.ancorasQuebradas.length === 0 && r.whatsFora === 0 && r.estilos && r.sol && r.sobra <= 0
         && falhas.length === 0 && outrosErros.length === 0,
       `status ${resposta.status()}; relativos: ${r.relativos.join(' ') || 0}; âncoras quebradas: ${r.ancorasQuebradas.join(' ') || 0}; WhatsApp fora do contato: ${r.whatsFora}; sobra ${r.sobra} px; arquivos que falharam: ${falhas.join(' ') || 0}; erros: ${outrosErros.slice(0, 1).join('') || 0}`);
@@ -327,18 +327,17 @@ grupo('Tela 1 · Abertura');
   }
   conferir('Os 4 ambientes trocam a cena e os rótulos', ambientes.length === 4 && trocas === 4, `${trocas}/4`);
 
-  await pagina.click('.ambientes .chip[data-ambiente="casa"]');
-  const titulos = new Set();
-  for (const s of ['normal', 'energia', 'internet', 'visita']) {
-    await pagina.click(`[data-situacao="${s}"]`);
-    titulos.add(await pagina.textContent('[data-ese-titulo]'));
-  }
-  conferir('Os 4 cenários do "E se…?" mudam a cena e o texto', titulos.size === 4);
-  await pagina.click('[data-situacao="energia"]');
-  const antes = await pagina.$eval('.cena-ambiente[data-ambiente="casa"] .no[data-sistema="cameras"]', (n) => n.dataset.estado);
-  await pagina.click('.ese-reserva');
-  const depois = await pagina.$eval('.cena-ambiente[data-ambiente="casa"] .no[data-sistema="cameras"]', (n) => n.dataset.estado);
-  conferir('Em "Faltou energia" o nobreak pode ser ligado', antes === 'off' && depois === 'reserva', `${antes} → ${depois}`);
+  // Inicial enxuta (17/10/2026): o "E se…?" e a faixa de serviços ficam fora da inicial; o "E se…?" segue nas páginas 3D.
+  const enxuta = await pagina.evaluate(() => ({
+    ese: Boolean(document.querySelector('#inicio .ese, #inicio [data-situacao]')),
+    faixa: Boolean(document.querySelector('.faixa-servicos')),
+    monte: Boolean(document.querySelector('#monte')),
+    cliente: Boolean(document.querySelector('.cliente')),
+    personalize: Boolean(document.querySelector('.upgrades, .por-que')),
+    botaoMonte: document.querySelector('.abertura-acoes a.btn-contorno')?.getAttribute('href'),
+  }));
+  conferir('Inicial enxuta: sem "E se…?", faixa de serviços, configurador, "Personalize" e Área do cliente; botão leva a /monte-seu-sistema/',
+    !enxuta.ese && !enxuta.faixa && !enxuta.monte && !enxuta.cliente && !enxuta.personalize && enxuta.botaoMonte === '/monte-seu-sistema/', JSON.stringify(enxuta));
   await contexto.close();
 
   for (const largura of [1440, 390]) {
@@ -385,6 +384,8 @@ grupo('Tela 2 · Planos');
   const ctas = cartoes.filter((c) => c.cta.abreSol && c.cta.href === '#contato' && c.cta.plano === String(c.n) && c.cta.orbe && !c.cta.whats
     && c.cta.msg === `Quero o plano de ${c.n} ${c.n > 1 ? 'câmeras' : 'câmera'}`);
   conferir('"Quero este plano" abre a Sol com o plano (orbe, sem WhatsApp; sem JavaScript leva a "Fale com a SC")', ctas.length === 5, `${ctas.length}/5`);
+  const simular = await pagina.$$eval('.plano', (els) => els.filter((e) => e.querySelector('.plano-simular')?.getAttribute('href') === `/monte-seu-sistema/?cameras=${e.dataset.plano}`).length);
+  conferir('"Ver no configurador" leva à página /monte-seu-sistema/ com a quantidade de câmeras do plano', simular === 5, `${simular}/5`);
   await pagina.click('#guia-redes');
   const aba = await pagina.evaluate(() => ({ redes: !document.getElementById('aba-redes').hidden, cameras: !document.getElementById('aba-cameras').hidden }));
   await pagina.focus('#guia-redes');
@@ -395,9 +396,20 @@ grupo('Tela 2 · Planos');
 }
 
 /* ---------- 5. Tela 3 ---------- */
-grupo('Tela 3 · Configurador');
+grupo('Tela 3 · Configurador (/monte-seu-sistema/)');
 {
-  const { pagina, contexto } = await abrir(1440);
+  const { pagina, contexto, erros } = await abrir(1440, {}, 'monte-seu-sistema/');
+  const geral = await pagina.evaluate(() => ({
+    h1: document.querySelectorAll('h1').length,
+    whatsFora: [...document.querySelectorAll('a[href*="wa.me"]')].filter((a) => !a.closest('#contato')).length,
+    whatsDentro: document.querySelectorAll('#contato a[href*="wa.me"]').length,
+    ancorasQuebradas: [...document.querySelectorAll('a[href^="#"]')].map((a) => a.getAttribute('href')).filter((h) => h.length > 1 && !document.querySelector(h)),
+    texto: document.body.textContent,
+  }));
+  conferir('Página do configurador: um título principal, WhatsApp só em "Fale com a SC", sem âncora quebrada, sem erro e sem condição contratual ou "instalação inclusa"',
+    geral.h1 === 1 && geral.whatsFora === 0 && geral.whatsDentro > 0 && geral.ancorasQuebradas.length === 0 && erros.length === 0
+      && !/prazo mínimo|24 meses|multa|IPCA|valor de reposição|desistência|instalação (padrão )?(está )?inclu[sí]|sem investimento inicial/i.test(geral.texto),
+    JSON.stringify({ ...geral, texto: undefined, erros: erros.slice(0, 1) }));
   await pagina.locator('#monte').scrollIntoViewIfNeeded();
   const clicarPlanta = (x, y) => pagina.evaluate(([px, py]) => {
     const s = document.querySelector('[data-planta]'); const r = s.getBoundingClientRect(); const k = r.width / 818;
@@ -429,9 +441,11 @@ grupo('Tela 3 · Configurador');
   const errados = Object.entries(esperado).filter(([n, v]) => obtido[n] !== v);
   conferir('Plano calculado: 1-4 exato, 5-7 → 8 com proposta, 8 exato, 9+ proposta', errados.length === 0, errados.map(([n]) => `${n}→${obtido[n]}`).join(', '));
 
-  await pagina.click('[data-config-limpar]');
-  await pagina.click('[data-configurar="4"]', { force: true }).catch(() => pagina.evaluate(() => document.querySelector('[data-configurar="4"]').click()));
+  // Vindo do plano de 4 câmeras (/monte-seu-sistema/?cameras=4)
+  await pagina.goto(`${endereco}monte-seu-sistema/?cameras=4`, { waitUntil: 'networkidle' });
   const r4 = await rec();
+  const n4 = await nCameras();
+  conferir('?cameras=4 já chega com as 4 câmeras do plano marcadas', n4 === 4 && r4.tipo === 'exato' && r4.plano === '4', `${n4} câmeras; ${r4.tipo}:${r4.plano}`);
   const excedeAntes = r4.texto.includes('Passa cerca');
   await clicarPlanta(460, 150);
   await pagina.click('[data-camada="cameras"] [data-cam]:last-of-type');
@@ -452,6 +466,12 @@ grupo('Tela 3 · Configurador');
   const cond = await rec();
   const msgCond = await pagina.$eval('[data-mensagem]', (e) => e.textContent);
   conferir('Condomínio vai para proposta personalizada', cond.tipo === 'proposta' && msgCond.includes('Condomínio Evoluído') && msgCond.includes('controle de acesso facial'));
+  await pagina.goto(`${endereco}monte-seu-sistema/?ambiente=condominio`, { waitUntil: 'networkidle' });
+  const viaLink = await pagina.$eval('[data-config-ambiente="condominio"]', (b) => b.getAttribute('aria-pressed'));
+  conferir('?ambiente=condominio abre o configurador no condomínio (link da aba Condomínio)', viaLink === 'true', String(viaLink));
+  // Endereço antigo: /#monte vai para a página nova
+  await pagina.goto(`${endereco}#monte`, { waitUntil: 'networkidle' });
+  conferir('Link antigo /#monte leva a /monte-seu-sistema/', new URL(pagina.url()).pathname === '/monte-seu-sistema/', pagina.url());
   await contexto.close();
 }
 
@@ -473,8 +493,6 @@ grupo('Tela 4 · Como funciona');
   await pagina.fill('[data-busca]', 'xyzabc');
   const semResultado = await pagina.$eval('[data-sem-resultado]', (e) => !e.hidden && !e.querySelector('[data-sol-pergunta]').hidden && !e.querySelector('a[href*="wa.me"]'));
   conferir('Busca sem resultado oferece perguntar para a Sol (sem WhatsApp)', semResultado);
-  const cliente = await pagina.$eval('.cliente', (e) => e.textContent);
-  conferir('Área do cliente identificada como exemplo ("em breve")', /em breve/i.test(cliente) && /exemplo/i.test(cliente));
   await contexto.close();
 }
 
@@ -495,9 +513,12 @@ grupo('Tela 5 · Celular');
   await pagina.waitForTimeout(350);
   const modos = [await modo()];
   await irPara('.planos-trilho'); modos.push(await modo());
-  await irPara('.config-planta'); modos.push(await modo());
   await irPara('.contato-caixa'); modos.push(await modo());
-  conferir('Barra fixa muda conforme a seção', modos.join(',') === 'contato,plano,configurador,contato (escondida)', modos.join(' → '));
+  // O configurador tem página própria desde 17/10/2026: lá a barra mostra o resumo do sistema.
+  await pagina.goto(`${endereco}monte-seu-sistema/`, { waitUntil: 'networkidle' });
+  await irPara('.config-planta'); modos.push(await modo());
+  await pagina.goto(endereco, { waitUntil: 'networkidle' });
+  conferir('Barra fixa muda conforme a seção (inicial e configurador)', modos.join(',') === 'contato,plano,contato (escondida),configurador', modos.join(' → '));
   const barraSemWhats = await pagina.$eval('.barra-fixa', (b) => !b.querySelector('a[href*="wa.me"]') && !b.querySelector('.barra-sol').hidden);
   conferir('Barra fixa sem WhatsApp: fica a Sol', barraSemWhats);
 
@@ -958,10 +979,11 @@ grupo('Condomínio · maquete 3D');
   const linkAbertura = await visiveis();
   const outros = await ini.pagina.evaluate(() => ({
     planos: Boolean(document.querySelector('#aba-condominio a[href="/condominio/"]')),
-    configurador: Boolean(document.querySelector('[data-condominio] a[href="/condominio/"]')),
     menu: ['/casa/', '/comercio/', '/empresa/', '/condominio/'].every((h) => document.querySelector(`.nav-menu a[href="${h}"]`) && document.querySelector(`.menu-celular-solucoes a[href="${h}"]`)),
   }));
-  conferir('Inicial leva às páginas 3D: convite na abertura (um por ambiente), aba dos planos, configurador e menu "Soluções"',
+  await ini.pagina.goto(`${endereco}monte-seu-sistema/`, { waitUntil: 'networkidle' });
+  outros.configurador = await ini.pagina.evaluate(() => Boolean(document.querySelector('[data-condominio] a[href="/condominio/"]')));
+  conferir('Inicial leva às páginas 3D: convite na abertura (um por ambiente), aba dos planos e menu "Soluções"; o configurador também',
     escondidoAntes && linkAbertura === '/condominio/' && outros.planos && outros.configurador && outros.menu, JSON.stringify({ escondidoAntes, linkAbertura, ...outros }));
   await ini.contexto.close();
 }
@@ -1093,7 +1115,7 @@ grupo('Acessibilidade (axe)');
     const r = await new AxeBuilder({ page: pagina }).withTags(regras).analyze();
     for (const v of r.violations) achados.push(`${rotulo}: ${v.id} (${v.nodes.length}) ${v.nodes[0]?.target.join(' ')}`);
   };
-  for (const [caminho, nome] of [['', 'Página inicial'], ['privacidade/', '/privacidade/'], ['condominio/', '/condominio/'], ['nao-existe/', 'Página 404'], ['casa/', '/casa/'], ['comercio/', '/comercio/'], ['empresa/', '/empresa/']]) {
+  for (const [caminho, nome] of [['', 'Página inicial'], ['privacidade/', '/privacidade/'], ['condominio/', '/condominio/'], ['nao-existe/', 'Página 404'], ['monte-seu-sistema/', '/monte-seu-sistema/'], ['casa/', '/casa/'], ['comercio/', '/comercio/'], ['empresa/', '/empresa/']]) {
     const achados = [];
     for (const largura of [1440, 390]) {
       const { pagina, contexto } = await abrir(largura, { reducedMotion: 'reduce' });
@@ -1127,11 +1149,11 @@ if (comFotos) {
   const telas = [
     { n: '01', nome: 'abertura', sel: '#inicio', mock: '01-abertura' },
     { n: '02', nome: 'planos', sel: '#planos', mock: '02-planos' },
-    { n: '03', nome: 'monte-seu-sistema', sel: '#monte', mock: '03-monte-seu-sistema', antes: async (p) => { await p.click('[data-configurar="4"]', { force: true }).catch(() => {}); await p.click('[data-recurso][value="colorida"] ~ .caixinha'); } },
+    { n: '03', nome: 'monte-seu-sistema', sel: '#monte', mock: '03-monte-seu-sistema', caminho: 'monte-seu-sistema/?cameras=4', antes: async (p) => { await p.click('[data-recurso][value="colorida"] ~ .caixinha'); } },
     { n: '04', nome: 'como-funciona', sel: '#como-funciona', mock: '04-como-funciona' },
   ];
   for (const t of telas) {
-    const { pagina, contexto } = await abrir(1440);
+    const { pagina, contexto } = await abrir(1440, {}, t.caminho ?? '');
     await rolarTudo(pagina);
     if (t.antes) await t.antes(pagina);
     await pagina.waitForTimeout(2800);
@@ -1140,10 +1162,9 @@ if (comFotos) {
     await contexto.close();
   }
   for (const [nome, acao] of [['inicio', null], ['planos', '.planos-trilho'], ['configurador', '.config-planta']]) {
-    const { pagina, contexto } = await abrir(390);
+    const { pagina, contexto } = await abrir(390, {}, nome === 'configurador' ? 'monte-seu-sistema/?cameras=4' : '');
     await rolarTudo(pagina);
     if (acao) { await pagina.evaluate((s) => { const el = document.querySelector(s); scrollTo({ top: el.getBoundingClientRect().top + scrollY - 140, behavior: 'instant' }); }, acao); }
-    if (nome === 'configurador') await pagina.evaluate(() => document.querySelector('[data-configurar="4"]').click());
     await pagina.waitForTimeout(900);
     await pagina.screenshot({ path: path.join(pastaFotos, `05-celular-${nome}.png`) });
     await contexto.close();

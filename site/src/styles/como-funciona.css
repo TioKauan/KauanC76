@@ -12,7 +12,7 @@
 .etapa p { font-size: 14px; line-height: 1.6; color: #a6b6c6; margin: 8px 0 12px; }
 .etapa-meta { display: inline-flex; font-size: 12px; color: #8fd9e8; border: 1px solid #1f4658; border-radius: 6px; padding: 5px 9px; }
 
-.duvidas-grade { display: grid; grid-template-columns: minmax(0, 1fr) 500px; gap: 28px; margin-top: 96px; align-items: start; scroll-margin-top: calc(var(--cab-altura) + 16px); }
+.duvidas-grade { display: grid; grid-template-columns: minmax(0, 860px); gap: 28px; margin-top: 96px; align-items: start; scroll-margin-top: calc(var(--cab-altura) + 16px); }
 .duvidas-titulo { font-size: clamp(30px, 3vw, 40px); }
 .busca { display: flex; align-items: center; gap: 10px; margin-top: 22px; padding: 0 16px; min-height: 52px; border: 1px solid var(--linha-2); border-radius: 12px; background: #050d17; color: #8196ab; max-width: 560px; transition: border-color 0.2s; }
 .busca:focus-within { border-color: var(--ciano); }
@@ -34,29 +34,7 @@
 .sem-resultado[hidden] { display: none; }
 .sem-resultado p { font-size: 14px; color: var(--texto-2); flex: 1 1 240px; }
 
-.cliente { padding: 24px; position: relative; overflow: hidden; margin-top: 44px; }
-.cliente-selo { position: absolute; right: 18px; top: 18px; }
-.cliente-k { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: #ffad70; font-weight: 800; }
-.cliente h3 { font-size: 24px; margin: 12px 0 6px; padding-right: 10px; }
-.cliente-sub { font-size: 13.5px; color: var(--texto-2); line-height: 1.6; }
-.cliente-previa { margin-top: 18px; padding: 16px; border-radius: 12px; border: 1px solid #1d3348; background: #050d17; }
-.cliente-plano { font-size: 12.5px; color: var(--texto-3); margin-bottom: 12px; }
-.acompanha { list-style: none; margin: 0; padding: 0; }
-.acompanha li { display: grid; grid-template-columns: 28px 1fr auto; gap: 12px; align-items: start; padding-bottom: 14px; position: relative; }
-.acompanha li::before { content: ''; position: absolute; left: 13px; top: 26px; bottom: 0; width: 2px; background: #1f3a52; }
-.acompanha li:last-child { padding-bottom: 0; }
-.acompanha li:last-child::before { display: none; }
-.acompanha li[data-estado='feito']::before { background: var(--ciano); }
 .bolinha { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid #2b4a66; color: #7f95a9; background: #07121e; position: relative; z-index: 1; }
-.acompanha li[data-estado='feito'] .bolinha { background: var(--ciano); border-color: var(--ciano); color: #04121a; }
-.acompanha li[data-estado='agora'] .bolinha { border-color: var(--laranja); color: var(--laranja-2); box-shadow: 0 0 0 5px #ff6a0020; }
-.acompanha b { font-size: 14px; display: block; }
-.acompanha small { font-size: 12px; color: #8ea3b6; }
-.acompanha em { font-style: normal; font-size: 12px; color: #9fb1c2; }
-.cliente-equip { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 14px; padding-top: 12px; border-top: 1px dashed #243a50; font-size: 12px; color: #a9bccd; }
-.cliente-equip span { display: inline-flex; gap: 7px; align-items: center; }
-.cliente-equip .ic { color: var(--ciano); }
-.cliente-cta { width: 100%; margin-top: 16px; }
 
 @media (max-width: 1100px) {
   .linha-tempo { grid-template-columns: 1fr; gap: 0; padding-left: 70px; }
@@ -66,7 +44,6 @@
   .etapa-num { left: -70px; top: 6px; }
   .etapa-icone { display: none; }
   .duvidas-grade { grid-template-columns: 1fr; margin-top: 64px; }
-  .cliente { margin-top: 12px; }
 }
 
 @media (max-width: 800px) {
@@ -76,7 +53,4 @@
   .etapa h3 { font-size: 19px; }
   .pergunta summary { padding: 12px 16px; font-size: 15px; }
   .pergunta p { padding: 0 16px 16px; }
-  .cliente { padding: 20px; }
-  .cliente-selo { position: static; margin-bottom: 12px; }
-  .acompanha em { display: none; }
 }

@@ -3,11 +3,13 @@
  * Tela 2: planos de locação. Abas e carrossel em src/scripts/planos.ts.
  * Desde 28/09/2026 (noite) os botões de venda abrem a Sol com a escolha já
  * escrita; sem JavaScript, levam à seção "Fale com a SC" (#contato).
+ * 17/10/2026: inicial mais enxuta; saíram "Personalize seu sistema" (os recursos extras ficam
+ * no configurador) e "Por que locar" (o título da seção já diz o principal).
  */
 import Icone from './Icone.astro';
 import MiniPlanta from './MiniPlanta.astro';
 import {
-  planos, upgrades, condicoes, porQueLocar, servicosProposta, textoProposta,
+  planos, condicoes, servicosProposta, textoProposta,
   formatarPreco, mostrarPrecos, nomePlano, textoTaxaInstalacao, rotuloTaxa,
 } from '../lib/dados';
 import { mensagemQueroPlano } from '../lib/sol';
@@ -66,7 +68,7 @@ const cameras = (n: number) => `${n} ${n > 1 ? 'câmeras' : 'câmera'}`;
                    data-sol-abrir data-sol-plano={p.cameras} data-sol-mensagem={mensagemQueroPlano(p.cameras)}>
                   <span class="sol-orbe sol-orbe-p" aria-hidden="true"></span> Quero este plano<span class="sr"> ({nomePlano(p)}, abre o chat da Sol)</span>
                 </a>
-                <a class="plano-simular" href="#monte" data-configurar={p.cameras}>Ver no configurador <Icone nome="arrow-right" tamanho={14} /></a>
+                <a class="plano-simular" href={`/monte-seu-sistema/?cameras=${p.cameras}`}>Ver no configurador <Icone nome="arrow-right" tamanho={14} /></a>
               </article>
             ))
           }
@@ -74,11 +76,6 @@ const cameras = (n: number) => `${n} ${n > 1 ? 'câmeras' : 'câmera'}`;
       </div>
       <div class="planos-pontos" role="group" aria-label="Escolher plano">
         {planos.map((p) => <button type="button" data-ir-plano={p.cameras} aria-label={`Ver ${nomePlano(p)}`} />)}
-      </div>
-      <div class="cartao upgrades">
-        <strong>Personalize seu sistema</strong>
-        <ul>{upgrades.map((u) => <li title={u.detalhe}><Icone nome={u.icone} tamanho={17} /> {u.nome}</li>)}</ul>
-        <em>Upgrades sob orçamento</em>
       </div>
     </div>
 
@@ -98,17 +95,12 @@ const cameras = (n: number) => `${n} ${n > 1 ? 'câmeras' : 'câmera'}`;
             </a>
             {s.id === 'condominio' && (
               <a class="btn btn-contorno" href="/condominio/"><Icone nome="layers" tamanho={18} /> Ver o Condomínio Evoluído em 3D</a>
-              <a class="btn btn-contorno" href="#monte" data-configurar-ambiente="condominio">Montar a proposta no configurador</a>
+              <a class="btn btn-contorno" href="/monte-seu-sistema/?ambiente=condominio">Montar a proposta no configurador</a>
             )}
           </div>
         </div>
       ))
     }
-
-    <div class="por-que" data-revelar>
-      <div class="por-que-titulo"><h3>Por que locar em vez de comprar?</h3><p>O que muda para quem só quer o sistema funcionando.</p></div>
-      {porQueLocar.map((m) => <div class="por-que-item"><Icone nome={m.icone} tamanho={26} traco={1.4} /><b>{m.titulo}</b><span>{m.texto}</span></div>)}
-    </div>
 
     <div class="tudo-claro" data-revelar>
       <h3>Simples de contratar<small>Sem papel e sem burocracia.</small></h3>

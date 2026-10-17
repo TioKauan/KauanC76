@@ -121,22 +121,17 @@ export const upgrades: Upgrade[] = [
 ];
 
 /*
- * "Simples de contratar": como é a contratação (25/09/2026).
+ * "Simples de contratar": o que muda para quem loca e como é a contratação (25/09/2026).
+ * Em 17/10/2026 o antigo "Por que locar" entrou aqui, para a inicial ficar mais curta.
  * As condições contratuais completas (prazo, cancelamento, cobranças extras,
  * reajuste) ficam no contrato, apresentado ao cliente antes da assinatura.
  * Só acrescente condições aqui com pedido do Kauan; o validador confere isso.
  */
 export const condicoes: ItemIcone[] = [
-  { icone: 'signature', titulo: 'Assinatura eletrônica', texto: 'Contrato do plano enviado e assinado pela ZapSign.' },
-  { icone: 'cable', titulo: 'Taxa de instalação', texto: `Valor de ${rotuloTaxa} do plano, pago antecipadamente.` },
-  { icone: 'zap', titulo: 'Mensalidades na ativação', texto: 'As mensalidades começam com o sistema instalado e funcionando.' },
-  { icone: 'calendar-check', titulo: 'Pagamento mensal', texto: 'Por PIX, boleto ou cartão de crédito, com cobrança automática.' },
-];
-
-export const porQueLocar: ItemIcone[] = [
   { icone: 'sparkles', titulo: 'Sem comprar equipamentos', texto: 'Os equipamentos são da SC: você paga a instalação uma vez e depois só a mensalidade do plano.' },
   { icone: 'wrench', titulo: 'Defeito natural? A SC resolve', texto: 'Reparo ou troca por equipamento equivalente ou superior, conforme o contrato.' },
-  { icone: 'calendar-check', titulo: 'Mensalidade previsível', texto: 'Você sabe quanto paga todo mês. Sujeita a reajustes por melhorias no sistema e na renovação.' },
+  { icone: 'cable', titulo: 'Taxa de instalação', texto: `Valor de ${rotuloTaxa} do plano, pago antecipadamente.` },
+  { icone: 'signature', titulo: 'Contrato e pagamento pelo celular', texto: 'Assinatura pela ZapSign. Mensalidade por PIX, boleto ou cartão, a partir da ativação.' },
 ];
 
 // Serviços que viram proposta personalizada (documento: "Exemplos de soluções personalizadas").

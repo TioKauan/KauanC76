@@ -16,19 +16,20 @@ export const solucoes: readonly LinkSolucao[] = [
 export const links: readonly (LinkSecao | { grupo: 'Soluções'; itens: readonly LinkSolucao[] })[] = [
   { href: '#inicio', rotulo: 'Início' },
   { href: '#planos', rotulo: 'Planos' },
-  { href: '#monte', rotulo: 'Monte seu sistema' },
+  // Página própria desde 17/10/2026 (antes era a seção #monte da inicial).
+  { href: '/monte-seu-sistema/', rotulo: 'Monte seu sistema' },
   { grupo: 'Soluções', itens: solucoes },
   { href: '#como-funciona', rotulo: 'Como funciona' },
   { href: '#duvidas', rotulo: 'Dúvidas' },
 ];
 
-/** Só as seções da inicial (sem o grupo), na ordem do menu. */
+/** Itens simples do menu (sem o grupo), na ordem do menu. */
 export const secoes: readonly LinkSecao[] = links.filter((l): l is LinkSecao => 'href' in l);
 
 /**
  * Endereço de um item do menu visto de uma página.
  * Na inicial as seções ficam como âncora (#planos); nas outras páginas viram /#planos.
- * Páginas próprias (/condominio/) valem igual em qualquer lugar.
+ * Páginas próprias (/condominio/, /monte-seu-sistema/) valem igual em qualquer lugar.
  */
 export function hrefSecao(href: string, naInicial: boolean): string {
   if (!href.startsWith('#')) return href;
