@@ -48,6 +48,10 @@ solução, não a mais simples de entender; nas conversas, explique o porquê da
 - **Botões:** todo botão que abre o WhatsApp mostra o ícone do WhatsApp (`IconeWhatsapp.astro` ou
   `iconeWhatsapp()` de `src/lib/marcas.ts`), em contorno ciano, nunca verde; tudo o que abre a Sol
   mostra o orbe laranja. O validador confere o ícone.
+- **Inicial enxuta (17/10/2026):** a inicial tem só abertura, planos, como funciona, dúvidas e contato.
+  O configurador fica em `/monte-seu-sistema/` (`src/pages/monte-seu-sistema.astro`; `?cameras=N` marca as
+  câmeras do plano e `?ambiente=` escolhe o ambiente; `/#monte` redireciona). O "E se…?" fica só nas
+  páginas 3D. Não acrescente blocos na inicial sem pedido do Kauan; o validador confere a inicial enxuta.
 - **Páginas com maquete 3D**: Condomínio Evoluído (`/condominio/`, aprovada em 30/09/2026) e Casa, Comércio
   e Empresa (`/casa/`, `/comercio/`, `/empresa/`, pedidas em 05/10/2026 "igual ao do condomínio"). Um motor
   comum desenha qualquer maquete descrita em dados (`src/lib/maquete/` e `src/scripts/maquete/`, Three.js

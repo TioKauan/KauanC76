@@ -28,6 +28,7 @@ npm run imagens-maquete      # depois de npm run build: refaz as imagens prontas
 ```
 src/
   pages/index.astro        página inicial (compõe as seções; importa os estilos e o script dela)
+  pages/monte-seu-sistema.astro  configurador "Monte seu sistema" (desde 17/10/2026; ?cameras=N e ?ambiente=; /#monte redireciona)
   pages/condominio.astro   Condomínio Evoluído: capítulos + maquete 3D (plano em docs/inovacao/condominio/)
   pages/[ambiente].astro   Casa, Comércio e Empresa (/casa/, /comercio/, /empresa/): mesma maquete 3D, com "Escolha o plano"
   pages/privacidade.astro  política de privacidade
