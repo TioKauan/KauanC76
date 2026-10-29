@@ -1,0 +1,177 @@
+---
+/**
+ * Calculadoras técnicas (/calculadoras/): armazenamento de HD, queda de tensão e bitola de cabo,
+ * fonte e bateria, banda de rede. Pedido do Kauan em 29/10/2026, para uso em campo (instalável no
+ * celular, funciona sem internet) e para atrair contatos. As contas rodam no navegador: nada do que
+ * a pessoa digita é enviado ou guardado. A fórmula de cada uma e os testes estão em
+ * src/lib/calculadoras/ e tests/calculadoras.test.ts. O botão final abre a Sol com o resultado.
+ */
+import Base from '../layouts/Base.astro';
+import Cabecalho from '../components/Cabecalho.astro';
+import ContatoFinal from '../components/ContatoFinal.astro';
+import Rodape from '../components/Rodape.astro';
+import BarraFixa from '../components/BarraFixa.astro';
+import Sol from '../components/Sol.astro';
+import '../styles/calculadoras.css';
+import { empresa } from '../lib/dados';
+import { separarCidade, dadosPagina } from '../lib/buscadores';
+import { RESOLUCOES, CODECS } from '../lib/calculadoras/bitrate';
+import { SECOES } from '../lib/calculadoras/cabo';
+
+const descricao = 'Calculadoras gratuitas para instalação de câmeras: espaço de HD, queda de tensão e bitola do cabo, fonte e bateria, banda de rede. Funcionam no celular, mesmo sem internet.';
+const nome = 'Calculadoras para instalação de câmeras';
+const abas = [
+  { id: 'hd', rotulo: 'HD' },
+  { id: 'cabo', rotulo: 'Cabo' },
+  { id: 'energia', rotulo: 'Fonte e bateria' },
+  { id: 'rede', rotulo: 'Rede' },
+];
+---
+
+<Base
+  titulo={`${nome} | ${empresa.nome}, ${separarCidade(empresa.cidade).municipio}`}
+  descricao={descricao}
+  tituloSocial={`${nome} | ${empresa.nome}`}
+  descricaoSocial="Espaço de HD, bitola do cabo, fonte, bateria e banda de rede."
+  dadosEstruturados={dadosPagina('/calculadoras/', nome, descricao)}
+  manifesto="/calculadoras/manifest.webmanifest"
+>
+  <Cabecalho naInicial={false} />
+  <main id="conteudo">
+    <section class="calc" aria-labelledby="calc-titulo">
+      <div class="wrap">
+        <p class="sobretitulo">Para quem instala</p>
+        <h1 id="calc-titulo">Calculadoras <span class="destaque">de campo</span></h1>
+        <p class="calc-intro">
+          Quatro contas que aparecem em toda instalação de câmeras. Rodam no seu celular e funcionam sem internet
+          depois da primeira visita. Nada do que você digita sai do aparelho.
+        </p>
+        <p class="calc-instalar" data-instalar hidden>
+          <button class="btn btn-contorno btn-p" type="button" data-instalar-botao>Instalar no celular</button>
+        </p>
+
+        <div class="calc-abas" role="tablist" aria-label="Calculadoras">
+          {abas.map((a, i) => (
+            <button class="chip" role="tab" type="button" id={`aba-${a.id}`} aria-controls={`painel-${a.id}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-aba={a.id}>
+              {a.rotulo}
+            </button>
+          ))}
+        </div>
+
+        <!-- 1. Armazenamento -->
+        <section class="cartao calc-painel" role="tabpanel" id="painel-hd" aria-labelledby="aba-hd" data-painel="hd">
+          <h2>Espaço de HD para gravação</h2>
+          <form class="calc-form" data-form="hd" novalidate>
+            <label>Câmeras <input type="number" name="cameras" value="8" min="1" max="256" inputmode="numeric" /></label>
+            <label>Resolução
+              <select name="resolucao">{RESOLUCOES.map((r) => <option value={r.id} selected={r.id === '4mp'}>{r.rotulo}</option>)}</select>
+            </label>
+            <label>Codec
+              <select name="codec">{CODECS.map((c) => <option value={c.id} selected={c.id === 'h265'}>{c.rotulo}</option>)}</select>
+            </label>
+            <label>Taxa por câmera (Mbps) <input type="number" name="mbps" value="3" min="0.1" step="0.1" inputmode="decimal" /></label>
+            <label>Dias de gravação <input type="number" name="dias" value="30" min="1" max="365" inputmode="numeric" /></label>
+            <label>Horas gravadas por dia <input type="number" name="horas" value="24" min="1" max="24" inputmode="numeric" /></label>
+            <label>Margem de segurança (%) <input type="number" name="margem" value="10" min="0" max="100" inputmode="numeric" /></label>
+          </form>
+          <div class="calc-saida" aria-live="polite" data-saida="hd"></div>
+          <p class="calc-nota">
+            A taxa é uma <strong>estimativa de mercado</strong> (25 fps, cena comum). A real depende da marca, da cena e da
+            configuração: confira no NVR e edite o campo. O disco é contado em TB decimal, como na etiqueta.
+          </p>
+        </section>
+
+        <!-- 2. Cabo -->
+        <section class="cartao calc-painel" role="tabpanel" id="painel-cabo" aria-labelledby="aba-cabo" data-painel="cabo" hidden>
+          <h2>Queda de tensão e bitola do cabo</h2>
+          <form class="calc-form" data-form="cabo" novalidate>
+            <label>Circuito
+              <select name="circuito">
+                <option value="cc12" selected>Corrente contínua, 12 V (câmeras)</option>
+                <option value="cc24">Corrente contínua, 24 V</option>
+                <option value="ca127">Corrente alternada, 127 V</option>
+                <option value="ca220">Corrente alternada, 220 V</option>
+              </select>
+            </label>
+            <label>Corrente total do trecho (A) <input type="number" name="corrente" value="1" min="0.01" step="0.1" inputmode="decimal" /></label>
+            <label>Distância de ida (m) <input type="number" name="comprimento" value="40" min="1" step="1" inputmode="decimal" /></label>
+            <label>Queda máxima aceita (%) <input type="number" name="queda" value="5" min="0.5" max="20" step="0.5" inputmode="decimal" /></label>
+            <label>Temperatura do cobre
+              <select name="rho">
+                <option value="20" selected>20 °C (cabo frio)</option>
+                <option value="70">70 °C (cabo no limite, mais conservador)</option>
+              </select>
+            </label>
+          </form>
+          <div class="calc-saida" aria-live="polite" data-saida="cabo"></div>
+          <p class="calc-nota">
+            Conta: queda = 2 × distância × corrente × ρ ÷ seção, com ρ do cobre (1/56 a 20 °C; 1/48 a 70 °C). A corrente
+            máxima do cabo vem da tabela de capacidade de condução da NBR 5410 (cobre, PVC 70 °C, método B1, dois
+            condutores). O limite de queda é escolha sua: em 12 V vale a tolerância da câmera, que está na folha de dados.
+            Seções comerciais: {SECOES.map((s) => `${String(s.mm2).replace('.', ',')}`).join(', ')} mm².
+          </p>
+        </section>
+
+        <!-- 3. Fonte e bateria -->
+        <section class="cartao calc-painel" role="tabpanel" id="painel-energia" aria-labelledby="aba-energia" data-painel="energia" hidden>
+          <h2>Fonte e bateria</h2>
+          <form class="calc-form" data-form="energia" novalidate>
+            <label>Câmeras <input type="number" name="cameras" value="8" min="0" max="256" inputmode="numeric" /></label>
+            <label>Consumo de cada câmera (W) <input type="number" name="wCamera" value="5" min="0" step="0.5" inputmode="decimal" /></label>
+            <label>Gravador / NVR (W) <input type="number" name="wGravador" value="30" min="0" step="1" inputmode="decimal" /></label>
+            <label>Outros equipamentos (W) <input type="number" name="wOutros" value="0" min="0" step="1" inputmode="decimal" /></label>
+            <label>Tensão (V)
+              <select name="tensao"><option value="12" selected>12 V</option><option value="24">24 V</option></select>
+            </label>
+            <label>Folga da fonte (%) <input type="number" name="folga" value="20" min="0" max="100" inputmode="numeric" /></label>
+            <label>Autonomia da bateria (horas; 0 = sem bateria) <input type="number" name="horas" value="4" min="0" max="72" step="0.5" inputmode="decimal" /></label>
+            <label>Descarga máxima da bateria (%) <input type="number" name="dod" value="50" min="10" max="100" inputmode="numeric" /></label>
+            <label>Eficiência (%) <input type="number" name="ef" value="85" min="30" max="100" inputmode="numeric" /></label>
+          </form>
+          <div class="calc-saida" aria-live="polite" data-saida="energia"></div>
+          <p class="calc-nota">
+            Fonte: potência ÷ tensão, mais a folga. Bateria selada de chumbo-ácido: Ah = corrente × horas ÷ (descarga ×
+            eficiência). Consumo de câmera e gravador está na folha de dados; câmera com infravermelho e aquecedor gasta mais.
+          </p>
+        </section>
+
+        <!-- 4. Rede -->
+        <section class="cartao calc-painel" role="tabpanel" id="painel-rede" aria-labelledby="aba-rede" data-painel="rede" hidden>
+          <h2>Banda de rede</h2>
+          <form class="calc-form" data-form="rede" novalidate>
+            <label>Câmeras <input type="number" name="cameras" value="16" min="1" max="256" inputmode="numeric" /></label>
+            <label>Resolução
+              <select name="resolucao">{RESOLUCOES.map((r) => <option value={r.id} selected={r.id === '4mp'}>{r.rotulo}</option>)}</select>
+            </label>
+            <label>Codec
+              <select name="codec">{CODECS.map((c) => <option value={c.id} selected={c.id === 'h265'}>{c.rotulo}</option>)}</select>
+            </label>
+            <label>Taxa por câmera (Mbps) <input type="number" name="mbps" value="3" min="0.1" step="0.1" inputmode="decimal" /></label>
+            <label>Folga de protocolo (%) <input type="number" name="folga" value="20" min="0" max="100" inputmode="numeric" /></label>
+            <label>Telas vendo de fora da rede, ao mesmo tempo <input type="number" name="remotos" value="2" min="0" max="50" inputmode="numeric" /></label>
+            <label>Taxa do fluxo do celular (Mbps) <input type="number" name="secundario" value="0.5" min="0.1" step="0.1" inputmode="decimal" /></label>
+          </form>
+          <div class="calc-saida" aria-live="polite" data-saida="rede"></div>
+          <p class="calc-nota">
+            Um enlace (porta ou cabo entre switches) deve ficar abaixo de 70 % da velocidade em uso contínuo. Para ver
+            as câmeras de fora, o que limita é a velocidade de <strong>envio (upload)</strong> da internet do local.
+          </p>
+        </section>
+
+        <div class="calc-cta">
+          <p><strong>Quer que a SC confira isso no seu local?</strong> A Sol recebe a sua conta e encaminha para a equipe.</p>
+          <a class="btn btn-primario btn-g" href="#contato" data-sol-abrir data-sol-mensagem="Usei as calculadoras do site e quero conversar sobre a minha instalação." data-calc-cta>
+            <span class="sol-orbe sol-orbe-p" aria-hidden="true"></span> Levar esta conta para a Sol
+          </a>
+        </div>
+      </div>
+    </section>
+    <ContatoFinal />
+  </main>
+  <Rodape naInicial={false} />
+  <BarraFixa sub="Fale com a Sol sobre a sua instalação" />
+  <Sol />
+  <script>
+    import '../scripts/calculadoras';
+  </script>
+</Base>

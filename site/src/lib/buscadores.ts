@@ -76,3 +76,34 @@ export function dadosEstruturados() {
 export function jsonParaScript(dados: unknown): string {
   return JSON.stringify(dados).replace(/</g, '\\u003c');
 }
+
+/**
+ * Dados estruturados de uma página interna: o caminho de migalhas (Início › página) e a ligação
+ * com a empresa da inicial (`#empresa`). Ajuda o Google a mostrar a página dentro do site e a
+ * entender de quem ela é. Só texto que já está na página; nada novo é afirmado aqui.
+ */
+export function dadosPagina(caminho: string, nome: string, descricao: string) {
+  const site = empresa.site.replace(/\/$/, '');
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'WebPage',
+        '@id': `${site}${caminho}#pagina`,
+        url: `${site}${caminho}`,
+        name: nome,
+        description: descricao,
+        inLanguage: 'pt-BR',
+        isPartOf: { '@id': `${site}/#site` },
+        about: { '@id': `${site}/#empresa` },
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: empresa.nome, item: `${site}/` },
+          { '@type': 'ListItem', position: 2, name: nome, item: `${site}${caminho}` },
+        ],
+      },
+    ],
+  };
+}

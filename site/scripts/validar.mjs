@@ -1115,7 +1115,7 @@ grupo('Acessibilidade (axe)');
     const r = await new AxeBuilder({ page: pagina }).withTags(regras).analyze();
     for (const v of r.violations) achados.push(`${rotulo}: ${v.id} (${v.nodes.length}) ${v.nodes[0]?.target.join(' ')}`);
   };
-  for (const [caminho, nome] of [['', 'Página inicial'], ['privacidade/', '/privacidade/'], ['condominio/', '/condominio/'], ['nao-existe/', 'Página 404'], ['monte-seu-sistema/', '/monte-seu-sistema/'], ['casa/', '/casa/'], ['comercio/', '/comercio/'], ['empresa/', '/empresa/']]) {
+  for (const [caminho, nome] of [['', 'Página inicial'], ['privacidade/', '/privacidade/'], ['condominio/', '/condominio/'], ['nao-existe/', 'Página 404'], ['monte-seu-sistema/', '/monte-seu-sistema/'], ['casa/', '/casa/'], ['comercio/', '/comercio/'], ['empresa/', '/empresa/'], ['calculadoras/', '/calculadoras/']]) {
     const achados = [];
     for (const largura of [1440, 390]) {
       const { pagina, contexto } = await abrir(largura, { reducedMotion: 'reduce' });
@@ -1224,6 +1224,65 @@ if (comFotos) {
     await compCond.screenshot({ path: path.join(pastaCond, 'comparacao', `${par.nome}.jpg`), type: 'jpeg', quality: 85, fullPage: true });
   }
   console.log('Condomínio: fotos em docs/inovacao/condominio/site-final/ e comparação em docs/inovacao/condominio/comparacao/');
+}
+
+/* ---------- Calculadoras de campo (/calculadoras/) ---------- */
+grupo('Calculadoras de campo');
+{
+  const { pagina, contexto, erros } = await abrir(1440, {}, 'calculadoras/');
+  const saida = (id) => pagina.$eval(`[data-saida="${id}"]`, (e) => e.textContent);
+  const hd = await saida('hd');
+  // 8 câmeras × 3 Mbps (4 MP em H.265) × 30 dias × 24 h = 7,776 TB; com 10 % de margem, 8,5536 TB (conta à mão).
+  conferir('Calculadoras: HD com os valores iniciais dá 8,55 TB e 1 disco de 10 TB', hd.includes('8,55 TB') && hd.includes('1 × 10 TB'), hd.slice(0, 160));
+  await pagina.click('#aba-cabo');
+  const cabo = await saida('cabo');
+  // 12 V, 1 A, 40 m, 5 %: 2·40·1 ÷ 56 ÷ 0,6 = 2,38 mm² → cabo de 2,5 mm².
+  conferir('Calculadoras: cabo com os valores iniciais pede 2,38 mm² e indica 2,5 mm²', cabo.includes('2,38 mm²') && cabo.includes('2,5 mm²'), cabo.slice(0, 160));
+  const painelVisivel = await pagina.$eval('#painel-cabo', (e) => !e.hidden) && await pagina.$eval('#painel-hd', (e) => e.hidden);
+  conferir('Calculadoras: trocar de aba mostra só o painel escolhido', painelVisivel);
+  await pagina.fill('[data-form="cabo"] [name="comprimento"]', '1000');
+  const semCabo = await saida('cabo');
+  conferir('Calculadoras: trecho enorme avisa que nenhum cabo serve', semCabo.includes('Nenhum cabo'), semCabo.slice(0, 120));
+  await pagina.fill('[data-form="cabo"] [name="comprimento"]', '40');
+  const msg = await pagina.$eval('[data-calc-cta]', (a) => a.dataset.solMensagem);
+  conferir('Calculadoras: o botão da Sol leva o resumo da conta aberta', msg.startsWith('Usei as calculadoras do site. Cabo:') && msg.length <= 600, msg);
+  await pagina.click('#aba-energia');
+  const energia = await saida('energia');
+  // 8 × 5 W + 30 W = 70 W; 70 ÷ 12 = 5,83 A; ×1,2 = 7 A → fonte de 10 A; 5,83 × 4 ÷ 0,425 = 54,9 Ah → 65 Ah.
+  conferir('Calculadoras: energia com os valores iniciais dá 70 W, fonte de 10 A e bateria de 65 Ah', energia.includes('70 W') && energia.includes('10 A') && energia.includes('65 Ah'), energia.slice(0, 200));
+  await pagina.click('#aba-rede');
+  const rede = await saida('rede');
+  // 16 × 3 = 48 Mbps; × 1,2 = 57,6 Mbps → cabe em 100 Mbps (70 %).
+  conferir('Calculadoras: rede com os valores iniciais dá 57,6 Mbps e enlace de 100 Mbps', rede.includes('57,6 Mbps') && rede.includes('100 Mbps (usa até 70 %)'), rede.slice(0, 200));
+  await pagina.keyboard.press('Escape');
+  const extras = await pagina.evaluate(() => ({
+    manifesto: document.querySelector('link[rel="manifest"]')?.getAttribute('href'),
+    whatsFora: [...document.querySelectorAll('a[href*="wa.me"]')].filter((a) => !a.closest('#contato')).length,
+    h1: document.querySelectorAll('h1').length,
+    orbe: Boolean(document.querySelector('[data-calc-cta] .sol-orbe')),
+    rodape: Boolean(document.querySelector('.rodape a[href="/calculadoras/"]')),
+    menuTopo: Boolean(document.querySelector('.nav a[href="/calculadoras/"]')),
+  }));
+  conferir('Calculadoras: manifesto, rodapé, orbe da Sol, um h1, WhatsApp só em "Fale com a SC" e fora do menu do topo',
+    extras.manifesto === '/calculadoras/manifest.webmanifest' && extras.rodape && extras.orbe && extras.h1 === 1 && extras.whatsFora === 0 && !extras.menuTopo, JSON.stringify(extras));
+  // Offline: o service worker guarda a página e abre sem internet.
+  const escopo = await pagina.evaluate(async () => (await navigator.serviceWorker.ready).scope);
+  await pagina.reload({ waitUntil: 'networkidle' });
+  await contexto.setOffline(true);
+  await pagina.reload({ waitUntil: 'domcontentloaded' });
+  const titulo = await pagina.title();
+  const hdOffline = await saida('hd');
+  conferir('Calculadoras: service worker só em /calculadoras/ e a página abre e calcula sem internet', escopo.endsWith('/calculadoras/') && titulo.includes('Calculadoras') && hdOffline.includes('8,55 TB'), `${escopo}; ${titulo}`);
+  await contexto.setOffline(false);
+  const sw = readFileSync(path.join(dist, 'calculadoras', 'sw.js'), 'utf8');
+  conferir('Calculadoras: o service worker é versionado, limpa caches velhos e usa rede primeiro para a página', /const VERSAO = 'sc-calculadoras-v\d+'/.test(sw) && sw.includes('caches.delete') && sw.includes('fetch(pedido)'), '');
+  conferir('Calculadoras: zero erros no console', erros.length === 0, erros.slice(0, 3).join('; '));
+  await contexto.close();
+  const cel = await abrir(390, {}, 'calculadoras/');
+  const sobra = await cel.pagina.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  const pequenos = await cel.pagina.evaluate(() => [...document.querySelectorAll('.calc input, .calc select, .calc-abas .chip, [data-calc-cta]')].filter((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height < 44; }).length);
+  conferir('Calculadoras no celular: sem rolagem lateral e campos/botões ≥ 44 px', sobra <= 0 && pequenos === 0, `sobra ${sobra}; pequenos ${pequenos}`);
+  await cel.contexto.close();
 }
 
 await navegador.close();

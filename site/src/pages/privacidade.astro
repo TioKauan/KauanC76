@@ -2,7 +2,8 @@
 /**
  * Política de privacidade (26/09/2026; atualizada em 27/09/2026 com a Sol no site e em
  * 28/09/2026, quando a voz saiu do chat e a Sol passou a pedir os dados no começo e,
- * no mesmo dia, quando a origem da visita passou a ir junto com o lead).
+ * no mesmo dia, quando a origem da visita passou a ir junto com o lead; em 29/10/2026, com a
+ * página de calculadoras, que roda no aparelho e guarda uma cópia para uso sem internet).
  * Descreve o que acontece de fato: o site não usa cookie nem analytics; tem a Sol,
  * assistente virtual com IA, que pede nome, WhatsApp, cidade e o que a pessoa procura
  * antes da conversa (aviso à equipe pelo Telegram) e trata as mensagens; o navegador
@@ -14,7 +15,7 @@ import Base from '../layouts/Base.astro';
 import Logo from '../components/Logo.astro';
 import { contato, empresa } from '../lib/dados';
 
-const atualizada = '28 de setembro de 2026';
+const atualizada = '29 de outubro de 2026';
 ---
 
 <Base
@@ -46,6 +47,11 @@ const atualizada = '28 de setembro de 2026';
       O site não usa cookies e não usa ferramentas de análise ou de publicidade. Como qualquer servidor
       de internet, o servidor que hospeda o site registra dados técnicos de acesso (endereço IP, data,
       hora e página pedida) para segurança e funcionamento.
+    </p>
+    <p>
+      A página de <strong>calculadoras</strong> (/calculadoras/) faz as contas no próprio aparelho: o que você
+      digita lá não é enviado nem guardado por nós. Para funcionar sem internet, o navegador guarda uma cópia da
+      página e dos arquivos dela no aparelho (você apaga em "dados do site", nas configurações do navegador).
     </p>
     <p>
       <strong>No site há a Sol, uma assistente virtual com inteligência artificial.</strong> Conversar com

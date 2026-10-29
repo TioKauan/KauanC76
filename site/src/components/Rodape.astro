@@ -21,7 +21,7 @@ const { naInicial = true } = Astro.props;
     <a class="voltar-topo" href={naInicial ? '#inicio' : '#conteudo'}>{naInicial ? 'Voltar ao início' : 'Voltar ao topo'} <Icone nome="arrow-up" tamanho={16} /></a>
   </div>
   <p class="wrap rodape-empresa">
-    {empresa.nome} em {empresa.descricao} · CNPJ {empresa.cnpj} · {empresa.cidade} · <a href={`mailto:${contato.email}`}>{contato.email}</a> · <a href="/privacidade/">Política de privacidade</a>
+    {empresa.nome} em {empresa.descricao} · CNPJ {empresa.cnpj} · {empresa.cidade} · <a href={`mailto:${contato.email}`}>{contato.email}</a> · <a href="/calculadoras/">Calculadoras</a> · <a href="/privacidade/">Política de privacidade</a>
   </p>
   <div class="wrap rodape-base">
     <span>© {new Date().getFullYear()} {empresa.nome} · somoscella.online</span>

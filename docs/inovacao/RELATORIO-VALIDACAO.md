@@ -1,15 +1,15 @@
 # Relatório de validação do site
 
-Gerado por `npm run validar` em 17/10/2026, 14:03:17.
-Resultado: **146 de 146 itens ✅** — checklist completa.
+Gerado por `npm run validar` em 29/10/2026, 12:33:20.
+Resultado: **159 de 159 itens ✅** — checklist completa.
 
 ## Geral
 
 | | Item | Detalhe |
 |---|---|---|
 | ✅ | Tipos conferidos (astro check) e build sem erro |  |
-| ✅ | Testes unitários das regras (Vitest) passam | 177 testes |
-| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 346 KB em 11 arquivos; maiores: / 165 KB, /marca/sc-logo.webp 52 KB, /assets/sol.CJgAvoiE.js 44 KB |
+| ✅ | Testes unitários das regras (Vitest) passam | 194 testes |
+| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 347 KB em 11 arquivos; maiores: / 165 KB, /marca/sc-logo.webp 52 KB, /assets/sol.o05Wpb7B.js 44 KB |
 | ✅ | Todo link interno leva a uma seção que existe | 6 destinos conferidos |
 | ✅ | Todo WhatsApp usa wa.me/5546991331306 com mensagem preenchida | 1 links |
 | ✅ | Todo botão de WhatsApp mostra o ícone do WhatsApp |  |
@@ -36,8 +36,8 @@ Resultado: **146 de 146 itens ✅** — checklist completa.
 | ✅ | Sem JavaScript o conteúdo aparece e os contatos funcionam (botões de venda levam a "Fale com a SC") | {"planos":5,"duvidas":7,"escondidos":0,"vendas":9,"whatsContato":true,"solEscondida":true} |
 | ✅ | Rodapé tem link para a Política de privacidade |  |
 | ✅ | /privacidade/ abre com as 9 seções, sem erro no console e sem rolagem lateral | 9 seções; erros: 0; sobra 0 px |
-| ✅ | Buscadores: robots.txt aponta o sitemap, e o sitemap lista todas as páginas | páginas: /, /casa/, /comercio/, /condominio/, /empresa/, /monte-seu-sistema/, /privacidade/; no sitemap: /, /casa/, /comercio/, /condominio/, /empresa/, /monte-seu-sistema/, /privacidade/ |
-| ✅ | Buscadores: /sitemap.xml existe e é igual ao sitemap-0.xml (endereço que o Search Console sugere) | 733 bytes |
+| ✅ | Buscadores: robots.txt aponta o sitemap, e o sitemap lista todas as páginas | páginas: /, /calculadoras/, /casa/, /comercio/, /condominio/, /empresa/, /monte-seu-sistema/, /privacidade/; no sitemap: /, /calculadoras/, /casa/, /comercio/, /condominio/, /empresa/, /monte-seu-sistema/, /privacidade/ |
+| ✅ | Buscadores: /sitemap.xml existe e é igual ao sitemap-0.xml (endereço que o Search Console sugere) | 794 bytes |
 
 ## Buscadores
 
@@ -86,7 +86,7 @@ Resultado: **146 de 146 itens ✅** — checklist completa.
 | ✅ | Mensagem para a Sol leva ambiente, quantidade, pontos, plano, valor e recursos | Olá! Montei meu sistema no site da SC. / Ambiente: Casa / Câmeras: 8 (entrada principal, garagem e portão, fundos / quintal, lateral esquerda, fundos / quintal  |
 | ✅ | Condomínio vai para proposta personalizada |  |
 | ✅ | ?ambiente=condominio abre o configurador no condomínio (link da aba Condomínio) | true |
-| ✅ | Link antigo /#monte leva a /monte-seu-sistema/ | http://127.0.0.1:56738/monte-seu-sistema/ |
+| ✅ | Link antigo /#monte leva a /monte-seu-sistema/ | http://127.0.0.1:51784/monte-seu-sistema/ |
 
 ## Tela 4 · Como funciona
 
@@ -165,7 +165,7 @@ Resultado: **146 de 146 itens ✅** — checklist completa.
 | ✅ | Casa: escolher o plano instala as câmeras dele na maquete e atualiza preço, cabo e o "Quero este plano" (Sol) | Plano de 8 câmeras R$ 159,90/mês · ≈ 121 m de 100 m inclusos → Plano de 1 câmera |
 | ✅ | Casa: "E se…?" com os textos da inicial; na visita, o visitante e o acesso acendem |  |
 | ✅ | Casa: "reduzir movimento" sem animação, WhatsApp só em "Fale com a SC", sem condição contratual nem "instalação inclusa", zero erros | 0 quadros parada; WhatsApp 1/0; erros: 0 |
-| ✅ | Casa: primeira visão ≤ 300 KB e maquete 3D ≤ 700 KB (baixada depois) | primeira visão 269 KB; maquete 640 KB |
+| ✅ | Casa: primeira visão ≤ 300 KB e maquete 3D ≤ 700 KB (baixada depois) | primeira visão 270 KB; maquete 640 KB |
 | ✅ | Casa no celular: maquete no alto, sem rolagem lateral, toques ≥ 44 px e sem erros | {"sobra":0,"alturaPalco":354,"pequenos":[],"erros":[]} |
 | ✅ | Casa sem 3D: imagem da maquete, os 5 capítulos, o plano de 4 e o contato | {"imagem":true,"capitulos":5,"so3d":0,"plano":"Plano de 4 câmeras","contato":true} |
 | ✅ | Casa sem JavaScript: imagem da maquete, os 5 capítulos, o plano de 4 e o contato | {"imagem":true,"capitulos":5,"so3d":0,"plano":"Plano de 4 câmeras","contato":true} |
@@ -175,7 +175,7 @@ Resultado: **146 de 146 itens ✅** — checklist completa.
 | ✅ | Comércio: escolher o plano instala as câmeras dele na maquete e atualiza preço, cabo e o "Quero este plano" (Sol) | Plano de 8 câmeras R$ 159,90/mês · ≈ 158 m de 100 m inclusos → Plano de 1 câmera |
 | ✅ | Comércio: "E se…?" com os textos da inicial; na visita, o visitante e o acesso acendem |  |
 | ✅ | Comércio: "reduzir movimento" sem animação, WhatsApp só em "Fale com a SC", sem condição contratual nem "instalação inclusa", zero erros | 0 quadros parada; WhatsApp 1/0; erros: 0 |
-| ✅ | Comércio: primeira visão ≤ 300 KB e maquete 3D ≤ 700 KB (baixada depois) | primeira visão 270 KB; maquete 640 KB |
+| ✅ | Comércio: primeira visão ≤ 300 KB e maquete 3D ≤ 700 KB (baixada depois) | primeira visão 271 KB; maquete 640 KB |
 | ✅ | Comércio no celular: maquete no alto, sem rolagem lateral, toques ≥ 44 px e sem erros | {"sobra":0,"alturaPalco":354,"pequenos":[],"erros":[]} |
 | ✅ | Comércio sem 3D: imagem da maquete, os 6 capítulos, o plano de 4 e o contato | {"imagem":true,"capitulos":6,"so3d":0,"plano":"Plano de 4 câmeras","contato":true} |
 | ✅ | Comércio sem JavaScript: imagem da maquete, os 6 capítulos, o plano de 4 e o contato | {"imagem":true,"capitulos":6,"so3d":0,"plano":"Plano de 4 câmeras","contato":true} |
@@ -185,7 +185,7 @@ Resultado: **146 de 146 itens ✅** — checklist completa.
 | ✅ | Empresa: escolher o plano instala as câmeras dele na maquete e atualiza preço, cabo e o "Quero este plano" (Sol) | Plano de 8 câmeras R$ 159,90/mês · ≈ 158 m de 100 m inclusos → Plano de 1 câmera |
 | ✅ | Empresa: "E se…?" com os textos da inicial; na visita, o visitante e o acesso acendem |  |
 | ✅ | Empresa: "reduzir movimento" sem animação, WhatsApp só em "Fale com a SC", sem condição contratual nem "instalação inclusa", zero erros | 0 quadros parada; WhatsApp 1/0; erros: 0 |
-| ✅ | Empresa: primeira visão ≤ 300 KB e maquete 3D ≤ 700 KB (baixada depois) | primeira visão 268 KB; maquete 640 KB |
+| ✅ | Empresa: primeira visão ≤ 300 KB e maquete 3D ≤ 700 KB (baixada depois) | primeira visão 269 KB; maquete 640 KB |
 | ✅ | Empresa no celular: maquete no alto, sem rolagem lateral, toques ≥ 44 px e sem erros | {"sobra":0,"alturaPalco":354,"pequenos":[],"erros":[]} |
 | ✅ | Empresa sem 3D: imagem da maquete, os 6 capítulos, o plano de 4 e o contato | {"imagem":true,"capitulos":6,"so3d":0,"plano":"Plano de 4 câmeras","contato":true} |
 | ✅ | Empresa sem JavaScript: imagem da maquete, os 6 capítulos, o plano de 4 e o contato | {"imagem":true,"capitulos":6,"so3d":0,"plano":"Plano de 4 câmeras","contato":true} |
@@ -202,4 +202,22 @@ Resultado: **146 de 146 itens ✅** — checklist completa.
 | ✅ | /casa/: nenhuma violação de acessibilidade (computador e celular) |  |
 | ✅ | /comercio/: nenhuma violação de acessibilidade (computador e celular) |  |
 | ✅ | /empresa/: nenhuma violação de acessibilidade (computador e celular) |  |
+| ✅ | /calculadoras/: nenhuma violação de acessibilidade (computador e celular) |  |
 | ✅ | Chat da Sol aberto: nenhuma violação de acessibilidade (computador e celular) |  |
+
+## Calculadoras de campo
+
+| | Item | Detalhe |
+|---|---|---|
+| ✅ | Calculadoras: HD com os valores iniciais dá 8,55 TB e 1 disco de 10 TB | Por câmera, por dia32,4 GBTotal gravado7,78 TBCom 10 % de margem8,55 TB (≈ 7,78 TiB no NVR)Discos sugeridos1 × 10 TB (10 TB) |
+| ✅ | Calculadoras: cabo com os valores iniciais pede 2,38 mm² e indica 2,5 mm² | Seção mínima pela queda2,38 mm²Cabo indicado2,5 mm² (≈ AWG 14)Queda real0,57 V (4,76 %)Tensão no fim do cabo11,43 VCorrente máxima do cabo24 A |
+| ✅ | Calculadoras: trocar de aba mostra só o painel escolhido |  |
+| ✅ | Calculadoras: trecho enorme avisa que nenhum cabo serve | Seção mínima pela queda59,52 mm²Nenhum cabo de até 16 mm² serve nesse trecho. Reduza a distância, divida a carga em mais |
+| ✅ | Calculadoras: o botão da Sol leva o resumo da conta aberta | Usei as calculadoras do site. Cabo: CC 12 V, 1 A a 40 m: 2,5 mm² (queda 4,76 %). Quero conversar sobre a minha instalação. |
+| ✅ | Calculadoras: energia com os valores iniciais dá 70 W, fonte de 10 A e bateria de 65 Ah | Potência total70 WCorrente a 12 V5,83 A (7 A com folga)Fonte indicada10 ABateria para 4 h54,9 Ah necessários → 65 Ah |
+| ✅ | Calculadoras: rede com os valores iniciais dá 57,6 Mbps e enlace de 100 Mbps | Câmeras somadas48 MbpsCom a folga de protocolo57,6 MbpsEnlace até o gravador100 Mbps (usa até 70 %)Upload para ver de fora1,2 Mbps |
+| ✅ | Calculadoras: manifesto, rodapé, orbe da Sol, um h1, WhatsApp só em "Fale com a SC" e fora do menu do topo | {"manifesto":"/calculadoras/manifest.webmanifest","whatsFora":0,"h1":1,"orbe":true,"rodape":true,"menuTopo":false} |
+| ✅ | Calculadoras: service worker só em /calculadoras/ e a página abre e calcula sem internet | http://127.0.0.1:51784/calculadoras/; Calculadoras para instalação de câmeras / SC Soluções, Francisco Beltrão |
+| ✅ | Calculadoras: o service worker é versionado, limpa caches velhos e usa rede primeiro para a página |  |
+| ✅ | Calculadoras: zero erros no console |  |
+| ✅ | Calculadoras no celular: sem rolagem lateral e campos/botões ≥ 44 px | sobra 0; pequenos 0 |

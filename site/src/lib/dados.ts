@@ -279,6 +279,8 @@ export interface TextosAmbiente {
   descricao: string;
   /** Título curto para redes sociais e para o menu. */
   curto: string;
+  /** Título da aba e do resultado no Google, com o que a pessoa digita na busca. */
+  tituloBusca: string;
   /** Lista curta abaixo dos botões da abertura. */
   destaques: readonly string[];
   cameras: { titulo: string; texto: string };
@@ -299,6 +301,7 @@ export const paginasAmbiente = {
   casa: {
     sobre: 'Sua casa',
     curto: 'Casa',
+    tituloBusca: 'Câmeras de segurança para casa',
     titulo: 'Sua casa protegida, do portão ao quintal.',
     lead: 'Gire a maquete, escolha o plano e veja o que cada câmera enxerga, por dentro e por fora.',
     descricao: 'Veja numa maquete 3D o que cada câmera enxerga numa casa e escolha o plano de locação de câmeras da SC Soluções, com gravação local e imagens no celular. Francisco Beltrão e região.',
@@ -311,6 +314,7 @@ export const paginasAmbiente = {
   comercio: {
     sobre: 'Comércio',
     curto: 'Comércio',
+    tituloBusca: 'Câmeras de segurança para comércio',
     titulo: 'Caixa, estoque e entrada à vista, de onde você estiver.',
     lead: 'Gire a maquete da loja, escolha o plano e veja o que cada câmera enxerga.',
     descricao: 'Veja numa maquete 3D o que cada câmera enxerga numa loja: caixa, salão, estoque e entrada. Planos de locação de câmeras da SC Soluções, rede Wi-Fi e alarme. Francisco Beltrão e região.',
@@ -324,6 +328,7 @@ export const paginasAmbiente = {
   empresa: {
     sobre: 'Empresa',
     curto: 'Empresa',
+    tituloBusca: 'Câmeras e rede para empresas',
     titulo: 'Segurança e rede da sua empresa no mesmo projeto.',
     lead: 'Gire a maquete, veja o que cada câmera enxerga e como a rede liga tudo.',
     descricao: 'Veja numa maquete 3D as câmeras, a rede e o alarme de uma empresa. Planos de locação de câmeras ou proposta personalizada da SC Soluções. Francisco Beltrão e região.',
