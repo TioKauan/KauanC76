@@ -5,6 +5,21 @@ Cada publicação tem uma tag `publicado-<data>` no Git, apontando para o commit
 
 ---
 
+## 02/11/2026, 13:37 (Brasília) — Botão do plano no WhatsApp e condições do contrato
+
+Tag `publicado-2026-11-02-163701` (a data da tag é UTC, como a do script).
+
+### O que mudou para quem visita o site
+
+- O título da abertura passou a dizer "Câmeras em locação em Francisco Beltrão" e o preço inicial.
+- "Quero este plano" agora abre o WhatsApp da equipe com o plano e o valor já escritos.
+- Cada plano mostra o custo por câmera; os planos de 3 e 4 câmeras destacam a diferença de preço.
+- Novo bloco "Condições do contrato" (prazo, multa, reajuste, o que a manutenção cobre e o que é cobrado à parte).
+- Dúvidas: 10 perguntas, com reajuste, furto e dano, energia e internet.
+- "Revisão semestral" e formas de pagamento saíram dos textos.
+
+---
+
 ## 17/10/2026, 14:10 (Brasília) — Inicial mais enxuta; "Monte seu sistema" em página própria
 
 Tag `publicado-2026-10-17-171017` (a data da tag é UTC, como a do script).
