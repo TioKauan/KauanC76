@@ -90,3 +90,7 @@
   .painel-servico ul { grid-template-columns: 1fr; }
   .tudo-claro { grid-template-columns: 1fr; padding: 20px; }
 }
+
+/* Custo por câmera e destaque da diferença entre 3 e 4 câmeras (02/11/2026) */
+.plano-camera { margin: 2px 0 0; font-size: 12.5px; color: #a9bdd0; }
+.plano-upsell { margin: 6px 0 0; padding: 6px 10px; border-radius: 10px; font-size: 12.5px; font-weight: 700; line-height: 1.4; color: #ffd9a8; background: rgba(255, 146, 43, 0.12); border: 1px solid rgba(255, 146, 43, 0.35); }

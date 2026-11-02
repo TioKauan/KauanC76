@@ -53,8 +53,8 @@ describe('dados estruturados para o Google', () => {
     expect(JSON.stringify(dadosEstruturados())).not.toMatch(/wa\.me|contactPoint/);
   });
 
-  it('nada de condição contratual ou instalação grátis', () => {
-    expect(JSON.stringify(dadosEstruturados())).not.toMatch(/prazo mínimo|multa|instalação inclu|sem investimento|R\$/i);
+  it('nada de instalação grátis nem preço nos dados do Google', () => {
+    expect(JSON.stringify(dadosEstruturados())).not.toMatch(/instalação inclu|sem investimento|R\$/i);
   });
 });
 

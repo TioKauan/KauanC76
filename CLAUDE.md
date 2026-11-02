@@ -18,21 +18,21 @@ solução, não a mais simples de entender; nas conversas, explique o porquê da
 - Comunicação dos planos: "aproximadamente 10 dias" de gravação; acesso pelo celular depende de
   energia e internet; recursos premium sempre "sob orçamento"; condomínio e empresa com
   infraestrutura especial → proposta personalizada.
-- **Condições contratuais ficam no contrato** (25/09/2026): prazo mínimo, cancelamento, cobranças
-  extras e reajuste não aparecem no site; o contrato é apresentado antes da assinatura. Só mude isso
-  com pedido do Kauan; o validador confere. Rodapé: CNPJ, cidade e e-mail. Alarme é "monitorado
-  pelo app".
+- **Condições do contrato aparecem no site** (desde 02/11/2026): prazo mínimo, multa, reajuste, o que a
+  manutenção cobre e o que é cobrado à parte, em `condicoesContrato` e no FAQ (`dados.ts`). Fonte: documento
+  "Planos de Locação de CFTV"; site e contrato precisam dizer a mesma coisa. Nunca prometa garantia contra
+  raio/surto nem reposição de furto (o documento exclui). Rodapé: CNPJ, cidade e e-mail. Alarme é
+  "monitorado pelo app". Nada de depoimento ou número inventado.
 - **A instalação não é grátis:** taxa = valor de 1 mensalidade do plano, paga antecipadamente
   (`taxaInstalacaoMensalidades` em `dados.ts`). Nunca escreva "instalação inclusa" nem "sem
   investimento inicial"; o validador falha.
 - WhatsApp do site: `(46) 99133-1306` (de volta em 04/10/2026, por decisão do Kauan:
   "este é o número correto"), atendimento humano. Os números `(46) 99113-8360` (banido em
   19/09) e `(49) 99832-5623` (usado de 27/09 a 04/10) não podem aparecer; o teste confere.
-- **O WhatsApp da equipe fica só na seção "Fale com a SC" (`#contato`)** (decisão do Kauan em
-  28/09/2026, noite: "não gostei do WhatsApp ali direto"). O topo e o menu do celular levam até lá; os
-  botões de venda ("Quero este plano", "Enviar para a SC", "Pedir proposta") abrem a Sol com a
-  escolha (`data-sol-abrir` + `data-sol-mensagem`/`data-sol-plano`) e, sem JavaScript, são links para
-  `#contato`. O validador confere que nenhum link `wa.me` fica fora de `#contato`.
+- **WhatsApp:** desde 02/11/2026 o "Quero este plano" dos cartões da inicial abre o WhatsApp da equipe
+  (mensagem `mensagemContratar` em `dados.ts`), além da seção "Fale com a SC" (`#contato`). Os demais botões de
+  venda ("Enviar para a SC", "Pedir proposta", páginas 3D) continuam abrindo a Sol (`data-sol-abrir` +
+  `data-sol-mensagem`/`data-sol-plano`) e, sem JavaScript, levam a `#contato`. O validador confere.
 - **Chat da Sol** (assistente virtual desde 27/09/2026; agente de captura de lead desde 28/09): tela
   em `src/components/Sol.astro` + `src/scripts/sol.ts`, regras em `src/lib/sol.ts` (com testes).
   Antes da IA, o próprio site pergunta nome, WhatsApp, cidade e o que a pessoa procura (roteiro fixo,
@@ -71,6 +71,10 @@ solução, não a mais simples de entender; nas conversas, explique o porquê da
   O mapa do site sai em `/sitemap-index.xml` (que o `robots.txt` aponta), `/sitemap-0.xml` e, desde
   13/10/2026, também em `/sitemap.xml` (cópia feita no build por `astro.config.mjs`, conferida pelo
   validador): é o endereço que o Search Console e o Bing sugerem.
+- **Calculadoras** (`/calculadoras/`, 29/10/2026): contas em `src/lib/calculadoras/` (sem DOM, com testes), tela em
+  `src/scripts/calculadoras.ts`, PWA em `public/calculadoras/` (service worker só nesse escopo). O link fica só no
+  rodapé, sem menu do topo; sem localStorage, cookie ou envio de dados (a privacidade cita o cache offline).
+  Mudou fórmula ou tabela de cabo? Atualize os testes; a ampacidade vem de tabela de fabricante que reproduz a NBR 5410.
 - Logo: só os arquivos oficiais (`site/public/marca/`); nunca redesenhe. O Claude não gera foto.
 - **Publicar é ação externa: só com pedido explícito do Kauan** (Nginx do VPS, guardando antes a versão no ar).
 

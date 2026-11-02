@@ -13,7 +13,7 @@ import { execSync } from 'node:child_process';
 import { readFileSync, writeFileSync, existsSync, statSync, mkdirSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { planos, contato, empresa, formatarPreco, duvidas } from '../src/lib/dados.ts';
+import { planos, contato, empresa, formatarPreco, precoPorCamera, duvidas } from '../src/lib/dados.ts';
 
 const aqui = path.dirname(fileURLToPath(import.meta.url));
 const raizSite = path.resolve(aqui, '..');
@@ -113,9 +113,10 @@ const rolarTudo = (pagina) => pagina.evaluate(async () => {
   conferir('Todo botão de WhatsApp mostra o ícone do WhatsApp', whats.length > 0 && semIcone.length === 0, semIcone.join(' | '));
   // Decisão do Kauan (28/09/2026, noite): o WhatsApp da equipe fica só na seção "Fale com a SC";
   // o topo e o menu do celular levam até ela, e os botões de venda abrem a Sol.
-  const foraDoContato = await pagina.evaluate(() => [...document.querySelectorAll('a[href*="wa.me"]')]
-    .filter((a) => !a.closest('#contato')).map((a) => a.textContent.trim().slice(0, 30)));
-  conferir('WhatsApp da equipe só na seção "Fale com a SC"', whats.length > 0 && foraDoContato.length === 0, foraDoContato.join(' | '));
+  // Desde 02/11/2026 (decisão do Kauan) o "Quero este plano" da inicial abre o WhatsApp da equipe.
+  const foraPermitido = await pagina.evaluate(() => [...document.querySelectorAll('a[href*="wa.me"]')]
+    .filter((a) => !a.closest('#contato') && !a.matches('.plano-cta')).map((a) => a.textContent.trim().slice(0, 30)));
+  conferir('WhatsApp da equipe só em "Fale com a SC" e nos botões "Quero este plano"', whats.length > 0 && foraPermitido.length === 0, foraPermitido.join(' | '));
   const topoContato = await pagina.evaluate(() => [...document.querySelectorAll('.cabecalho-cta, #menu-celular a.btn')]
     .map((a) => ({ href: a.getAttribute('href'), texto: a.textContent.trim() })));
   conferir('Topo e menu do celular: "Fale com a SC" leva à seção de contato', topoContato.length === 2
@@ -128,7 +129,9 @@ const rolarTudo = (pagina) => pagina.evaluate(async () => {
   conferir('Rodapé identifica a empresa (CNPJ, cidade, e-mail)',
     [empresa.cnpj, empresa.cidade, contato.email].every((t) => rodape.includes(t)));
 
-  const precosValidos = new Set(planos.map((p) => formatarPreco(p.preco)));
+  // Valores derivados dos planos (02/11/2026): custo por câmera e a diferença entre 3 e 4 câmeras.
+  const preco3 = planos.find((x) => x.cameras === 3).preco, preco4 = planos.find((x) => x.cameras === 4).preco;
+  const precosValidos = new Set([...planos.map((p) => formatarPreco(p.preco)), ...planos.map((p) => precoPorCamera(p)), formatarPreco(preco4 - preco3)]);
   const achados = [...textoTodo.matchAll(/R\$\s?(\d{1,3},\d{2})/g)].map((m) => m[1]);
   const invalidos = achados.filter((v) => !precosValidos.has(v));
   conferir('Todo preço na página bate com dados.ts', achados.length > 0 && invalidos.length === 0, `${achados.length} preços encontrados${invalidos.length ? `; fora da tabela: ${invalidos.join(', ')}` : ''}`);
@@ -203,7 +206,7 @@ for (const largura of [360, 390, 768, 1024, 1440]) {
     solEscondida: document.querySelector('[data-sol]').hidden && [...document.querySelectorAll('button[data-sol-abrir]')].every((b) => b.hidden && getComputedStyle(b).display === 'none'),
   }));
   conferir('Sem JavaScript o conteúdo aparece e os contatos funcionam (botões de venda levam a "Fale com a SC")',
-    semJs.planos === 5 && semJs.duvidas === 7 && semJs.escondidos === 0 && semJs.vendas === 9 && semJs.whatsContato && semJs.solEscondida, JSON.stringify(semJs));
+    semJs.planos === 5 && semJs.duvidas === 10 && semJs.escondidos === 0 && semJs.vendas === 4 && semJs.whatsContato && semJs.solEscondida, JSON.stringify(semJs));
   await contexto.close();
 }
 
@@ -371,19 +374,20 @@ grupo('Tela 2 · Planos');
   conferir('Destaque "Cobertura completa" só no plano de 4 câmeras', destaques.length === 1 && destaques[0] === 4 && cartoes.find((c) => c.n === 4).texto.includes('Cobertura completa'));
   const claro = await pagina.$eval('.tudo-claro', (e) => e.textContent);
   conferir('"Simples de contratar": assinatura eletrônica, taxa de instalação, mensalidades na ativação, pagamento',
-    ['ZapSign', 'Taxa de instalação', 'ativação', 'PIX'].every((t) => claro.includes(t)));
+    ['ZapSign', 'Taxa de instalação', 'ativação'].every((t) => claro.includes(t)));
   // Taxa de instalação = 1 mensalidade do plano, paga antecipadamente (Kauan, 25/09/2026).
   const taxas = cartoes.filter((c) => { const p = planos.find((x) => x.cameras === c.n); return c.texto.includes(`Instalação: R$ ${formatarPreco(p.preco)} (1 mensalidade)`); }).length;
   const gratis = (await pagina.evaluate(() => document.body.textContent)).match(/instalação (padrão )?(está )?inclu[sí]|sem investimento inicial|sem pagar antes/i);
   conferir('Cada plano mostra a taxa de instalação (1 mensalidade) e nada diz que a instalação é grátis', taxas === 5 && !gratis,
     `${taxas}/5${gratis ? `; achado: "${gratis[0]}"` : ''}`);
-  // As condições contratuais ficam no contrato (25/09/2026); o site não repete prazo, multa etc.
-  const contratuais = /prazo mínimo|24 meses|multa|IPCA|valor de reposição|desistência/i;
-  const achadoContratual = (await pagina.evaluate(() => document.body.textContent)).match(contratuais);
-  conferir('Condições contratuais ficam no contrato (sem prazo mínimo, multa ou cobranças extras no site)', !achadoContratual, achadoContratual ? `achado: "${achadoContratual[0]}"` : '');
-  const ctas = cartoes.filter((c) => c.cta.abreSol && c.cta.href === '#contato' && c.cta.plano === String(c.n) && c.cta.orbe && !c.cta.whats
-    && c.cta.msg === `Quero o plano de ${c.n} ${c.n > 1 ? 'câmeras' : 'câmera'}`);
-  conferir('"Quero este plano" abre a Sol com o plano (orbe, sem WhatsApp; sem JavaScript leva a "Fale com a SC")', ctas.length === 5, `${ctas.length}/5`);
+  // Desde 02/11/2026 o site mostra as condições do contrato (documento de planos), sem as regras antigas.
+  const textoPag = await pagina.evaluate(() => document.body.textContent);
+  const contratoVisivel = ['24 meses', '30%', 'IPCA', 'Os equipamentos são da SC', 'Foro'].filter((t) => !textoPag.includes(t));
+  conferir('Bloco "Condições do contrato" mostra prazo, multa, reajuste, propriedade e foro', contratoVisivel.length === 0 && Boolean(await pagina.$('#contrato')), contratoVisivel.join(', '));
+  const errado = textoPag.match(/multa de 50|50% das mensalidades|renova(ção)? autom[aá]tic[ao] por mais 24|garantia contra raio/i);
+  conferir('Nenhuma condição antiga ou promessa fora do documento (50%, renovação automática, garantia contra raio)', !errado, errado ? `achado: "${errado[0]}"` : '');
+  const zap = await pagina.$$eval('.plano-cta', (els) => els.filter((a) => { const u = new URL(a.href); const t = u.searchParams.get('text') || ''; return u.host === 'wa.me' && /quero contratar/.test(t) && /R\$ \d/.test(t) && /instalação/.test(t); }).length);
+  conferir('"Quero este plano" abre o WhatsApp da equipe com o plano, o valor e a pergunta da instalação', zap === 5, `${zap}/5`);
   const simular = await pagina.$$eval('.plano', (els) => els.filter((e) => e.querySelector('.plano-simular')?.getAttribute('href') === `/monte-seu-sistema/?cameras=${e.dataset.plano}`).length);
   conferir('"Ver no configurador" leva à página /monte-seu-sistema/ com a quantidade de câmeras do plano', simular === 5, `${simular}/5`);
   await pagina.click('#guia-redes');
@@ -489,7 +493,7 @@ grupo('Tela 4 · Como funciona');
   const perguntas = await pagina.$$eval('[data-pergunta]', (p) => p.length);
   await pagina.fill('[data-busca]', 'posso ver pelo celular?');
   const visiveis = await pagina.$$eval('[data-pergunta]:not([hidden]) summary', (s) => s.map((x) => x.textContent.trim()));
-  conferir('7 perguntas; a busca "celular" mostra a resposta certa', perguntas === 7 && visiveis[0]?.includes('pelo celular'), visiveis.join(' | '));
+  conferir('10 perguntas; a busca "celular" mostra a resposta certa', perguntas === 10 && visiveis[0]?.includes('pelo celular'), visiveis.join(' | '));
   await pagina.fill('[data-busca]', 'xyzabc');
   const semResultado = await pagina.$eval('[data-sem-resultado]', (e) => !e.hidden && !e.querySelector('[data-sol-pergunta]').hidden && !e.querySelector('a[href*="wa.me"]'));
   conferir('Busca sem resultado oferece perguntar para a Sol (sem WhatsApp)', semResultado);
@@ -702,7 +706,9 @@ grupo('Sol · chat do site');
   conferir('Sem conexão com a Sol: aviso e botão do WhatsApp da equipe', falha.texto.includes('Não consegui') && falha.whats.startsWith(`https://wa.me/${contato.whatsapp}?text=`));
 
   const textoChat = await pagina.$eval('.sol-painel', (e) => e.innerText);
-  const precosValidos = new Set(planos.map((p) => formatarPreco(p.preco)));
+  // Valores derivados dos planos (02/11/2026): custo por câmera e a diferença entre 3 e 4 câmeras.
+  const preco3 = planos.find((x) => x.cameras === 3).preco, preco4 = planos.find((x) => x.cameras === 4).preco;
+  const precosValidos = new Set([...planos.map((p) => formatarPreco(p.preco)), ...planos.map((p) => precoPorCamera(p)), formatarPreco(preco4 - preco3)]);
   const precosChat = [...textoChat.matchAll(/R\$\s?(\d{1,3},\d{2})/g)].map((m) => m[1]);
   conferir('Todo preço no chat bate com dados.ts', precosChat.length > 0 && precosChat.every((v) => precosValidos.has(v)), `${precosChat.length} preços`);
 

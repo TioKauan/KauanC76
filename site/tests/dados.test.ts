@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { planos, contato, empresa, planoParaCameras, formatarPreco, linkWhatsapp, mensagemPlano, nomePlano, menorPreco, duvidas, condicoes, servicosProposta, textoProposta, etapas, taxaInstalacao, textoTaxaInstalacao } from '../src/lib/dados';
+import { planos, contato, empresa, planoParaCameras, formatarPreco, linkWhatsapp, mensagemPlano, nomePlano, menorPreco, duvidas, condicoes, condicoesContrato, mensagemContratar, precoPorCamera, etapas, taxaInstalacao, textoTaxaInstalacao } from '../src/lib/dados';
 
 describe('planos de locação', () => {
   it('são os planos fixos de 1, 2, 3, 4 e 8 câmeras, em ordem', () => {
@@ -77,10 +77,30 @@ describe('textos e contato', () => {
     }
   });
 
-  it('condições contratuais (prazo, multa, cobranças extras, reajuste) ficam no contrato, não no site', () => {
-    const tudo = JSON.stringify({ condicoes, duvidas, servicosProposta, textoProposta });
-    expect(tudo).not.toMatch(/prazo mínimo|24 meses|multa|IPCA|valor de reposição|desistência|central de monitoramento/i);
+  it('condições do contrato aparecem no site e batem com o documento de planos (02/11/2026)', () => {
+    const tudo = JSON.stringify({ condicoesContrato, duvidas });
+    expect(tudo).toMatch(/24 meses/);
+    expect(tudo).toMatch(/30%/);
+    expect(tudo).toMatch(/IPCA/);
+    expect(tudo).toMatch(/30 dias/);
+    expect(tudo).toMatch(/sem nova fidelidade/i);
+    // Raio e surto NÃO são cobertos (documento): o site nunca pode prometer garantia contra isso.
+    expect(tudo).not.toMatch(/garantia contra raio|cobre raio|reposição (gratuita )?de equipamento furtado/i);
+    expect(tudo).not.toMatch(/50%/);
     expect(condicoes.map((c) => c.titulo)).toEqual(['Sem comprar equipamentos', 'Defeito natural? A SC resolve', 'Taxa de instalação', 'Contrato e pagamento pelo celular']);
+  });
+
+  it('mensagem do botão "Quero este plano" cita o plano, o valor e a instalação', () => {
+    for (const p of planos) {
+      const msg = mensagemContratar(p);
+      expect(msg).toContain(nomePlano(p));
+      expect(msg).toContain(formatarPreco(p.preco));
+      expect(msg).toMatch(/instalação/);
+    }
+  });
+
+  it('custo por câmera é arredondado ao centavo', () => {
+    expect(planos.map(precoPorCamera)).toEqual(['49,90', '34,95', '29,97', '24,98', '19,99']);
   });
 
   it('taxa de instalação = 1 mensalidade do plano, e nenhum texto diz que a instalação é grátis', () => {
@@ -111,6 +131,6 @@ describe('textos e contato', () => {
     const tudo = JSON.stringify({ duvidas, condicoes });
     expect(tudo).toMatch(/aproximadamente dez dias/);
     expect(tudo).not.toMatch(/garant(e|ia) (a )?identifica/i);
-    expect(duvidas).toHaveLength(7);
+    expect(duvidas).toHaveLength(10);
   });
 });

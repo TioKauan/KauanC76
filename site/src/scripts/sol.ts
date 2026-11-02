@@ -166,7 +166,7 @@ export function iniciarSol(): void {
     comIcone(cabo, 'cable', 14);
     c.append(cabo);
     const lista = el('ul', 'sol-plano-lista');
-    for (const item of [`${p.cameras} ${p.cameras > 1 ? 'câmeras' : 'câmera'} 2 MP ou superior`, 'Gravação local ≈ 10 dias', `${p.gravador} e imagens no celular`, 'Revisão semestral e manutenção']) {
+    for (const item of [`${p.cameras} ${p.cameras > 1 ? 'câmeras' : 'câmera'} 2 MP ou superior`, 'Gravação local ≈ 10 dias', `${p.gravador} e imagens no celular`, 'Suporte e manutenção']) {
       const li = el('li', '', item);
       comIcone(li, 'check', 14);
       lista.append(li);

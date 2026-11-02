@@ -7,13 +7,16 @@
  * no configurador) e "Por que locar" (o título da seção já diz o principal).
  */
 import Icone from './Icone.astro';
+import IconeWhatsapp from './IconeWhatsapp.astro';
 import MiniPlanta from './MiniPlanta.astro';
 import {
-  planos, condicoes, servicosProposta, textoProposta,
+  planos, condicoes, condicoesContrato, servicosProposta, textoProposta,
   formatarPreco, mostrarPrecos, nomePlano, textoTaxaInstalacao, rotuloTaxa,
+  linkWhatsapp, mensagemContratar, precoPorCamera,
 } from '../lib/dados';
-import { mensagemQueroPlano } from '../lib/sol';
 
+const preco3 = planos.find((x) => x.cameras === 3)?.preco ?? 0;
+const preco4 = planos.find((x) => x.cameras === 4)?.preco ?? 0;
 const cameras = (n: number) => `${n} ${n > 1 ? 'câmeras' : 'câmera'}`;
 ---
 
@@ -57,16 +60,18 @@ const cameras = (n: number) => `${n} ${n > 1 ? 'câmeras' : 'câmera'}`;
                 ) : (
                   <div class="preco"><strong class="preco-consulta">Sob consulta</strong></div>
                 )}
+                {mostrarPrecos && <p class="plano-camera">{p.cameras > 1 ? `R$ ${precoPorCamera(p)} por câmera/mês` : 'Uma câmera, sem complicação'}</p>}
+                {mostrarPrecos && p.cameras === 3 && <p class="plano-upsell">Por mais R$ {formatarPreco(preco4 - p.preco)}/mês você leva 4 câmeras.</p>}
+                {mostrarPrecos && p.cameras === 4 && <p class="plano-upsell">Só R$ {formatarPreco(p.preco - preco3)} a mais que o plano de 3 câmeras: +1 câmera.</p>}
                 <p class="plano-cabo"><Icone nome="cable" tamanho={15} /><span>Instalação: {textoTaxaInstalacao(p)}{mostrarPrecos && ` (${rotuloTaxa})`}<br />até {p.caboMetros} m de cabo</span></p>
                 <ul class="plano-lista">
-                  <li><Icone nome="check" tamanho={16} traco={2.2} />{cameras(p.cameras)} 2 MP ou superior</li>
-                  <li><Icone nome="check" tamanho={16} traco={2.2} />Gravação local ≈ 10 dias</li>
+                  <li><Icone nome="check" tamanho={16} traco={2.2} />{cameras(p.cameras)} Full HD (2 MP ou superior)</li>
+                  <li><Icone nome="check" tamanho={16} traco={2.2} />Gravação no local por aproximadamente 10 dias</li>
                   <li><Icone nome="check" tamanho={16} traco={2.2} />{p.gravador} e imagens no celular</li>
-                  <li><Icone nome="check" tamanho={16} traco={2.2} />Revisão semestral e manutenção</li>
+                  <li><Icone nome="check" tamanho={16} traco={2.2} />Suporte e manutenção</li>
                 </ul>
-                <a class:list={['btn plano-cta', p.destaque ? 'btn-primario' : 'btn-contorno']} href="#contato" data-plano-cta={p.cameras}
-                   data-sol-abrir data-sol-plano={p.cameras} data-sol-mensagem={mensagemQueroPlano(p.cameras)}>
-                  <span class="sol-orbe sol-orbe-p" aria-hidden="true"></span> Quero este plano<span class="sr"> ({nomePlano(p)}, abre o chat da Sol)</span>
+                <a class:list={['btn plano-cta', p.destaque ? 'btn-primario' : 'btn-contorno']} href={linkWhatsapp(mensagemContratar(p))} target="_blank" rel="noopener" data-plano-cta={p.cameras}>
+                  <IconeWhatsapp tamanho={18} /> Quero este plano<span class="sr"> ({nomePlano(p)}, abre o WhatsApp da equipe)</span>
                 </a>
                 <a class="plano-simular" href={`/monte-seu-sistema/?cameras=${p.cameras}`}>Ver no configurador <Icone nome="arrow-right" tamanho={14} /></a>
               </article>
@@ -105,6 +110,11 @@ const cameras = (n: number) => `${n} ${n > 1 ? 'câmeras' : 'câmera'}`;
     <div class="tudo-claro" data-revelar>
       <h3>Simples de contratar<small>Sem papel e sem burocracia.</small></h3>
       {condicoes.map((c) => <div class="condicao"><Icone nome={c.icone} tamanho={20} /><div><b>{c.titulo}</b><span>{c.texto}</span></div></div>)}
+    </div>
+
+    <div class="tudo-claro" id="contrato" data-revelar>
+      <h3>Condições do contrato<small>O resumo do que você assina, antes de assinar.</small></h3>
+      {condicoesContrato.map((c) => <div class="condicao"><Icone nome={c.icone} tamanho={20} /><div><b>{c.titulo}</b><span>{c.texto}</span></div></div>)}
     </div>
   </div>
 </section>

@@ -123,15 +123,35 @@ export const upgrades: Upgrade[] = [
 /*
  * "Simples de contratar": o que muda para quem loca e como é a contratação (25/09/2026).
  * Em 17/10/2026 o antigo "Por que locar" entrou aqui, para a inicial ficar mais curta.
- * As condições contratuais completas (prazo, cancelamento, cobranças extras,
- * reajuste) ficam no contrato, apresentado ao cliente antes da assinatura.
- * Só acrescente condições aqui com pedido do Kauan; o validador confere isso.
+ * Desde 02/11/2026 (decisão do Kauan: "vamos mostrar tudo sob o contrato") as condições do
+ * contrato (prazo, multa, reajuste, cobranças à parte...) também aparecem no site, em
+ * `condicoesContrato`. Fonte: documento "Planos de Locação de CFTV". Site e contrato precisam
+ * dizer a mesma coisa: mudou uma regra, mude os dois.
  */
 export const condicoes: ItemIcone[] = [
   { icone: 'sparkles', titulo: 'Sem comprar equipamentos', texto: 'Os equipamentos são da SC: você paga a instalação uma vez e depois só a mensalidade do plano.' },
   { icone: 'wrench', titulo: 'Defeito natural? A SC resolve', texto: 'Reparo ou troca por equipamento equivalente ou superior, conforme o contrato.' },
   { icone: 'cable', titulo: 'Taxa de instalação', texto: `Valor de ${rotuloTaxa} do plano, pago antecipadamente.` },
-  { icone: 'signature', titulo: 'Contrato e pagamento pelo celular', texto: 'Assinatura pela ZapSign. Mensalidade por PIX, boleto ou cartão, a partir da ativação.' },
+  { icone: 'signature', titulo: 'Contrato e pagamento pelo celular', texto: 'Assinatura eletrônica pela ZapSign. As mensalidades começam na ativação do sistema.' },
+];
+
+/*
+ * "Condições do contrato" (02/11/2026): o que o cliente assina, em linguagem simples.
+ * Fonte: documento "Planos de Locação de CFTV" (seções de condições, danos, cobranças e gravação).
+ * Não invente regra aqui: tudo precisa estar no documento.
+ */
+export const condicoesContrato: ItemIcone[] = [
+  { icone: 'signature', titulo: 'Prazo mínimo de 24 meses', texto: 'Contado da ativação do sistema. A primeira mensalidade vence na ativação.' },
+  { icone: 'circle-check', titulo: 'Depois dos 24 meses', texto: 'O contrato segue por prazo indeterminado, sem nova fidelidade automática. Para cancelar, avise por escrito com pelo menos 30 dias de antecedência.' },
+  { icone: 'circle-alert', titulo: 'Cancelamento antes dos 24 meses', texto: 'Multa de 30% das mensalidades que faltam para completar os 24 meses.' },
+  { icone: 'refresh-cw', titulo: 'Reajuste anual pelo IPCA', texto: 'A mensalidade é reajustada uma vez por ano pela variação acumulada do IPCA ou índice oficial substituto.' },
+  { icone: 'cctv', titulo: 'Os equipamentos são da SC', texto: 'Durante a locação os equipamentos continuam sendo da SC, que os retira ao fim do contrato. Marca e modelo podem variar, mantendo ou superando as funções contratadas.' },
+  { icone: 'wrench', titulo: 'O que a manutenção cobre', texto: 'Defeito natural dos equipamentos locados. Danos externos e mau uso são cobrados à parte.' },
+  { icone: 'triangle-alert', titulo: 'Não coberto gratuitamente', texto: 'Vandalismo, furto, roubo, impacto, mau uso, pragas, infiltração externa, incêndio, raio, surto acima da proteção instalada, oscilação grave, falta de aterramento, desastre natural, obra, intervenção de terceiros e descumprimento de orientação técnica.' },
+  { icone: 'cable', titulo: 'Cobrado à parte', texto: 'Cabo além do limite do plano; canaletas, eletrodutos, postes, suportes especiais, rack ou quadro técnico; obras civis, pintura e passagem subterrânea; andaime, plataforma ou trabalho em altura; rede elétrica, aterramento, nobreak e proteção adicional; adequação de internet, roteador ou rede; mudança de endereço, reposicionamento e ampliação; reconfiguração por troca de roteador, provedor ou senha; visita em que não se encontre defeito coberto.' },
+  { icone: 'hard-drive', titulo: 'Gravação e acesso pelo celular', texto: 'Cerca de 10 dias de gravação, variando com HD, resolução, movimento e câmeras; o sistema pode apagar as imagens mais antigas, então exporte as importantes antes. A SC não guarda as gravações. O acesso depende de energia, internet, rede, aparelho compatível e senha válida.' },
+  { icone: 'scan-eye', titulo: 'Sem vigilância humana', texto: 'Os planos de locação de câmeras não incluem vigilância humana.' },
+  { icone: 'map-pin', titulo: 'Foro', texto: 'Comarca de Francisco Beltrão, Paraná, preservados os direitos do consumidor.' },
 ];
 
 // Serviços que viram proposta personalizada (documento: "Exemplos de soluções personalizadas").
@@ -180,7 +200,7 @@ export const etapas: Etapa[] = [
   { icone: 'map-pin', titulo: 'A SC confirma o local', texto: 'Pontos, viabilidade técnica e se precisa de alguma infraestrutura extra.', meta: 'Cabo dentro do limite do plano' },
   { icone: 'signature', titulo: 'Assine pelo celular', texto: 'O contrato do plano chega pela ZapSign. Sem papel, sem ir até a loja.', meta: 'Assinatura eletrônica' },
   { icone: 'wrench', titulo: 'Instalação e app', texto: 'Instalamos, configuramos o gravador, testamos e deixamos as imagens no seu celular.', meta: 'Mensalidades a partir da ativação' },
-  { icone: 'headset', titulo: 'Suporte contínuo', texto: 'Revisão preventiva a cada 6 meses, diagnóstico remoto em horário comercial e manutenção de defeitos naturais durante o contrato.', meta: 'Troca por equivalente ou superior' },
+  { icone: 'headset', titulo: 'Suporte contínuo', texto: 'Diagnóstico remoto em horário comercial, atendimento presencial quando necessário e agendado, e manutenção de defeitos naturais durante o contrato.', meta: 'Troca por equivalente ou superior' },
 ];
 
 // Perguntas frequentes: texto do documento.
@@ -203,11 +223,23 @@ export const duvidas: Duvida[] = [
   },
   {
     pergunta: 'A manutenção está incluída?',
-    resposta: 'Sim. Há revisão preventiva a cada 6 meses, e defeitos naturais dos equipamentos locados são consertados ou trocados por equivalente ou superior.',
+    resposta: 'Sim, para defeitos naturais dos equipamentos locados: a SC conserta ou troca por equivalente ou superior. Danos externos e mau uso são cobrados à parte.',
   },
   {
     pergunta: 'Posso cancelar?',
-    resposta: 'Sim. As condições de cancelamento estão no contrato, e a equipe da SC explica cada uma antes da assinatura.',
+    resposta: 'Sim. O prazo mínimo é de 24 meses, contados da ativação: cancelando antes, a multa é de 30% das mensalidades restantes. Passados os 24 meses, o contrato segue sem nova fidelidade e você cancela com aviso por escrito de 30 dias.',
+  },
+  {
+    pergunta: 'A mensalidade aumenta?',
+    resposta: 'Uma vez por ano, pela variação acumulada do IPCA (ou índice oficial substituto). A mensalidade não muda no meio do ano.',
+  },
+  {
+    pergunta: 'E se roubarem ou danificarem as câmeras?',
+    resposta: 'Os equipamentos são da SC, e a manutenção cobre defeito natural. Furto, roubo, vandalismo, impacto, mau uso, raio, surto, incêndio e intervenção de terceiros não são cobertos e geram cobrança.',
+  },
+  {
+    pergunta: 'E se faltar energia ou a internet cair?',
+    resposta: 'O acesso pelo celular depende de energia elétrica e de internet. Nobreak é um adicional, sob orçamento.',
   },
   {
     pergunta: 'Posso adicionar câmeras premium?',
@@ -305,7 +337,7 @@ export const paginasAmbiente = {
     titulo: 'Sua casa protegida, do portão ao quintal.',
     lead: 'Gire a maquete, escolha o plano e veja o que cada câmera enxerga, por dentro e por fora.',
     descricao: 'Veja numa maquete 3D o que cada câmera enxerga numa casa e escolha o plano de locação de câmeras da SC Soluções, com gravação local e imagens no celular. Francisco Beltrão e região.',
-    destaques: ['Planos de 1 a 8 câmeras', 'Gravação local', 'Imagens no celular', 'Revisão semestral e manutenção'],
+    destaques: ['Planos de 1 a 8 câmeras', 'Gravação local', 'Imagens no celular', 'Suporte e manutenção'],
     cameras: { titulo: 'Veja o que cada câmera enxerga. E o que fica de fora.', texto: textoCameras('Entrada, garagem, laterais, fundos e dentro de casa') },
     plano: { titulo: 'Escolha o plano e veja a cobertura na hora.', texto: 'A maquete mostra onde ficam as câmeras de cada plano, o cabo até o gravador e o que ainda fica sem câmera.' },
     ese: { titulo: 'E se faltar energia ou a internet cair?', texto: 'Teste as situações e veja o que continua funcionando na sua casa.' },
@@ -387,6 +419,17 @@ export function planoParaCameras(n: number): Recomendacao {
 
 export function linkWhatsapp(mensagem: string): string {
   return `https://wa.me/${contato.whatsapp}?text=${encodeURIComponent(mensagem)}`;
+}
+
+/** Mensagem do botão "Quero este plano" que abre o WhatsApp da equipe (02/11/2026). */
+export function mensagemContratar(plano: Plano): string {
+  const valor = mostrarPrecos ? ` (R$ ${formatarPreco(plano.preco)}/mês)` : '';
+  return `Olá! Vim pelo site e quero contratar o ${nomePlano(plano)}${valor}. Como agendamos a instalação?`;
+}
+
+/** Mensalidade por câmera, arredondada ao centavo (ex.: "24,98"). */
+export function precoPorCamera(plano: Plano): string {
+  return formatarPreco(Math.round((plano.preco * 100) / plano.cameras) / 100);
 }
 
 export function mensagemPlano(plano: Plano): string {
