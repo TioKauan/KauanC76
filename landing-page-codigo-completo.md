@@ -63,7 +63,7 @@ atualizado para `(46) 99133-1306` em 24/09/2026.
 
 Desde 21/09/2026 o Kauan faz as artes e posta à mão. Só produza posts quando ele
 pedir um lote. Nesse caso use a skill `sc-social-semanal`
-(`C:/Users/kauan/.claude/skills/sc-social-semanal/SKILL.md`) e os subagentes de
+(`C:/edicoes/.claude/skills/sc-social-semanal/SKILL.md`) e os subagentes de
 `.claude/agents/` (`sc-pauta`, `sc-roteiro`, `sc-direcao-arte`, `sc-revisao`,
 `sc-agendamento`).
 
