@@ -1,6 +1,10 @@
 ---
-/** Comércio (/comercio/): página leve de solução; textos em `paginasAmbiente.comercio` (src/lib/dados.ts). */
+/** Comércio (/comercio/): página leve de solução; textos em `paginasAmbiente.comercio` (src/lib/dados.ts).
+ *  Ferramenta "Toque onde quer câmera" no slot "ferramenta" (src/components/ToqueCamera.astro). */
 import PaginaSolucao from '../components/PaginaSolucao.astro';
+import ToqueCamera from '../components/ToqueCamera.astro';
 ---
 
-<PaginaSolucao id="comercio" />
+<PaginaSolucao id="comercio">
+  <ToqueCamera slot="ferramenta" fachada="comercio" />
+</PaginaSolucao>

@@ -56,7 +56,10 @@ solução, não a mais simples de entender; nas conversas, explique o porquê da
   a 4 blocos e botões). Textos em `dados.ts`: `paginasAmbiente` (casa, comércio, empresa: planos de 1 a 8
   câmeras, botões para `/#planos` e para `/monte-seu-sistema/?ambiente=`) e `paginaCondominio` (nada de
   preço, dias de gravação ou quantidade de câmeras: é proposta personalizada, e o botão abre a Sol). O
-  slot `ferramenta` da página (seção `#ferramenta`) é o ponto de entrada para uma ferramenta própria. O menu
+  slot `ferramenta` da página (seção `#ferramenta`) é o ponto de entrada para uma ferramenta própria: em
+  `/casa/` e `/comercio/` ele leva "Toque onde quer câmera" (`ToqueCamera.astro`; pontos em
+  `lib/toque-camera.ts`, textos em `dados.ts`, fotos de banco em `src/assets/fotos`; cada ponto é uma
+  câmera e o plano sai de `planoParaCameras`). O menu
   "Soluções" leva às quatro. As maquetes 3D (Three.js) e a cena isométrica da abertura foram retiradas em
   11/11/2026; o plano antigo do condomínio segue em `docs/inovacao/condominio/`.
 - **Buscadores** (05/10/2026): os dados da empresa para o Google (schema.org) saem de `dados.ts` em

@@ -14,5 +14,11 @@ Coloque aqui, quando tiver:
 | `condominio-evoluido.webp` | Página do Condomínio Evoluído | 1600 × 1000 px |
 | `instalacao-*.webp` | Fotos reais de instalações (com autorização do cliente) | 1200 × 900 px |
 
+## Fotos de banco já em uso
+
+As fachadas de banco (Pexels) usadas na ferramenta "Toque onde quer câmera" (`/casa/` e `/comercio/`) não
+ficam nesta pasta: estão em `src/assets/fotos` (créditos em `src/assets/fotos/CREDITOS.md`). Elas são só
+ilustrativas e devem ser trocadas por fotos reais da SC, com autorização do cliente, quando houver.
+
 Dicas: formato `.webp`, até ~250 KB cada, sem rostos ou placas de carro de clientes sem autorização.
 Não use as artes antigas com o WhatsApp `(46) 99113-8360`.

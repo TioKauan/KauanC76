@@ -1,0 +1,131 @@
+---
+/**
+ * Ferramenta "Toque onde quer câmera" (slot "ferramenta" de /casa/ e /comercio/).
+ * Foto ilustrativa de fachada com pontos tocáveis: cada ponto marcado soma uma câmera e o plano aparece ao lado
+ * (abaixo, no celular). Pontos em src/lib/toque-camera.ts, textos e planos em src/lib/dados.ts, tela em
+ * src/scripts/toque-camera.ts. Sem JavaScript, os pontos aparecem desativados e um texto leva aos planos.
+ */
+import { Image } from 'astro:assets';
+import IconeWhatsapp from './IconeWhatsapp.astro';
+import Icone from './Icone.astro';
+import fotoCasa from '../assets/fotos/fachada-casa.jpg';
+import fotoLoja from '../assets/fotos/fachada-loja.jpg';
+import { toqueCamera } from '../lib/dados';
+import { fachadas, naFoto, rotuloAcessivel, type IdFachada } from '../lib/toque-camera';
+import '../styles/toque-camera.css';
+
+interface Props {
+  fachada: IdFachada;
+}
+const { fachada: id } = Astro.props;
+const fachada = fachadas[id];
+const foto = id === 'casa' ? fotoCasa : fotoLoja;
+const naImagem = fachada.pontos.filter(naFoto);
+const fora = fachada.pontos.filter((p) => !naFoto(p));
+const tituloId = `toque-titulo-${id}`;
+---
+
+<div class="toque" data-toque={id}>
+  <div class="toque-cabeca">
+    <h2 id={tituloId}>{toqueCamera.titulo}</h2>
+    <p>{toqueCamera.apoio}</p>
+  </div>
+
+  <div class="toque-grade">
+    <div class="toque-pontos">
+      <figure class="toque-figura">
+        <div class="toque-foto">
+          <Image
+            src={foto}
+            alt={fachada.alt}
+            format="webp"
+            widths={[480, 720, 960, 1280]}
+            sizes="(max-width: 760px) calc(100vw - 32px), (max-width: 1264px) calc((100vw - 64px) * 0.58), 700px"
+            quality={72}
+          />
+          {
+            naImagem.map((p, i) => (
+              <button
+                type="button"
+                class="toque-ponto"
+                data-ponto={p.id}
+                data-lado={p.lado ?? 'direita'}
+                aria-pressed="false"
+                aria-label={rotuloAcessivel(p, false)}
+                style={`--x: ${p.x}; --y: ${p.y}`}
+                disabled
+              >
+                <span class="toque-marca" aria-hidden="true">
+                  <svg class="toque-ic toque-ic-mais" viewBox="0 0 24 24" width="18" height="18" focusable="false"><path d="M12 5v14M5 12h14" /></svg>
+                  <svg class="toque-ic toque-ic-camera" viewBox="0 0 24 24" width="20" height="20" focusable="false"><rect x="2" y="6" width="14" height="12" rx="2.5" /><path d="M16 10.5 22 7v10l-6-3.5Z" /></svg>
+                  <span class="toque-num">{i + 1}</span>
+                </span>
+                <span class="toque-rotulo" aria-hidden="true">{p.rotulo}</span>
+              </button>
+            ))
+          }
+        </div>
+        <figcaption>{toqueCamera.legenda}</figcaption>
+      </figure>
+
+      <ol class="toque-legenda" aria-hidden="true">
+        {naImagem.map((p, i) => <li data-legenda={p.id}><span class="toque-num">{i + 1}</span>{p.rotulo}</li>)}
+      </ol>
+
+      <div class="toque-extras" role="group" aria-label={toqueCamera.foraDaFoto}>
+        <p class="toque-extras-titulo" aria-hidden="true">{toqueCamera.foraDaFoto}</p>
+        {
+          fora.map((p) => (
+            <button type="button" class="toque-ponto toque-extra" data-ponto={p.id} aria-pressed="false" aria-label={rotuloAcessivel(p, false)} disabled>
+              <span class="toque-marca" aria-hidden="true">
+                <svg class="toque-ic toque-ic-mais" viewBox="0 0 24 24" width="16" height="16" focusable="false"><path d="M12 5v14M5 12h14" /></svg>
+                <svg class="toque-ic toque-ic-camera" viewBox="0 0 24 24" width="18" height="18" focusable="false"><rect x="2" y="6" width="14" height="12" rx="2.5" /><path d="M16 10.5 22 7v10l-6-3.5Z" /></svg>
+              </span>
+              <span class="toque-rotulo" aria-hidden="true">{p.rotulo}</span>
+            </button>
+          ))
+        }
+      </div>
+
+      <p class="toque-sem-js" data-toque-semjs>
+        {toqueCamera.semJs} <a href="/#planos">ver todos os planos</a> ou <a href={`/monte-seu-sistema/?ambiente=${id}`}>montar o sistema no configurador</a>.
+      </p>
+    </div>
+
+    <div class="toque-resultado cartao" data-toque-resultado hidden>
+      <div class="toque-anuncio" aria-live="polite" data-toque-anuncio>
+        <p class="toque-qtd" data-toque-qtd>0 câmeras marcadas</p>
+        <p class="toque-convite" data-toque-convite>{toqueCamera.convite}</p>
+        <div class="toque-plano" data-toque-plano hidden>
+          <h3 data-toque-nome></h3>
+          <p class="toque-preco"><strong data-toque-preco></strong><span data-toque-mes>/mês</span></p>
+          <p class="toque-linha"><Icone nome="cable" tamanho={16} /><span data-toque-taxa></span></p>
+          <p class="toque-linha"><Icone nome="check" tamanho={16} traco={2.2} /><span data-toque-cabo></span></p>
+          <p class="toque-aviso" data-toque-aviso hidden></p>
+        </div>
+        <div class="toque-proposta" data-toque-proposta hidden>
+          <h3>Proposta personalizada</h3>
+          <p>{toqueCamera.proposta}</p>
+        </div>
+      </div>
+      <div class="toque-acoes">
+        <div data-toque-caixa-whats hidden>
+          <a class="btn btn-primario plano-cta toque-cta" target="_blank" rel="noopener" data-toque-cta>
+            <IconeWhatsapp tamanho={18} /> Quero este plano<span class="sr" data-toque-cta-sr></span>
+          </a>
+        </div>
+        <div data-toque-caixa-sol hidden>
+          <a class="btn btn-primario toque-cta" href="#contato" data-sol-abrir data-toque-sol data-sol-mensagem={toqueCamera.proposta}>
+            <span class="sol-orbe sol-orbe-p" aria-hidden="true"></span> Pedir proposta<span class="sr"> (abre o chat da Sol)</span>
+          </a>
+        </div>
+        <a class="toque-todos" href="/#planos">Ver todos os planos <Icone nome="arrow-right" tamanho={16} /></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { iniciarToqueCamera } from '../scripts/toque-camera';
+  iniciarToqueCamera();
+</script>

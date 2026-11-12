@@ -469,11 +469,38 @@ export function linkWhatsapp(mensagem: string): string {
   return `https://wa.me/${contato.whatsapp}?text=${encodeURIComponent(mensagem)}`;
 }
 
+const perguntaInstalacao = 'Como agendamos a instalação?';
+
 /** Mensagem do botão "Quero este plano" que abre o WhatsApp da equipe (02/11/2026). */
 export function mensagemContratar(plano: Plano): string {
   const valor = mostrarPrecos ? ` (R$ ${formatarPreco(plano.preco)}/mês)` : '';
-  return `Olá! Vim pelo site e quero contratar o ${nomePlano(plano)}${valor}. Como agendamos a instalação?`;
+  return `Olá! Vim pelo site e quero contratar o ${nomePlano(plano)}${valor}. ${perguntaInstalacao}`;
 }
+
+/**
+ * Mensagem do "Quero este plano" da ferramenta "Toque onde quer câmera" (/casa/ e /comercio/):
+ * a mesma de `mensagemContratar`, com os pontos que a pessoa marcou na foto.
+ */
+export function mensagemContratarPontos(plano: Plano, pontos: readonly string[]): string {
+  const base = mensagemContratar(plano);
+  if (pontos.length === 0) return base;
+  const lista = `${pontos.length > 1 ? 'Pontos' : 'Ponto'}: ${pontos.join(', ')}.`;
+  return `${base.slice(0, -perguntaInstalacao.length)}${lista} ${perguntaInstalacao}`;
+}
+
+/** Textos da ferramenta "Toque onde quer câmera" (src/components/ToqueCamera.astro). */
+export const toqueCamera = {
+  titulo: 'Toque onde quer câmera',
+  apoio: 'Cada ponto marcado é uma câmera. O plano e a mensalidade aparecem na hora.',
+  convite: 'Toque nos pontos onde você quer uma câmera',
+  legenda: 'Foto ilustrativa (Pexels)',
+  foraDaFoto: 'Fora da foto',
+  avisoFolga: (n: number) =>
+    `Você marcou ${n} pontos. O plano de 8 câmeras cobre com folga e sobra canal no gravador; para exatamente ${n} câmeras, a SC faz uma proposta personalizada.`,
+  proposta: 'Para mais de 8 câmeras, a SC monta uma proposta personalizada.',
+  mensagemProposta: (pontos: readonly string[]) => `Quero uma proposta para ${pontos.length} câmeras. Pontos: ${pontos.join(', ')}.`,
+  semJs: 'Para marcar os pontos na foto, ative o JavaScript. Você também pode',
+} as const;
 
 /** Mensalidade por câmera, arredondada ao centavo (ex.: "24,98"). */
 export function precoPorCamera(plano: Plano): string {

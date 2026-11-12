@@ -1,0 +1,112 @@
+/* Ferramenta "Toque onde quer câmera" (src/components/ToqueCamera.astro), em /casa/ e /comercio/ */
+.toque-cabeca h2 { font-size: clamp(26px, 3vw, 36px); font-weight: 650; line-height: 1.1; letter-spacing: -0.03em; }
+.toque-cabeca p { margin-top: 10px; color: var(--texto-2); max-width: 62ch; line-height: 1.6; }
+
+.toque-grade { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 32px; align-items: start; margin-top: 24px; }
+
+/* Foto e pontos */
+.toque-figura { margin: 0; }
+.toque-foto { position: relative; border-radius: var(--raio); overflow: hidden; border: 1px solid var(--linha); background: var(--cartao); }
+.toque-foto img { display: block; width: 100%; height: auto; }
+.toque-figura figcaption { margin-top: 8px; font-size: 14px; font-weight: 500; color: var(--texto-3); }
+
+.toque-ponto {
+  display: inline-flex; align-items: center; gap: 4px; min-height: 44px; min-width: 44px; padding: 0; margin: 0;
+  border: 0; background: none; color: var(--texto); font: inherit; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.toque-foto .toque-ponto {
+  position: absolute;
+  left: clamp(22px, calc(var(--x) * 1%), calc(100% - 22px));
+  top: clamp(22px, calc(var(--y) * 1%), calc(100% - 22px));
+  transform: translate(-22px, -50%);
+}
+.toque-foto .toque-ponto[data-lado='esquerda'] { flex-direction: row-reverse; transform: translate(calc(-100% + 22px), -50%); }
+.toque-ponto:disabled { cursor: not-allowed; }
+.toque-ponto:focus-visible { outline: none; }
+.toque-ponto:focus-visible .toque-marca::before { outline: 3px solid var(--ciano); outline-offset: 3px; }
+.toque-extra:focus-visible { outline: 2px solid var(--ciano); outline-offset: 3px; border-radius: 999px; }
+
+.toque-marca { position: relative; flex: none; display: grid; place-items: center; width: 44px; height: 44px; }
+.toque-marca::before {
+  content: ''; position: absolute; inset: 4px; border-radius: 50%;
+  background: var(--fundo); border: 2px solid var(--ciano); box-shadow: var(--sombra);
+  transition: background-color 0.2s, transform 0.2s var(--suave);
+}
+.toque-ic { position: relative; fill: none; stroke: var(--ciano); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.toque-ic-camera { display: none; fill: var(--sobre-ciano); stroke: var(--sobre-ciano); stroke-width: 1; }
+.toque-ponto[aria-pressed='true'] .toque-marca::before { background: var(--ciano); }
+.toque-ponto[aria-pressed='true'] .toque-ic-mais { display: none; }
+.toque-ponto[aria-pressed='true'] .toque-ic-camera { display: block; }
+.toque-ponto:not(:disabled):hover .toque-marca::before { transform: scale(1.08); }
+.toque-ponto:disabled .toque-marca::before { border-color: var(--texto-3); }
+.toque-ponto:disabled .toque-ic { stroke: var(--texto-3); }
+
+.toque-rotulo {
+  padding: 5px 10px; border-radius: 999px; background: var(--fundo); border: 1px solid var(--linha-2);
+  font-size: 13px; font-weight: 650; line-height: 1.3; white-space: nowrap;
+}
+.toque-ponto[aria-pressed='true'] .toque-rotulo { border-color: var(--ciano); color: var(--ciano); }
+
+.toque-num {
+  display: none; place-items: center; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 999px;
+  background: var(--texto); color: var(--fundo); font-size: 11px; font-weight: 800; line-height: 1;
+}
+.toque-marca .toque-num { position: absolute; top: -1px; right: -1px; }
+
+/* Lista com os números (só no celular) */
+.toque-legenda { display: none; list-style: none; margin: 12px 0 0; padding: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 12px; font-size: 14px; color: var(--texto-2); }
+.toque-legenda li { display: flex; align-items: center; gap: 8px; }
+.toque-legenda .toque-num { display: inline-grid; flex: none; }
+.toque-legenda li[data-marcado] { color: var(--ciano); font-weight: 650; }
+.toque-legenda li[data-marcado] .toque-num { background: var(--ciano); color: var(--sobre-ciano); }
+
+/* Pontos fora da foto */
+.toque-extras { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-top: 16px; }
+.toque-extras-titulo { width: 100%; margin: 0; font-size: 14px; font-weight: 600; color: var(--texto-3); }
+.toque-extra { padding-right: 16px; border: 1px solid var(--linha-2); border-radius: 999px; background: var(--cartao); }
+.toque-extra .toque-marca { width: 40px; height: 40px; }
+.toque-extra .toque-marca::before { inset: 5px; box-shadow: none; }
+.toque-extra .toque-rotulo { padding: 0; border: 0; background: none; font-size: 14px; }
+.toque-extra[aria-pressed='true'] { border-color: var(--ciano); }
+
+.toque-sem-js { margin-top: 16px; color: var(--texto-2); line-height: 1.6; max-width: 62ch; }
+.toque-sem-js a { color: var(--ciano); text-decoration: underline; text-underline-offset: 3px; }
+
+/* Resultado */
+.toque-resultado { padding: 24px; }
+.toque-resultado:hover { border-color: var(--linha); }
+.toque-qtd { font-size: 14px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ciano); }
+.toque-convite { margin-top: 10px; font-size: 20px; font-weight: 650; line-height: 1.3; }
+.toque-plano h3, .toque-proposta h3 { margin-top: 10px; font-size: 22px; font-weight: 650; line-height: 1.25; letter-spacing: -0.02em; }
+.toque-proposta p { margin-top: 8px; color: var(--texto-2); line-height: 1.6; }
+.toque-preco { margin-top: 6px; display: flex; align-items: baseline; gap: 4px; }
+.toque-preco strong { font-size: clamp(32px, 3.4vw, 40px); font-weight: 750; letter-spacing: -0.03em; }
+.toque-preco span { color: var(--texto-2); font-weight: 600; }
+.toque-linha { margin-top: 8px; display: flex; align-items: center; gap: 8px; color: var(--texto-2); font-size: 15px; }
+.toque-linha .ic { flex: none; color: var(--ciano); }
+.toque-aviso { margin-top: 14px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--linha-2); background: var(--cartao-2); color: var(--texto-2); font-size: 14px; line-height: 1.5; }
+
+.toque-acoes { display: grid; gap: 14px; margin-top: 20px; }
+.toque-cta { width: 100%; }
+.toque-todos { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; justify-self: start; color: var(--ciano); font-weight: 650; font-size: 15px; }
+.toque-todos:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+@media (max-width: 960px) {
+  .toque-grade { grid-template-columns: 1fr; gap: 20px; }
+}
+
+/* Celular: só o número sobre a foto; os nomes vão para a lista logo abaixo */
+@media (max-width: 760px) {
+  .toque-foto { border-radius: 14px; }
+  .toque-foto .toque-rotulo { position: absolute; width: 1px; height: 1px; padding: 0; border: 0; overflow: hidden; clip: rect(0 0 0 0); }
+  .toque-foto .toque-ponto, .toque-foto .toque-ponto[data-lado='esquerda'] { transform: translate(-50%, -50%); left: clamp(22px, calc(var(--x) * 1%), calc(100% - 22px)); }
+  .toque-foto .toque-num { display: inline-grid; }
+  .toque-legenda { display: grid; }
+  .toque-resultado { padding: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toque-marca::before { transition: none; }
+  .toque-ponto:not(:disabled):hover .toque-marca::before { transform: none; }
+}

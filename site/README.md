@@ -38,6 +38,8 @@ src/
   components/*.astro       uma seção por componente (Abertura, Planos, Configurador, ComoFunciona…)
   components/PaginaSolucao.astro  página de solução: título, texto de apoio, destaques, blocos e botões; o slot
                            "ferramenta" (seção #ferramenta, só aparece se for preenchido) é o ponto de entrada de uma ferramenta própria
+  components/ToqueCamera.astro  ferramenta "Toque onde quer câmera" de /casa/ e /comercio/ (pontos em lib/toque-camera.ts,
+                           tela em scripts/toque-camera.ts, estilo em styles/toque-camera.css; fotos de banco em src/assets/fotos)
   lib/                     dados e regras, sem DOM (rodam no build e no navegador)
     dados.ts               conteúdo comercial: planos, preços, condições, dúvidas, contato, textos das páginas de solução
     configurador-dados.ts  plantas, zonas e pontos sugeridos

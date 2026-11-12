@@ -16,6 +16,7 @@ import path from 'node:path';
 import {
   planos, contato, empresa, formatarPreco, precoPorCamera, duvidas,
   aberturaVideo, confiancaGoogle, contratoSimples, condicoesContrato, explicacaoGravador, perfis, servicosProposta, textoProposta,
+  mostrarPrecos, nomePlano,
 } from '../src/lib/dados.ts';
 
 const aqui = path.dirname(fileURLToPath(import.meta.url));
@@ -1236,6 +1237,143 @@ grupo('Páginas de solução');
     `três: ${comThree.length}; maquete: ${restosMaquete.length}; canvas: ${paginasComCanvas.length}`);
   const jsDist = arquivosDist.filter((f) => f.endsWith('.js') && !f.includes(`${path.sep}calculadoras${path.sep}`)).reduce((s, f) => s + statSync(f).size, 0);
   console.log(`   (JavaScript do dist, sem o service worker das calculadoras: ${(jsDist / 1024).toFixed(0)} KB)`);
+}
+
+/* ---------- Toque onde quer câmera (/casa/ e /comercio/) ---------- */
+// Ferramenta de src/components/ToqueCamera.astro: cada ponto marcado é uma câmera e o plano sai de planoParaCameras (dados.ts).
+// O clique é dado direto no botão (el.click()) porque os pontos ficam sobre a foto e o rótulo de um pode cobrir o vizinho.
+grupo('Toque onde quer câmera');
+{
+  const fachadasToque = [{ id: 'casa', nome: 'Casa' }, { id: 'comercio', nome: 'Comércio' }];
+  const plano3 = planos.find((p) => p.cameras === 3);
+  const plano8 = planos.find((p) => p.cameras === 8);
+  const precoEsperado = (p) => (mostrarPrecos ? `R$ ${formatarPreco(p.preco)}` : 'Sob consulta');
+  const botaoPonto = (pagina, i) => pagina.locator('[data-toque] button[data-ponto]').nth(i);
+  const tocar = async (pagina, indices) => { for (const i of indices) await botaoPonto(pagina, i).evaluate((b) => b.click()); };
+  const lerToque = (pagina) => pagina.evaluate(() => {
+    const raiz = document.querySelector('[data-toque]');
+    const visivel = (el) => Boolean(el) && !el.hidden && !el.closest('[hidden]');
+    const q = (n) => raiz.querySelector(`[data-toque-${n}]`);
+    const botoes = [...raiz.querySelectorAll('button[data-ponto]')];
+    const cta = q('cta');
+    return {
+      pontos: botoes.length,
+      pressionados: botoes.filter((b) => b.getAttribute('aria-pressed') === 'true').length,
+      semAriaPressed: botoes.filter((b) => !['true', 'false'].includes(b.getAttribute('aria-pressed'))).length,
+      rotulosMarcados: botoes.filter((b) => b.getAttribute('aria-pressed') === 'true' && /, marcada$/.test(b.getAttribute('aria-label') ?? '')).length,
+      desabilitados: botoes.filter((b) => b.disabled).length,
+      rotulos: botoes.map((b) => b.querySelector('.toque-rotulo')?.textContent.trim()),
+      ariaLive: q('nome')?.closest('[aria-live]')?.getAttribute('aria-live') ?? null,
+      qtd: q('qtd')?.textContent.trim(),
+      conviteVisivel: visivel(q('convite')),
+      planoVisivel: visivel(q('plano')),
+      nome: q('nome')?.textContent.trim(),
+      preco: q('preco')?.textContent.trim(),
+      avisoVisivel: visivel(q('aviso')),
+      aviso: q('aviso')?.textContent.trim(),
+      ctaVisivel: visivel(cta),
+      ctaTexto: cta?.textContent.replace(/\s+/g, ' ').trim(),
+      ctaHref: cta?.getAttribute('href') ?? null,
+      ctaClasse: cta?.classList.contains('plano-cta') ?? false,
+      whatsForaDoContato: [...document.querySelectorAll('a[href*="wa.me"]')].filter((a) => !a.closest('#contato')).length,
+    };
+  });
+
+  for (const { id, nome } of fachadasToque) {
+    await protegido(`${nome}: Toque onde quer câmera`, async () => {
+      const imagensFora = [];
+      const { pagina, contexto, erros } = await abrir(1440, {}, `${id}/`, async (ctx) => {
+        ctx.on('request', (r) => { if (r.resourceType() === 'image' && /^https?:/.test(r.url()) && !r.url().startsWith(endereco)) imagensFora.push(r.url()); });
+      });
+      await rolarTudo(pagina);
+
+      // Estado inicial: convite, nada marcado, pontos ligados e sem link de WhatsApp (o botão ainda não existe)
+      const ini = await lerToque(pagina);
+      conferir(`${nome}: ferramenta começa com o convite, nenhum ponto marcado, pontos ativos e sem link de WhatsApp fora de "Fale com a SC"`,
+        ini.pontos >= 6 && ini.pressionados === 0 && ini.semAriaPressed === 0 && ini.desabilitados === 0 && ini.conviteVisivel && !ini.planoVisivel && !ini.ctaVisivel
+          && ini.ctaHref === null && ini.whatsForaDoContato === 0 && ini.qtd === '0 câmeras marcadas', JSON.stringify(ini));
+
+      // 3 pontos: Plano de 3 câmeras, preço de dados.ts e botão "Quero este plano" com a mensagem
+      await tocar(pagina, [0, 1, 2]);
+      const t3 = await lerToque(pagina);
+      const msg3 = t3.ctaHref ? new URL(t3.ctaHref).searchParams.get('text') ?? '' : '';
+      const marcados3 = t3.rotulos.slice(0, 3);
+      conferir(`${nome}: 3 pontos marcados mostram o ${nomePlano(plano3)} com o preço de dados.ts (${precoEsperado(plano3)}) e a contagem "3 câmeras marcadas"`,
+        t3.planoVisivel && !t3.conviteVisivel && t3.nome === nomePlano(plano3) && t3.preco === precoEsperado(plano3) && t3.qtd === '3 câmeras marcadas' && !t3.avisoVisivel,
+        JSON.stringify({ nome: t3.nome, preco: t3.preco, qtd: t3.qtd, aviso: t3.avisoVisivel }));
+      conferir(`${nome}: "Quero este plano" abre wa.me/${contato.whatsapp} com "${nomePlano(plano3)}" e os pontos marcados, sem "instalação inclusa"`,
+        t3.ctaVisivel && t3.ctaClasse && /Quero este plano/.test(t3.ctaTexto ?? '') && Boolean(t3.ctaHref?.startsWith(`https://wa.me/${contato.whatsapp}?text=`))
+          && msg3.includes(nomePlano(plano3)) && marcados3.every((r) => r && msg3.includes(r)) && !/instalação inclu/i.test(msg3) && t3.whatsForaDoContato === 1,
+        JSON.stringify({ href: t3.ctaHref?.slice(0, 60), msg: msg3, marcados3, whatsFora: t3.whatsForaDoContato }));
+      conferir(`${nome}: aria-pressed dos pontos acompanha a marcação (3 "true", rótulo "marcada") e o resultado é aria-live`,
+        t3.pressionados === 3 && t3.rotulosMarcados === 3 && t3.semAriaPressed === 0 && t3.ariaLive === 'polite', JSON.stringify({ pressionados: t3.pressionados, rotulosMarcados: t3.rotulosMarcados, ariaLive: t3.ariaLive }));
+
+      // Mais três (seis no total): não há plano fixo de 6, então vale o de 8 câmeras com o aviso de folga
+      await tocar(pagina, [3, 4, 5]);
+      const t6 = await lerToque(pagina);
+      conferir(`${nome}: 6 pontos marcados mostram o ${nomePlano(plano8)} com o aviso de folga`,
+        t6.planoVisivel && t6.nome === nomePlano(plano8) && t6.preco === precoEsperado(plano8) && t6.avisoVisivel && /Você marcou 6 pontos/.test(t6.aviso ?? '') && /folga/.test(t6.aviso ?? '')
+          && t6.qtd === '6 câmeras marcadas' && t6.pressionados === 6, JSON.stringify({ nome: t6.nome, preco: t6.preco, aviso: t6.aviso, qtd: t6.qtd }));
+
+      // Desmarca tudo: volta o convite inicial
+      await tocar(pagina, [0, 1, 2, 3, 4, 5]);
+      const t0 = await lerToque(pagina);
+      conferir(`${nome}: desmarcar tudo devolve o convite inicial, sem plano nem botão de WhatsApp`,
+        t0.conviteVisivel && !t0.planoVisivel && !t0.ctaVisivel && t0.ctaHref === null && t0.pressionados === 0 && t0.qtd === '0 câmeras marcadas' && t0.whatsForaDoContato === 0, JSON.stringify(t0));
+
+      // Imagens: nenhuma de outro domínio (pedidos de rede e <img> da página)
+      const imgs = await pagina.evaluate(() => [...document.images].map((i) => i.currentSrc || i.src).filter(Boolean));
+      const imgsFora = imgs.filter((u) => !u.startsWith(endereco) && !u.startsWith('data:'));
+      conferir(`${nome}: nenhuma imagem vem de domínio diferente do site e a página tem zero erros no console`,
+        imagensFora.length === 0 && imgsFora.length === 0 && imgs.length > 0 && erros.length === 0, JSON.stringify({ pedidosFora: imagensFora, imgFora: imgsFora, imagens: imgs.length, erros: erros.slice(0, 1) }));
+      await contexto.close();
+    });
+
+    // Sem JavaScript: pontos desativados e um caminho para os planos
+    await protegido(`${nome} sem JavaScript: Toque onde quer câmera`, async () => {
+      const semJs = await abrir(1440, { javaScriptEnabled: false }, `${id}/`);
+      const info = await semJs.pagina.evaluate(() => {
+        const raiz = document.querySelector('[data-toque]');
+        const botoes = [...raiz.querySelectorAll('button[data-ponto]')];
+        const aviso = raiz.querySelector('[data-toque-semjs]');
+        return {
+          pontos: botoes.length,
+          desabilitados: botoes.filter((b) => b.disabled).length,
+          avisoVisivel: Boolean(aviso) && !aviso.hidden && aviso.getClientRects().length > 0,
+          linkPlanos: Boolean(aviso?.querySelector('a[href="/#planos"]')),
+          resultadoOculto: raiz.querySelector('[data-toque-resultado]')?.hidden === true,
+          whatsFora: [...document.querySelectorAll('a[href*="wa.me"]')].filter((a) => !a.closest('#contato')).length,
+        };
+      });
+      conferir(`${nome} sem JavaScript: pontos desativados, resultado escondido e link para /#planos`,
+        info.pontos >= 6 && info.desabilitados === info.pontos && info.avisoVisivel && info.linkPlanos && info.resultadoOculto && info.whatsFora === 0, JSON.stringify(info));
+      await semJs.contexto.close();
+    });
+
+    // 375 px, com a ferramenta aberta (seis pontos marcados mostram o resultado inteiro)
+    await protegido(`${nome} em 375 px: Toque onde quer câmera`, async () => {
+      const cel = await abrir(375, {}, `${id}/`);
+      await tocar(cel.pagina, [0, 1, 2, 3, 4, 5]);
+      await rolarTudo(cel.pagina);
+      const m = await cel.pagina.evaluate(() => ({ largura: document.documentElement.clientWidth, sobra: document.documentElement.scrollWidth - 375 }));
+      conferir(`${nome} em 375 px com a ferramenta usada: scrollWidth ≤ 375`, m.sobra <= 0 && m.largura === 375 && cel.erros.length === 0, JSON.stringify({ ...m, erros: cel.erros.slice(0, 1) }));
+      await cel.contexto.close();
+    });
+
+    // Acessibilidade (axe) só na seção da ferramenta, com 3 pontos marcados
+    await protegido(`${nome}: axe na ferramenta`, async () => {
+      const achados = [];
+      for (const largura of [1440, 390]) {
+        const { pagina, contexto } = await abrir(largura, { reducedMotion: 'reduce' }, `${id}/`);
+        await tocar(pagina, [0, 1, 2]);
+        await rolarTudo(pagina);
+        const r = await new AxeBuilder({ page: pagina }).include('#ferramenta').withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
+        for (const v of r.violations) achados.push(`${largura}px: ${v.id} (${v.nodes.length}) ${v.nodes[0]?.target.join(' ')}`);
+        await contexto.close();
+      }
+      conferir(`${nome}: nenhuma violação de acessibilidade na seção da ferramenta (computador e celular)`, achados.length === 0, achados.slice(0, 3).join('; '));
+    });
+  }
 }
 
 /* ---------- Layout em 375 px (renovação de 11/11/2026) ---------- */
