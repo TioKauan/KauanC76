@@ -397,13 +397,12 @@ grupo('Tela 1 · Abertura');
 
   // 1. Carregar e rolar a inicial: zero pedidos a esses servidores (o ouvinte de rede liga antes do primeiro pedido).
   for (const largura of [1440, 390]) {
-    const titulo = `Abertura: carregar e rolar a inicial não faz pedido a youtube.com, youtube-nocookie.com, ytimg.com, googlevideo.com, google.com nem gstatic.com (${largura} px)`;
+    const titulo = `Abertura: carregar e rolar a inicial não faz pedido a nenhum host diferente do próprio site, nem ao Google nem ao YouTube (${largura} px)`;
     await protegido(titulo, async () => {
       const { pagina, contexto, externos } = await abrir(largura);
       await rolarTudo(pagina);
       await pagina.waitForTimeout(600);
-      const dosGoogle = externos.filter(deGoogle);
-      conferir(titulo, dosGoogle.length === 0, dosGoogle.length ? dosGoogle.slice(0, 3).join(' ') : `${externos.length} pedido(s) a outros servidores${externos.length ? `: ${externos.slice(0, 3).join(' ')}` : ''}`);
+      conferir(titulo, externos.length === 0, externos.length ? `${externos.length} pedido(s) a outros hosts: ${externos.slice(0, 3).join(' ')}` : '0 pedidos a outros hosts');
       await contexto.close();
     });
   }
@@ -1260,7 +1259,7 @@ grupo('Toque onde quer câmera');
       pontos: botoes.length,
       pressionados: botoes.filter((b) => b.getAttribute('aria-pressed') === 'true').length,
       semAriaPressed: botoes.filter((b) => !['true', 'false'].includes(b.getAttribute('aria-pressed'))).length,
-      rotulosMarcados: botoes.filter((b) => b.getAttribute('aria-pressed') === 'true' && /, marcada$/.test(b.getAttribute('aria-label') ?? '')).length,
+      rotulosMarcados: botoes.filter((b) => b.getAttribute('aria-pressed') === 'true' && /^Câmera .+/.test(b.getAttribute('aria-label') ?? '') && !/marcada/.test(b.getAttribute('aria-label') ?? '')).length,
       desabilitados: botoes.filter((b) => b.disabled).length,
       rotulos: botoes.map((b) => b.querySelector('.toque-rotulo')?.textContent.trim()),
       ariaLive: q('nome')?.closest('[aria-live]')?.getAttribute('aria-live') ?? null,
@@ -1275,6 +1274,8 @@ grupo('Toque onde quer câmera');
       ctaTexto: cta?.textContent.replace(/\s+/g, ' ').trim(),
       ctaHref: cta?.getAttribute('href') ?? null,
       ctaClasse: cta?.classList.contains('plano-cta') ?? false,
+      ctaIcone: Boolean(cta?.querySelector('use[href="#ic-whatsapp"]')),
+      rotulosFixos: botoes.every((b) => !/marcada/.test(b.getAttribute('aria-label') ?? '')),
       whatsForaDoContato: [...document.querySelectorAll('a[href*="wa.me"]')].filter((a) => !a.closest('#contato')).length,
     };
   });
@@ -1302,11 +1303,11 @@ grupo('Toque onde quer câmera');
         t3.planoVisivel && !t3.conviteVisivel && t3.nome === nomePlano(plano3) && t3.preco === precoEsperado(plano3) && t3.qtd === '3 câmeras marcadas' && !t3.avisoVisivel,
         JSON.stringify({ nome: t3.nome, preco: t3.preco, qtd: t3.qtd, aviso: t3.avisoVisivel }));
       conferir(`${nome}: "Quero este plano" abre wa.me/${contato.whatsapp} com "${nomePlano(plano3)}" e os pontos marcados, sem "instalação inclusa"`,
-        t3.ctaVisivel && t3.ctaClasse && /Quero este plano/.test(t3.ctaTexto ?? '') && Boolean(t3.ctaHref?.startsWith(`https://wa.me/${contato.whatsapp}?text=`))
+        t3.ctaVisivel && t3.ctaClasse && t3.ctaIcone && /Quero este plano/.test(t3.ctaTexto ?? '') && Boolean(t3.ctaHref?.startsWith(`https://wa.me/${contato.whatsapp}?text=`))
           && msg3.includes(nomePlano(plano3)) && marcados3.every((r) => r && msg3.includes(r)) && !/instalação inclu/i.test(msg3) && t3.whatsForaDoContato === 1,
         JSON.stringify({ href: t3.ctaHref?.slice(0, 60), msg: msg3, marcados3, whatsFora: t3.whatsForaDoContato }));
-      conferir(`${nome}: aria-pressed dos pontos acompanha a marcação (3 "true", rótulo "marcada") e o resultado é aria-live`,
-        t3.pressionados === 3 && t3.rotulosMarcados === 3 && t3.semAriaPressed === 0 && t3.ariaLive === 'polite', JSON.stringify({ pressionados: t3.pressionados, rotulosMarcados: t3.rotulosMarcados, ariaLive: t3.ariaLive }));
+      conferir(`${nome}: aria-pressed dos pontos acompanha a marcação (3 "true", rótulo fixo sem repetir o estado) e o resultado é aria-live`,
+        t3.pressionados === 3 && t3.rotulosMarcados === 3 && t3.rotulosFixos && t3.semAriaPressed === 0 && t3.ariaLive === 'polite', JSON.stringify({ pressionados: t3.pressionados, rotulosMarcados: t3.rotulosMarcados, ariaLive: t3.ariaLive }));
 
       // Mais três (seis no total): não há plano fixo de 6, então vale o de 8 câmeras com o aviso de folga
       await tocar(pagina, [3, 4, 5]);
@@ -1355,8 +1356,19 @@ grupo('Toque onde quer câmera');
       const cel = await abrir(375, {}, `${id}/`);
       await tocar(cel.pagina, [0, 1, 2, 3, 4, 5]);
       await rolarTudo(cel.pagina);
-      const m = await cel.pagina.evaluate(() => ({ largura: document.documentElement.clientWidth, sobra: document.documentElement.scrollWidth - 375 }));
-      conferir(`${nome} em 375 px com a ferramenta usada: scrollWidth ≤ 375`, m.sobra <= 0 && m.largura === 375 && cel.erros.length === 0, JSON.stringify({ ...m, erros: cel.erros.slice(0, 1) }));
+      const m = await cel.pagina.evaluate(() => {
+        const largura = document.documentElement.clientWidth;
+        const alem = [...document.body.querySelectorAll('*')]
+          .filter((el) => {
+            if (el.closest('.planos-trilho, .guias, svg, [hidden], .sol, .barra-fixa, .sr, .pular, .menu-celular')) return false;
+            const r = el.getBoundingClientRect();
+            const estilo = getComputedStyle(el);
+            return r.width > 0 && r.height > 0 && estilo.position !== 'fixed' && estilo.visibility !== 'hidden' && (r.right > largura + 1 || r.left < -1);
+          })
+          .map((el) => `${el.tagName.toLowerCase()}.${String(el.className).split(' ')[0]}`);
+        return { largura, sobra: document.documentElement.scrollWidth - 375, alem: [...new Set(alem)].slice(0, 5) };
+      });
+      conferir(`${nome} em 375 px com a ferramenta usada: scrollWidth ≤ 375 e nenhum elemento visível passa da borda`, m.sobra <= 0 && m.largura === 375 && m.alem.length === 0 && cel.erros.length === 0, JSON.stringify({ ...m, erros: cel.erros.slice(0, 1) }));
       await cel.contexto.close();
     });
 
@@ -1414,7 +1426,8 @@ grupo('Layout em 375 px');
     });
     const inicialOk = caminho !== '' || (m.esquerda !== null && Math.abs(m.esquerda - 16) <= 0.5 && m.celularDireita !== null && m.celularDireita <= m.largura - 16 + 0.5);
     conferir(`${nome} em 375 px: scrollWidth ≤ 375${caminho === '' ? ', margem lateral de 16 px, celular dentro da tela' : ''} e nenhum botão com texto cortado`,
-      m.largura === 375 && m.sobra <= 0 && m.botoesCortados.length === 0 && inicialOk,
+      m.largura === 375 && m.sobra <= 0 && m.botoesCortados.length === 0 && inicialOk
+        && (!['casa/', 'comercio/', 'empresa/', 'condominio/'].includes(caminho) || m.alem.length === 0),
       JSON.stringify({ sobra: m.sobra, cortados: m.botoesCortados, esquerda: m.esquerda, celularDireita: m.celularDireita, alemDaBorda: m.alem }));
     await contexto.close();
   }

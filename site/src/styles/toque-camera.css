@@ -17,14 +17,15 @@
 }
 .toque-foto .toque-ponto {
   position: absolute;
-  left: clamp(22px, calc(var(--x) * 1%), calc(100% - 22px));
-  top: clamp(22px, calc(var(--y) * 1%), calc(100% - 22px));
+  left: clamp(28px, calc(var(--x) * 1%), calc(100% - 28px));
+  top: clamp(28px, calc(var(--y) * 1%), calc(100% - 28px));
   transform: translate(-22px, -50%);
 }
 .toque-foto .toque-ponto[data-lado='esquerda'] { flex-direction: row-reverse; transform: translate(calc(-100% + 22px), -50%); }
 .toque-ponto:disabled { cursor: not-allowed; }
 .toque-ponto:focus-visible { outline: none; }
-.toque-ponto:focus-visible .toque-marca::before { outline: 3px solid var(--ciano); outline-offset: 3px; }
+/* Anel de foco em duas camadas (fundo + ciano): aparece sobre qualquer parte da foto; os pontos ficam a 28 px da borda para não ser cortado */
+.toque-ponto:focus-visible .toque-marca::before { box-shadow: 0 0 0 3px var(--fundo), 0 0 0 6px var(--ciano); }
 .toque-extra:focus-visible { outline: 2px solid var(--ciano); outline-offset: 3px; border-radius: 999px; }
 
 .toque-marca { position: relative; flex: none; display: grid; place-items: center; width: 44px; height: 44px; }
@@ -96,13 +97,16 @@
   .toque-grade { grid-template-columns: 1fr; gap: 20px; }
 }
 
-/* Celular: só o número sobre a foto; os nomes vão para a lista logo abaixo */
-@media (max-width: 760px) {
-  .toque-foto { border-radius: 14px; }
+/* Abaixo de 1100 px: só o número sobre a foto; os nomes vão para a lista logo abaixo (rótulos não cobrem os pontos vizinhos) */
+@media (max-width: 1100px) {
   .toque-foto .toque-rotulo { position: absolute; width: 1px; height: 1px; padding: 0; border: 0; overflow: hidden; clip: rect(0 0 0 0); }
-  .toque-foto .toque-ponto, .toque-foto .toque-ponto[data-lado='esquerda'] { transform: translate(-50%, -50%); left: clamp(22px, calc(var(--x) * 1%), calc(100% - 22px)); }
+  .toque-foto .toque-ponto, .toque-foto .toque-ponto[data-lado='esquerda'] { transform: translate(-50%, -50%); left: clamp(28px, calc(var(--x) * 1%), calc(100% - 28px)); }
   .toque-foto .toque-num { display: inline-grid; }
   .toque-legenda { display: grid; }
+}
+
+@media (max-width: 760px) {
+  .toque-foto { border-radius: 14px; }
   .toque-resultado { padding: 20px; }
 }
 

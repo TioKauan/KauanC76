@@ -178,7 +178,7 @@ export const contratoSimples: Duvida[] = [
   },
   {
     pergunta: 'O que é cobrado à parte?',
-    resposta: 'Furto, roubo, vandalismo, impacto, mau uso, raio, surto e incêndio não são cobertos e geram cobrança; cabo além do limite do plano, obras civis e adequação de internet também são cobrados à parte. A lista completa está logo abaixo.',
+    resposta: 'Furto, roubo, vandalismo, impacto, mau uso, raio, surto acima da proteção instalada e incêndio não são cobertos e geram cobrança; cabo além do limite do plano, obras civis e adequação de internet também são cobrados à parte. A lista completa está logo abaixo.',
   },
 ];
 
@@ -350,7 +350,7 @@ export const paginaCondominio = {
     },
     {
       titulo: 'Rede, Wi-Fi e nobreak',
-      texto: 'Câmeras, acesso e interfonia ligados ao quadro técnico, e Wi-Fi nas áreas comuns. O nobreak é dimensionado para a carga e mantém o sistema por um período na falta de energia, conforme a bateria.',
+      texto: 'Câmeras, acesso e interfonia ligados ao quadro técnico, e Wi-Fi nas áreas comuns. O nobreak é dimensionado para a carga e mantém o sistema por um período na falta de energia, conforme a bateria. Nobreak é adicional, incluído só se estiver na proposta.',
     },
     {
       titulo: 'Alarme integrado às câmeras, no celular',
@@ -382,8 +382,8 @@ export const paginasAmbiente = {
     curto: 'Comércio',
     tituloBusca: 'Câmeras de segurança para comércio',
     titulo: 'Caixa, estoque e entrada à vista, de onde você estiver.',
-    lead: 'Planos de locação de câmeras para a sua loja, com gravação local, imagens no celular, rede Wi-Fi e alarme.',
-    descricao: 'Câmeras para loja: caixa, salão, estoque e entrada. Planos de locação de câmeras da SC Soluções, rede Wi-Fi e alarme. Francisco Beltrão e região.',
+    lead: 'Planos de locação de câmeras para a sua loja, com gravação local e imagens no celular. Rede Wi-Fi e alarme em proposta personalizada.',
+    descricao: 'Câmeras para loja: caixa, salão, estoque e entrada. Locação da SC Soluções com gravação local e imagens no celular. Wi-Fi e alarme em proposta personalizada. Francisco Beltrão.',
     destaques: ['Planos de 1 a 8 câmeras', 'Gravação local', 'Rede Wi-Fi sob medida', 'Alarme monitorado pelo app'],
     blocos: [
       { titulo: 'Câmeras onde importa', texto: textoCameras('Fachada, caixa, salão, estoque e carga e descarga') },

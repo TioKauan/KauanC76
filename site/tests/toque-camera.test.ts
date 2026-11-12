@@ -15,7 +15,7 @@ describe('ferramenta "Toque onde quer câmera": pontos de cada fachada', () => {
       expect(p.rotulo.length).toBeGreaterThan(2);
       expect(p.rotulo.length).toBeLessThanOrEqual(28);
       // O rótulo acessível contém o rótulo visível (WCAG 2.5.3).
-      expect(rotuloAcessivel(p, true).toLowerCase()).toContain(p.rotulo.toLowerCase());
+      expect(rotuloAcessivel(p).toLowerCase()).toContain(p.rotulo.toLowerCase());
     }
     expect(f.alt.length).toBeGreaterThan(20);
   });
@@ -44,10 +44,10 @@ describe('ferramenta "Toque onde quer câmera": pontos de cada fachada', () => {
     expect(fachadas.comercio.pontos.filter(naFoto).map((p) => p.rotulo)).toEqual(['Porta de entrada', 'Vitrine', 'Calçada em frente']);
   });
 
-  it('rótulo acessível diz o lugar e se está marcado', () => {
+  it('rótulo acessível diz o lugar, sem o estado (o estado fica só no aria-pressed)', () => {
     const garagem = fachadas.casa.pontos[0]!;
-    expect(rotuloAcessivel(garagem, true)).toBe('Câmera na garagem, marcada');
-    expect(rotuloAcessivel(garagem, false)).toBe('Câmera na garagem, desmarcada');
+    expect(rotuloAcessivel(garagem)).toBe('Câmera na garagem');
+    expect(rotuloAcessivel(garagem)).not.toMatch(/marcada/);
   });
 
   it('pontos marcados saem na ordem da lista e ids desconhecidos são ignorados', () => {

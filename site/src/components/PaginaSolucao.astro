@@ -64,7 +64,7 @@ const comFerramenta = Astro.slots.has('ferramenta');
 
     {
       comFerramenta && (
-        <section id="ferramenta" class="solucao-ferramenta wrap" aria-label="Ferramenta">
+        <section id="ferramenta" class="solucao-ferramenta wrap" aria-labelledby={`toque-titulo-${id}`}>
           <slot name="ferramenta" />
         </section>
       )

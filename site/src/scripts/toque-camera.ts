@@ -3,7 +3,7 @@
  * A conta fica em src/lib/toque-camera.ts; aqui só se liga a regra aos botões e ao resultado.
  */
 import { formatarPreco, mostrarPrecos, nomePlano, rotuloTaxa, textoTaxaInstalacao, toqueCamera } from '../lib/dados';
-import { MAX_PONTOS, fachadas, resultadoToque, rotuloAcessivel, type IdFachada } from '../lib/toque-camera';
+import { MAX_PONTOS, fachadas, resultadoToque, type IdFachada } from '../lib/toque-camera';
 
 function iniciar(raiz: HTMLElement): void {
   const fachada = fachadas[raiz.dataset.toque as IdFachada];
@@ -37,7 +37,6 @@ function iniciar(raiz: HTMLElement): void {
       if (!p) continue;
       const marcado = marcados.has(p.id);
       b.setAttribute('aria-pressed', String(marcado));
-      b.setAttribute('aria-label', rotuloAcessivel(p, marcado));
       raiz.querySelector(`[data-legenda="${p.id}"]`)?.toggleAttribute('data-marcado', marcado);
     }
 

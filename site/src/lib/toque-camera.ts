@@ -11,7 +11,7 @@ export interface PontoCamera {
   id: string;
   /** Rótulo visível, curto. */
   rotulo: string;
-  /** Complemento do rótulo acessível: "Câmera {onde}, marcada". Contém o rótulo visível. */
+  /** Complemento do rótulo acessível: "Câmera {onde}". Contém o rótulo visível. */
   onde: string;
   /**
    * Posição sobre a foto, em % da largura (x) e da altura (y). Sem posição: ponto fora da foto
@@ -42,8 +42,8 @@ export const fachadas: Record<IdFachada, FachadaToque> = {
       { id: 'porta', rotulo: 'Porta da frente', onde: 'na porta da frente', x: 61, y: 62 },
       { id: 'calcada', rotulo: 'Calçada e rua', onde: 'na calçada e rua', x: 22, y: 87 },
       { id: 'jardim', rotulo: 'Jardim da frente', onde: 'no jardim da frente', x: 80, y: 72, lado: 'esquerda' },
-      { id: 'lateral-esquerda', rotulo: 'Lateral esquerda', onde: 'na lateral esquerda', x: 6, y: 58 },
-      { id: 'lateral-direita', rotulo: 'Lateral direita', onde: 'na lateral direita', x: 95, y: 52, lado: 'esquerda' },
+      { id: 'lateral-esquerda', rotulo: 'Lateral esquerda', onde: 'na lateral esquerda', x: 17, y: 50 },
+      { id: 'lateral-direita', rotulo: 'Lateral direita', onde: 'na lateral direita', x: 86, y: 44, lado: 'esquerda' },
       { id: 'fundos', rotulo: 'Fundos e quintal', onde: 'nos fundos e quintal' },
       { id: 'dentro', rotulo: 'Dentro de casa', onde: 'dentro de casa' },
     ],
@@ -68,9 +68,9 @@ export function naFoto(p: PontoCamera): p is PontoCamera & { x: number; y: numbe
   return typeof p.x === 'number' && typeof p.y === 'number';
 }
 
-/** Rótulo acessível do botão do ponto (ex.: "Câmera na garagem, marcada"). */
-export function rotuloAcessivel(p: PontoCamera, marcado: boolean): string {
-  return `Câmera ${p.onde}, ${marcado ? 'marcada' : 'desmarcada'}`;
+/** Rótulo acessível fixo do botão do ponto (ex.: "Câmera na garagem"); o estado fica só no aria-pressed. */
+export function rotuloAcessivel(p: PontoCamera): string {
+  return `Câmera ${p.onde}`;
 }
 
 /** Pontos marcados, na ordem da lista da fachada (ids desconhecidos são ignorados). */

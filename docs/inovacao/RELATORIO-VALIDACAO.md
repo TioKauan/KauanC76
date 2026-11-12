@@ -1,6 +1,6 @@
 # Relatório de validação do site
 
-Gerado por `npm run validar` em 12/11/2026, 09:16:47.
+Gerado por `npm run validar` em 12/11/2026, 09:31:50.
 Resultado: **201 de 201 itens ✅** — checklist completa.
 
 ## Geral
@@ -60,8 +60,8 @@ Resultado: **201 de 201 itens ✅** — checklist completa.
 | ✅ | Inicial enxuta: sem "E se…?", faixa de serviços, configurador, "Personalize" e Área do cliente; botão leva a /monte-seu-sistema/ | {"ese":false,"faixa":false,"monte":false,"cliente":false,"personalize":false,"botaoMonte":"/monte-seu-sistema/"} |
 | ✅ | "A partir de R$ 49,90/mês" visível sem rolar em 1440 px | fim do bloco em 760 de 900 px |
 | ✅ | "A partir de R$ 49,90/mês" visível sem rolar em 390 px | fim do bloco em 493 de 768 px |
-| ✅ | Abertura: carregar e rolar a inicial não faz pedido a youtube.com, youtube-nocookie.com, ytimg.com, googlevideo.com, google.com nem gstatic.com (1440 px) | 0 pedido(s) a outros servidores |
-| ✅ | Abertura: carregar e rolar a inicial não faz pedido a youtube.com, youtube-nocookie.com, ytimg.com, googlevideo.com, google.com nem gstatic.com (390 px) | 0 pedido(s) a outros servidores |
+| ✅ | Abertura: carregar e rolar a inicial não faz pedido a nenhum host diferente do próprio site, nem ao Google nem ao YouTube (1440 px) | 0 pedidos a outros hosts |
+| ✅ | Abertura: carregar e rolar a inicial não faz pedido a nenhum host diferente do próprio site, nem ao Google nem ao YouTube (390 px) | 0 pedidos a outros hosts |
 | ✅ | Abertura: tocar no play troca a cena por um iframe de www.youtube-nocookie.com/embed/wKUPPBYbi-Q (com título, autoplay e carregamento tardio), sem abrir outra aba | {"pedidosAntes":0,"pedidosDepois":["https://www.youtube-nocookie.com/embed/wKUPPBYbi-Q?autoplay=1&rel=0&pl"],"player":{"src":"https://www.youtube-nocookie.com/embed/wKUPPBYbi-Q?autoplay=1&rel=0&playsinline=1","title":"Vídeo de demonstração do fabricante: câmeras ColorVu com imagem colorida à noite","allow":"autoplay; encrypted-media; picture-in-picture","loading":"lazy","dentroDoCelular":true,"capaSumiu":true,"legenda":true,"total":1},"abas":1,"erros":[]} |
 | ✅ | Abertura sem JavaScript: o play é um link para https://www.youtube.com/watch?v=wKUPPBYbi-Q em nova aba (noopener), sem iframe e sem pedido ao Google | {"href":"https://www.youtube.com/watch?v=wKUPPBYbi-Q","alvo":"_blank","rel":"noopener","iframes":0,"texto":"Toque para ver o vídeo de demonstração do fabricante","externos":0} |
 | ✅ | Abertura: a legenda do vídeo aparece logo abaixo do celular e contém "sob orçamento" (1440 px) | 16 px abaixo do celular; "Demonstração do fabricante (Hikvision ColorVu). Imagem colorida à noit…" |
@@ -103,7 +103,7 @@ Resultado: **201 de 201 itens ✅** — checklist completa.
 | ✅ | Mensagem para a Sol leva ambiente, quantidade, pontos, plano, valor e recursos | Olá! Montei meu sistema no site da SC. / Ambiente: Casa / Câmeras: 8 (entrada principal, garagem e portão, fundos / quintal, lateral esquerda, fundos / quintal  |
 | ✅ | Condomínio vai para proposta personalizada |  |
 | ✅ | ?ambiente=condominio abre o configurador no condomínio (link da aba Condomínio) | true |
-| ✅ | Link antigo /#monte leva a /monte-seu-sistema/ | http://127.0.0.1:56208/monte-seu-sistema/ |
+| ✅ | Link antigo /#monte leva a /monte-seu-sistema/ | http://127.0.0.1:61810/monte-seu-sistema/ |
 
 ## Tela 4 · Como funciona
 
@@ -169,7 +169,7 @@ Resultado: **201 de 201 itens ✅** — checklist completa.
 | ✅ | Comércio: "reduzir movimento": nenhuma animação contínua roda | 0 animações contínuas |
 | ✅ | Comércio: nada fala de maquete, 3D nem "instalação inclusa"; menu "Soluções" leva às quatro páginas |  |
 | ✅ | Comércio: dados estruturados (schema.org) da página e título com a cidade | 1 bloco(s); Câmeras de segurança para comércio / SC Soluções, Francisco Beltrão |
-| ✅ | Comércio: página leve (peso total ≤ 300 KB, sem compactação) | 237 KB em 11 arquivos |
+| ✅ | Comércio: página leve (peso total ≤ 300 KB, sem compactação) | 235 KB em 11 arquivos |
 | ✅ | Comércio: planos de 1 a 8 câmeras, gravação de aproximadamente 10 dias, imagens no celular dependem de energia e internet, premium sob orçamento |  |
 | ✅ | Comércio: botões levam aos planos (/#planos) e ao configurador (?ambiente=comercio) | {"planos":"Ver os planos de locação","config":"Montar no configurador","whats":0} |
 | ✅ | Comércio no celular: sem rolagem lateral, toques ≥ 44 px, item "Contato" no menu e sem erros | {"sobra":0,"pequenos":[],"contatoNoMenu":true,"erros":[]} |
@@ -192,7 +192,7 @@ Resultado: **201 de 201 itens ✅** — checklist completa.
 | ✅ | Condomínio: página leve (peso total ≤ 300 KB, sem compactação) | 161 KB em 8 arquivos |
 | ✅ | Condomínio: sem preço, dias de gravação, quantidade de câmeras, prazo de contrato nem "instalação inclusa" |  |
 | ✅ | Condomínio: o botão de proposta tem o orbe da Sol, leva a #contato sem JavaScript e abre o chat da Sol | {"href":"#contato","msg":"Quero uma proposta do Condomínio Evoluído para o meu condomínio.","orbe":true,"whats":false,"config":true} |
-| ✅ | Condomínio: "Pedir proposta" abre a Sol e a página não sai do lugar | http://127.0.0.1:56208/condominio/ |
+| ✅ | Condomínio: "Pedir proposta" abre a Sol e a página não sai do lugar | http://127.0.0.1:61810/condominio/ |
 | ✅ | Condomínio no celular: sem rolagem lateral, toques ≥ 44 px, item "Contato" no menu e sem erros | {"sobra":0,"pequenos":[],"contatoNoMenu":true,"erros":[]} |
 | ✅ | Condomínio sem JavaScript: texto, blocos, contato e botões funcionam | {"h1":1,"blocos":4,"contato":true,"botoes":"#contato /monte-seu-sistema/?ambiente=condominio"} |
 | ✅ | Inicial leva às páginas de solução: aba "Condomínio" dos planos, menu "Soluções" e rodapé; o configurador também (sem falar em 3D) | {"planos":"Conhecer o Condomínio Evoluído","menu":true,"rodape":true,"configurador":"Conhecer o Condomínio Evoluído"} |
@@ -202,25 +202,25 @@ Resultado: **201 de 201 itens ✅** — checklist completa.
 
 | | Item | Detalhe |
 |---|---|---|
-| ✅ | Casa: ferramenta começa com o convite, nenhum ponto marcado, pontos ativos e sem link de WhatsApp fora de "Fale com a SC" | {"pontos":8,"pressionados":0,"semAriaPressed":0,"rotulosMarcados":0,"desabilitados":0,"rotulos":["Garagem","Porta da frente","Calçada e rua","Jardim da frente","Lateral esquerda","Lateral direita","Fundos e quintal","Dentro de casa"],"ariaLive":"polite","qtd":"0 câmeras marcadas","conviteVisivel":true,"planoVisivel":false,"nome":"","preco":"","avisoVisivel":false,"aviso":"","ctaVisivel":false,"ctaTexto":"Quero este plano","ctaHref":null,"ctaClasse":true,"whatsForaDoContato":0} |
+| ✅ | Casa: ferramenta começa com o convite, nenhum ponto marcado, pontos ativos e sem link de WhatsApp fora de "Fale com a SC" | {"pontos":8,"pressionados":0,"semAriaPressed":0,"rotulosMarcados":0,"desabilitados":0,"rotulos":["Garagem","Porta da frente","Calçada e rua","Jardim da frente","Lateral esquerda","Lateral direita","Fundos e quintal","Dentro de casa"],"ariaLive":"polite","qtd":"0 câmeras marcadas","conviteVisivel":true,"planoVisivel":false,"nome":"","preco":"","avisoVisivel":false,"aviso":"","ctaVisivel":false,"ctaTexto":"Quero este plano","ctaHref":null,"ctaClasse":true,"ctaIcone":true,"rotulosFixos":true,"whatsForaDoContato":0} |
 | ✅ | Casa: 3 pontos marcados mostram o Plano de 3 câmeras com o preço de dados.ts (R$ 89,90) e a contagem "3 câmeras marcadas" | {"nome":"Plano de 3 câmeras","preco":"R$ 89,90","qtd":"3 câmeras marcadas","aviso":false} |
 | ✅ | Casa: "Quero este plano" abre wa.me/5546991331306 com "Plano de 3 câmeras" e os pontos marcados, sem "instalação inclusa" | {"href":"https://wa.me/5546991331306?text=Ol%C3%A1!%20Vim%20pelo%20si","msg":"Olá! Vim pelo site e quero contratar o Plano de 3 câmeras (R$ 89,90/mês). Pontos: Garagem, Porta da frente, Calçada e rua. Como agendamos a instalação?","marcados3":["Garagem","Porta da frente","Calçada e rua"],"whatsFora":1} |
-| ✅ | Casa: aria-pressed dos pontos acompanha a marcação (3 "true", rótulo "marcada") e o resultado é aria-live | {"pressionados":3,"rotulosMarcados":3,"ariaLive":"polite"} |
+| ✅ | Casa: aria-pressed dos pontos acompanha a marcação (3 "true", rótulo fixo sem repetir o estado) e o resultado é aria-live | {"pressionados":3,"rotulosMarcados":3,"ariaLive":"polite"} |
 | ✅ | Casa: 6 pontos marcados mostram o Plano de 8 câmeras com o aviso de folga | {"nome":"Plano de 8 câmeras","preco":"R$ 159,90","aviso":"Você marcou 6 pontos. O plano de 8 câmeras cobre com folga e sobra canal no gravador; para exatamente 6 câmeras, a SC faz uma proposta personalizada.","qtd":"6 câmeras marcadas"} |
-| ✅ | Casa: desmarcar tudo devolve o convite inicial, sem plano nem botão de WhatsApp | {"pontos":8,"pressionados":0,"semAriaPressed":0,"rotulosMarcados":0,"desabilitados":0,"rotulos":["Garagem","Porta da frente","Calçada e rua","Jardim da frente","Lateral esquerda","Lateral direita","Fundos e quintal","Dentro de casa"],"ariaLive":"polite","qtd":"0 câmeras marcadas","conviteVisivel":true,"planoVisivel":false,"nome":"Plano de 1 câmera","preco":"R$ 49,90","avisoVisivel":false,"aviso":"","ctaVisivel":false,"ctaTexto":"Quero este plano (Plano de 1 câmera, abre o WhatsApp da equipe)","ctaHref":null,"ctaClasse":true,"whatsForaDoContato":0} |
+| ✅ | Casa: desmarcar tudo devolve o convite inicial, sem plano nem botão de WhatsApp | {"pontos":8,"pressionados":0,"semAriaPressed":0,"rotulosMarcados":0,"desabilitados":0,"rotulos":["Garagem","Porta da frente","Calçada e rua","Jardim da frente","Lateral esquerda","Lateral direita","Fundos e quintal","Dentro de casa"],"ariaLive":"polite","qtd":"0 câmeras marcadas","conviteVisivel":true,"planoVisivel":false,"nome":"Plano de 1 câmera","preco":"R$ 49,90","avisoVisivel":false,"aviso":"","ctaVisivel":false,"ctaTexto":"Quero este plano (Plano de 1 câmera, abre o WhatsApp da equipe)","ctaHref":null,"ctaClasse":true,"ctaIcone":true,"rotulosFixos":true,"whatsForaDoContato":0} |
 | ✅ | Casa: nenhuma imagem vem de domínio diferente do site e a página tem zero erros no console | {"pedidosFora":[],"imgFora":[],"imagens":3,"erros":[]} |
 | ✅ | Casa sem JavaScript: pontos desativados, resultado escondido e link para /#planos | {"pontos":8,"desabilitados":8,"avisoVisivel":true,"linkPlanos":true,"resultadoOculto":true,"whatsFora":0} |
-| ✅ | Casa em 375 px com a ferramenta usada: scrollWidth ≤ 375 | {"largura":375,"sobra":0,"erros":[]} |
+| ✅ | Casa em 375 px com a ferramenta usada: scrollWidth ≤ 375 e nenhum elemento visível passa da borda | {"largura":375,"sobra":0,"alem":[],"erros":[]} |
 | ✅ | Casa: nenhuma violação de acessibilidade na seção da ferramenta (computador e celular) |  |
-| ✅ | Comércio: ferramenta começa com o convite, nenhum ponto marcado, pontos ativos e sem link de WhatsApp fora de "Fale com a SC" | {"pontos":7,"pressionados":0,"semAriaPressed":0,"rotulosMarcados":0,"desabilitados":0,"rotulos":["Porta de entrada","Vitrine","Calçada em frente","Caixa","Salão","Estoque","Fundos ou carga e descarga"],"ariaLive":"polite","qtd":"0 câmeras marcadas","conviteVisivel":true,"planoVisivel":false,"nome":"","preco":"","avisoVisivel":false,"aviso":"","ctaVisivel":false,"ctaTexto":"Quero este plano","ctaHref":null,"ctaClasse":true,"whatsForaDoContato":0} |
+| ✅ | Comércio: ferramenta começa com o convite, nenhum ponto marcado, pontos ativos e sem link de WhatsApp fora de "Fale com a SC" | {"pontos":7,"pressionados":0,"semAriaPressed":0,"rotulosMarcados":0,"desabilitados":0,"rotulos":["Porta de entrada","Vitrine","Calçada em frente","Caixa","Salão","Estoque","Fundos ou carga e descarga"],"ariaLive":"polite","qtd":"0 câmeras marcadas","conviteVisivel":true,"planoVisivel":false,"nome":"","preco":"","avisoVisivel":false,"aviso":"","ctaVisivel":false,"ctaTexto":"Quero este plano","ctaHref":null,"ctaClasse":true,"ctaIcone":true,"rotulosFixos":true,"whatsForaDoContato":0} |
 | ✅ | Comércio: 3 pontos marcados mostram o Plano de 3 câmeras com o preço de dados.ts (R$ 89,90) e a contagem "3 câmeras marcadas" | {"nome":"Plano de 3 câmeras","preco":"R$ 89,90","qtd":"3 câmeras marcadas","aviso":false} |
 | ✅ | Comércio: "Quero este plano" abre wa.me/5546991331306 com "Plano de 3 câmeras" e os pontos marcados, sem "instalação inclusa" | {"href":"https://wa.me/5546991331306?text=Ol%C3%A1!%20Vim%20pelo%20si","msg":"Olá! Vim pelo site e quero contratar o Plano de 3 câmeras (R$ 89,90/mês). Pontos: Porta de entrada, Vitrine, Calçada em frente. Como agendamos a instalação?","marcados3":["Porta de entrada","Vitrine","Calçada em frente"],"whatsFora":1} |
-| ✅ | Comércio: aria-pressed dos pontos acompanha a marcação (3 "true", rótulo "marcada") e o resultado é aria-live | {"pressionados":3,"rotulosMarcados":3,"ariaLive":"polite"} |
+| ✅ | Comércio: aria-pressed dos pontos acompanha a marcação (3 "true", rótulo fixo sem repetir o estado) e o resultado é aria-live | {"pressionados":3,"rotulosMarcados":3,"ariaLive":"polite"} |
 | ✅ | Comércio: 6 pontos marcados mostram o Plano de 8 câmeras com o aviso de folga | {"nome":"Plano de 8 câmeras","preco":"R$ 159,90","aviso":"Você marcou 6 pontos. O plano de 8 câmeras cobre com folga e sobra canal no gravador; para exatamente 6 câmeras, a SC faz uma proposta personalizada.","qtd":"6 câmeras marcadas"} |
-| ✅ | Comércio: desmarcar tudo devolve o convite inicial, sem plano nem botão de WhatsApp | {"pontos":7,"pressionados":0,"semAriaPressed":0,"rotulosMarcados":0,"desabilitados":0,"rotulos":["Porta de entrada","Vitrine","Calçada em frente","Caixa","Salão","Estoque","Fundos ou carga e descarga"],"ariaLive":"polite","qtd":"0 câmeras marcadas","conviteVisivel":true,"planoVisivel":false,"nome":"Plano de 1 câmera","preco":"R$ 49,90","avisoVisivel":false,"aviso":"","ctaVisivel":false,"ctaTexto":"Quero este plano (Plano de 1 câmera, abre o WhatsApp da equipe)","ctaHref":null,"ctaClasse":true,"whatsForaDoContato":0} |
+| ✅ | Comércio: desmarcar tudo devolve o convite inicial, sem plano nem botão de WhatsApp | {"pontos":7,"pressionados":0,"semAriaPressed":0,"rotulosMarcados":0,"desabilitados":0,"rotulos":["Porta de entrada","Vitrine","Calçada em frente","Caixa","Salão","Estoque","Fundos ou carga e descarga"],"ariaLive":"polite","qtd":"0 câmeras marcadas","conviteVisivel":true,"planoVisivel":false,"nome":"Plano de 1 câmera","preco":"R$ 49,90","avisoVisivel":false,"aviso":"","ctaVisivel":false,"ctaTexto":"Quero este plano (Plano de 1 câmera, abre o WhatsApp da equipe)","ctaHref":null,"ctaClasse":true,"ctaIcone":true,"rotulosFixos":true,"whatsForaDoContato":0} |
 | ✅ | Comércio: nenhuma imagem vem de domínio diferente do site e a página tem zero erros no console | {"pedidosFora":[],"imgFora":[],"imagens":3,"erros":[]} |
 | ✅ | Comércio sem JavaScript: pontos desativados, resultado escondido e link para /#planos | {"pontos":7,"desabilitados":7,"avisoVisivel":true,"linkPlanos":true,"resultadoOculto":true,"whatsFora":0} |
-| ✅ | Comércio em 375 px com a ferramenta usada: scrollWidth ≤ 375 | {"largura":375,"sobra":0,"erros":[]} |
+| ✅ | Comércio em 375 px com a ferramenta usada: scrollWidth ≤ 375 e nenhum elemento visível passa da borda | {"largura":375,"sobra":0,"alem":[],"erros":[]} |
 | ✅ | Comércio: nenhuma violação de acessibilidade na seção da ferramenta (computador e celular) |  |
 
 ## Layout em 375 px
@@ -264,7 +264,7 @@ Resultado: **201 de 201 itens ✅** — checklist completa.
 | ✅ | Calculadoras: energia com os valores iniciais dá 70 W, fonte de 10 A e bateria de 65 Ah | Potência total70 WCorrente a 12 V5,83 A (7 A com folga)Fonte indicada10 ABateria para 4 h54,9 Ah necessários → 65 Ah |
 | ✅ | Calculadoras: rede com os valores iniciais dá 57,6 Mbps e enlace de 100 Mbps | Câmeras somadas48 MbpsCom a folga de protocolo57,6 MbpsEnlace até o gravador100 Mbps (usa até 70 %)Upload para ver de fora1,2 Mbps |
 | ✅ | Calculadoras: manifesto, rodapé, orbe da Sol, um h1, WhatsApp só em "Fale com a SC" e fora do menu do topo | {"manifesto":"/calculadoras/manifest.webmanifest","whatsFora":0,"h1":1,"orbe":true,"rodape":true,"menuTopo":false} |
-| ✅ | Calculadoras: service worker só em /calculadoras/ e a página abre e calcula sem internet | http://127.0.0.1:56208/calculadoras/; Calculadoras para instalação de câmeras / SC Soluções, Francisco Beltrão |
+| ✅ | Calculadoras: service worker só em /calculadoras/ e a página abre e calcula sem internet | http://127.0.0.1:61810/calculadoras/; Calculadoras para instalação de câmeras / SC Soluções, Francisco Beltrão |
 | ✅ | Calculadoras: o service worker é versionado, limpa caches velhos e usa rede primeiro para a página |  |
 | ✅ | Calculadoras: zero erros no console |  |
 | ✅ | Calculadoras no celular: sem rolagem lateral e campos/botões ≥ 44 px | sobra 0; pequenos 0 |
