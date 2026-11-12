@@ -5,6 +5,26 @@ Cada publicação tem uma tag `publicado-<data>` no Git, apontando para o commit
 
 ---
 
+## 12/11/2026, 12:55 (Brasília) — Visual novo, vídeo na abertura e "Toque onde quer câmera"
+
+Tag `publicado-2026-11-12-155539` (a data da tag é UTC, como a do script).
+
+### O que mudou para quem visita o site
+
+- Saíram as maquetes 3D e a cena desenhada da abertura. Casa, Comércio, Empresa e Condomínio viraram
+  páginas de texto, mais leves (o site carrega cerca de 90% menos JavaScript).
+- Visual mais sóbrio em todas as páginas.
+- A abertura mostra um celular com o vídeo de demonstração do fabricante (Hikvision ColorVu), que só carrega
+  quando a pessoa toca para assistir. A legenda avisa que imagem colorida à noite é adicional, sob orçamento.
+- Link para o Perfil da Empresa no Google, logo abaixo dos botões da abertura.
+- As condições do contrato viraram 5 perguntas curtas, com a lista completa logo abaixo.
+- O plano de 8 câmeras explica o gravador de 8 canais; "Pedir proposta" aparece uma vez só.
+- Casa e Comércio ganharam "Toque onde quer câmera": a pessoa marca os pontos numa foto ilustrativa de
+  fachada e vê na hora o plano e a mensalidade.
+- A política de privacidade cita o vídeo do YouTube e os links do Google Maps.
+
+---
+
 ## 02/11/2026, 13:37 (Brasília) — Botão do plano no WhatsApp e condições do contrato
 
 Tag `publicado-2026-11-02-163701` (a data da tag é UTC, como a do script).
