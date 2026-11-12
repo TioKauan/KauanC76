@@ -1,117 +1,40 @@
 ---
 /**
- * Tela 1: abertura com a cena viva de cada ambiente. Interação em src/scripts/abertura.ts.
- * Desde 17/10/2026 a inicial ficou mais enxuta: o "E se…?" mora nas páginas 3D e a faixa de
- * serviços saiu (as abas dos planos já levam a Redes, Alarme, Condomínio e Nobreak).
+ * Tela 1: abertura da inicial, em uma coluna: título, texto, os dois botões e a chamada de preço.
+ * Desde 17/10/2026 a inicial é enxuta (abertura, planos, como funciona, dúvidas e contato).
  */
 import Icone from './Icone.astro';
-import { cenas } from '../lib/cenas';
-import { ambientes, sistemas, estadoCena, type SistemaId } from '../lib/cenarios';
 import { formatarPreco, menorPreco, mostrarPrecos, rotuloTaxa } from '../lib/dados';
 
-const f = (n: number) => n.toFixed(2);
 const precoMenor = `R$ ${formatarPreco(menorPreco)}`;
-
-// Cada ambiente: SVG gerado no build + posição dos rótulos em % do desenho (760 × 600).
-const palcos = ambientes.map((a) => {
-  const cena = cenas[a.id]();
-  const { textos } = estadoCena(a.id, 'normal', false);
-  const rotulos = (Object.entries(cena.rotulos) as [SistemaId, [number, number, number]][]).map(([sistema, [dx, dy, indice]]) => {
-    const ponto = cena.pontos.filter((pt) => pt.sistema === sistema)[indice];
-    if (!ponto) throw new Error(`Ponto ${sistema}[${indice}] não existe na cena ${a.id}`);
-    return {
-      sistema,
-      abaixo: dy > 0,
-      x: f(((ponto.x + dx) / 760) * 100),
-      y: f(((ponto.y + dy) / 600) * 100),
-      px: f((ponto.x / 760) * 100),
-      py: f((ponto.y / 600) * 100),
-      nome: sistemas[sistema].nome,
-      icone: sistemas[sistema].icone,
-      texto: textos[sistema],
-    };
-  });
-  return { id: a.id, svg: cena.svg, rotulos };
-});
-
-// Convites para as páginas com maquete 3D (o primeiro chip, "Casa", vem escolhido).
-const convites = [
-  { id: 'casa', href: '/casa/', titulo: 'Veja uma casa em 3D, câmera por câmera', sub: 'O que cada câmera enxerga, do portão ao quintal, e o plano ideal' },
-  { id: 'comercio', href: '/comercio/', titulo: 'Veja uma loja em 3D, câmera por câmera', sub: 'Caixa, estoque e entrada, com rede Wi-Fi e alarme' },
-  { id: 'condominio', href: '/condominio/', titulo: 'Para mais soluções, conheça o Condomínio Evoluído em 3D', sub: 'Câmeras, acesso facial, interfonia, rede, nobreak e alarme' },
-  { id: 'empresa', href: '/empresa/', titulo: 'Veja uma empresa em 3D, câmera por câmera', sub: 'Câmeras, rede e alarme no mesmo projeto' },
-];
 ---
 
 <section class="abertura" id="inicio" aria-labelledby="abertura-titulo">
-  <div class="wrap abertura-grade">
-    <div class="abertura-texto">
-      <p class="sobretitulo">Integradora de segurança e tecnologia</p>
-      <h1 id="abertura-titulo">Câmeras em locação em Francisco Beltrão. <span class="destaque">Tecnologia que funciona.</span></h1>
-      <p class="abertura-lead">
-        {mostrarPrecos ? `Planos a partir de ${precoMenor}/mês, sem comprar os equipamentos. ` : 'Sem comprar os equipamentos. '}Câmeras, rede, acesso e energia em um só projeto.
-      </p>
-      <div class="abertura-acoes">
-        <a class="btn btn-primario btn-g" href="#planos">
-          <span class="so-grande">Ver planos de locação</span>
-          <span class="so-celular">{mostrarPrecos ? `Ver planos a partir de ${precoMenor}` : 'Ver planos de locação'}</span>
-          <Icone nome="arrow-right" tamanho={18} traco={2} />
-        </a>
-        <a class="btn btn-contorno btn-g" href="/monte-seu-sistema/"><Icone nome="mouse-pointer-click" tamanho={18} /> Monte seu sistema</a>
-      </div>
-      <div class="ambientes" role="group" aria-label="Veja no seu ambiente">
-        <span class="ambientes-rotulo">Veja no seu ambiente:</span>
-        {
-          ambientes.map((a, i) => (
-            <button type="button" class="chip" data-ambiente={a.id} aria-pressed={i === 0 ? 'true' : 'false'}>
-              <Icone nome={a.icone} tamanho={16} /> {a.nome}
-            </button>
-          ))
-        }
-      </div>
-      <!-- Um convite por ambiente: aparece o do ambiente escolhido (src/scripts/abertura.ts). -->
-      {
-        convites.map((c, i) => (
-          <a class="link-condominio" href={c.href} data-link-ambiente={c.id} hidden={i !== 0}>
-            <Icone nome="layers" tamanho={20} />
-            <span><b>{c.titulo}</b><small>{c.sub}</small></span>
-          </a>
-        ))
-      }
-      <a class="preco-chamada" href="#planos">
-        <Icone nome="cctv" tamanho={30} traco={1.4} />
-        <span>
-          <strong>
-            {mostrarPrecos ? <>Locação de câmeras a partir de <em>{precoMenor}</em>/mês</> : 'Planos de locação de câmeras'}
-          </strong>
-          <small>Instalação no valor de {rotuloTaxa} · mensalidades a partir da ativação</small>
-        </span>
+  <div class="wrap">
+   <div class="abertura-texto">
+    <p class="sobretitulo">Integradora de segurança e tecnologia</p>
+    <h1 id="abertura-titulo">Câmeras em locação em Francisco Beltrão. <span class="destaque">Tecnologia que funciona.</span></h1>
+    <p class="abertura-lead">
+      {mostrarPrecos ? `Planos a partir de ${precoMenor}/mês, sem comprar os equipamentos. ` : 'Sem comprar os equipamentos. '}Câmeras com gravação local e imagens no celular. Rede, acesso e alarme em projeto personalizado.
+    </p>
+    <div class="abertura-acoes">
+      <a class="btn btn-primario btn-g" href="#planos">
+        <span class="so-grande">Ver planos de locação</span>
+        <span class="so-celular">{mostrarPrecos ? `Ver planos a partir de ${precoMenor}` : 'Ver planos de locação'}</span>
+        <Icone nome="arrow-right" tamanho={18} traco={2} />
       </a>
+      <a class="btn btn-contorno btn-g" href="/monte-seu-sistema/"><Icone nome="mouse-pointer-click" tamanho={18} /> Monte seu sistema</a>
     </div>
-
-    <div class="abertura-cena">
-      <div class="cena" data-cenario="normal" data-reserva="nao" data-ambiente-ativo="casa">
-        {
-          palcos.map((palco, i) => (
-            <div class="cena-ambiente" data-ambiente={palco.id} hidden={i > 0}>
-              <Fragment set:html={palco.svg} />
-              {palco.rotulos.map((r) => (
-                <>
-                  <svg class="rotulo-linha" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" data-sistema={r.sistema} data-estado="ok">
-                    <line x1={r.px} y1={r.py} x2={r.x} y2={r.y} vector-effect="non-scaling-stroke" />
-                  </svg>
-                  <div class:list={['rotulo', { 'rotulo-baixo': r.abaixo }]} style={`left:${r.x}%;top:${r.y}%`} data-sistema={r.sistema} data-estado="ok">
-                    <Icone nome={r.icone} tamanho={18} />
-                    <span><b>{r.nome}</b><small data-texto>{r.texto}</small></span>
-                  </div>
-                </>
-              ))}
-            </div>
-          ))
-        }
-      </div>
-
-    </div>
+    <a class="preco-chamada" href="#planos">
+      <Icone nome="cctv" tamanho={30} traco={1.4} />
+      <span>
+        <strong>
+          {mostrarPrecos ? <>Locação de câmeras a partir de <em>{precoMenor}</em>/mês</> : 'Planos de locação de câmeras'}
+        </strong>
+        <small>Instalação no valor de {rotuloTaxa} · mensalidades a partir da ativação</small>
+      </span>
+    </a>
+   </div>
   </div>
 </section>
 <div class="fio" aria-hidden="true"></div>

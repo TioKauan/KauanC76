@@ -31,7 +31,7 @@ solução, não a mais simples de entender; nas conversas, explique o porquê da
   19/09) e `(49) 99832-5623` (usado de 27/09 a 04/10) não podem aparecer; o teste confere.
 - **WhatsApp:** desde 02/11/2026 o "Quero este plano" dos cartões da inicial abre o WhatsApp da equipe
   (mensagem `mensagemContratar` em `dados.ts`), além da seção "Fale com a SC" (`#contato`). Os demais botões de
-  venda ("Enviar para a SC", "Pedir proposta", páginas 3D) continuam abrindo a Sol (`data-sol-abrir` +
+  venda ("Enviar para a SC", "Pedir proposta", página do condomínio) continuam abrindo a Sol (`data-sol-abrir` +
   `data-sol-mensagem`/`data-sol-plano`) e, sem JavaScript, levam a `#contato`. O validador confere.
 - **Chat da Sol** (assistente virtual desde 27/09/2026; agente de captura de lead desde 28/09): tela
   em `src/components/Sol.astro` + `src/scripts/sol.ts`, regras em `src/lib/sol.ts` (com testes).
@@ -50,19 +50,15 @@ solução, não a mais simples de entender; nas conversas, explique o porquê da
   mostra o orbe laranja. O validador confere o ícone.
 - **Inicial enxuta (17/10/2026):** a inicial tem só abertura, planos, como funciona, dúvidas e contato.
   O configurador fica em `/monte-seu-sistema/` (`src/pages/monte-seu-sistema.astro`; `?cameras=N` marca as
-  câmeras do plano e `?ambiente=` escolhe o ambiente; `/#monte` redireciona). O "E se…?" fica só nas
-  páginas 3D. Não acrescente blocos na inicial sem pedido do Kauan; o validador confere a inicial enxuta.
-- **Páginas com maquete 3D**: Condomínio Evoluído (`/condominio/`, aprovada em 30/09/2026) e Casa, Comércio
-  e Empresa (`/casa/`, `/comercio/`, `/empresa/`, pedidas em 05/10/2026 "igual ao do condomínio"). Um motor
-  comum desenha qualquer maquete descrita em dados (`src/lib/maquete/` e `src/scripts/maquete/`, Three.js
-  baixado só com WebGL 2): capítulos por rolagem, câmera que acompanha a rolagem, camadas, pontos cegos,
-  "E se…?" e modo explorar. Condomínio em `src/lib/condominio/` (textos em `paginaCondominio`): nada de
-  preço, dias de gravação ou quantidade de câmeras, é proposta personalizada pela Sol. Casa, Comércio e
-  Empresa em `src/lib/ambientes/` (textos em `paginasAmbiente`): as maquetes saem das plantas do
-  configurador (`configurador-dados.ts`), e "Escolha o plano" instala as câmeras do plano com o mesmo cabo
-  estimado e o mesmo "Quero este plano" da inicial. O menu "Soluções" leva às quatro. Mudou uma maquete?
-  Rode `npm run build && npm run imagens-maquete` para refazer as imagens prontas. Plano do condomínio:
-  `docs/inovacao/condominio/`.
+  câmeras do plano e `?ambiente=` escolhe o ambiente; `/#monte` redireciona). Não acrescente blocos na inicial sem pedido do Kauan; o validador confere a inicial enxuta.
+- **Páginas de solução** (`/casa/`, `/comercio/`, `/empresa/`, `/condominio/`): páginas leves de texto, sem
+  canvas, todas pelo componente `src/components/PaginaSolucao.astro` (título, texto de apoio, destaques, de 2
+  a 4 blocos e botões). Textos em `dados.ts`: `paginasAmbiente` (casa, comércio, empresa: planos de 1 a 8
+  câmeras, botões para `/#planos` e para `/monte-seu-sistema/?ambiente=`) e `paginaCondominio` (nada de
+  preço, dias de gravação ou quantidade de câmeras: é proposta personalizada, e o botão abre a Sol). O
+  slot `ferramenta` da página (seção `#ferramenta`) é o ponto de entrada para uma ferramenta própria. O menu
+  "Soluções" leva às quatro. As maquetes 3D (Three.js) e a cena isométrica da abertura foram retiradas em
+  11/11/2026; o plano antigo do condomínio segue em `docs/inovacao/condominio/`.
 - **Buscadores** (05/10/2026): os dados da empresa para o Google (schema.org) saem de `dados.ts` em
   `src/lib/buscadores.ts`, com o telefone da equipe e as cidades de `empresa.cidadesAtendidas`
   (desde 14/10/2026), sem link de WhatsApp. `www` redireciona para o domínio sem `www` por uma

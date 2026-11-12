@@ -248,134 +248,113 @@ export const duvidas: Duvida[] = [
 ];
 
 /*
- * Página do Condomínio Evoluído (/condominio/), aprovada pelo Kauan em 30/09/2026.
- * Os sistemas são os de `servicosProposta` (condomínio) e do configurador; a maquete é
- * ilustrativa e os textos não prometem quantidade de câmeras, dias de gravação nem preço
- * (condomínio é sempre proposta personalizada).
+ * Páginas de solução (/casa/, /comercio/, /empresa/, /condominio/): texto curto, sem recursos
+ * interativos. Os fatos vêm daqui mesmo: planos de 1 a 8 câmeras, gravação de aproximadamente
+ * 10 dias, imagens no celular (dependem de energia e internet), recursos premium sob orçamento.
+ * O condomínio é sempre proposta personalizada: sem preço, dias de gravação nem quantidade de câmeras.
  */
-export const paginaCondominio = {
-  lead: 'Gire a maquete, toque em uma câmera e veja o que ela enxerga. Cada camada mostra o que a SC integra no condomínio.',
-  nota: 'Maquete ilustrativa. Cada projeto é dimensionado na visita técnica.',
-  noturna: 'À noite, a imagem padrão é em preto e branco. Imagem colorida à noite: sob orçamento.',
-  capitulos: {
-    cameras: {
-      sobre: 'Câmeras nas áreas comuns',
-      titulo: 'Veja o que cada câmera enxerga. E o que fica de fora.',
-      texto: 'Portaria, garagem, perímetro e lazer, com gravação no próprio condomínio. Toque numa câmera para ver a imagem dela.',
-      pontosCegos: 'As áreas listradas são de circulação e ficam fora do alcance das câmeras desta maquete. Na visita técnica, a SC define onde cada câmera fica.',
-    },
-    acesso: {
-      sobre: 'Controle de acesso facial',
-      titulo: 'Morador entra pelo rosto. Visitante espera a confirmação.',
-      morador: 'O leitor facial do portão de pedestres reconhece o morador cadastrado e libera a entrada.',
-    },
-    interfonia: {
-      sobre: 'Interfonia',
-      titulo: 'A portaria fala com cada apartamento.',
-      texto: 'A portaria chama o apartamento pela interfonia e só libera o visitante depois que o morador confirma. No mesmo projeto das câmeras e do acesso.',
-    },
-    rede: {
-      sobre: 'Rede e Wi-Fi',
-      titulo: 'Uma rede para tudo funcionar junto.',
-      texto: 'Câmeras, acesso e interfonia ligados ao quadro técnico, e Wi-Fi nas áreas comuns.',
-    },
-    energia: {
-      sobre: 'Nobreak e quadro técnico',
-      titulo: 'E se faltar energia no condomínio?',
-      texto: 'Teste as situações e veja o que continua funcionando.',
-    },
-    alarme: {
-      sobre: 'Alarme integrado',
-      titulo: 'Alarme integrado às câmeras, no celular.',
-      texto: 'Avisos de eventos no aplicativo: você acompanha e comanda pelo celular. Os sensores seguem o projeto de cada condomínio.',
-    },
-    proposta: {
-      sobre: 'Monte a proposta',
-      titulo: 'Marque o que o seu condomínio precisa.',
-      texto: 'A maquete acende o que você marcar. A Sol recebe o pedido e a equipe da SC continua a conversa.',
-    },
-  },
-} as const;
+export interface BlocoSolucao { titulo: string; texto: string }
 
-/**
- * Páginas de Casa, Comércio e Empresa (/casa/, /comercio/, /empresa/), pedidas pelo Kauan em
- * 05/10/2026 "igual ao do condomínio". Maquete 3D ilustrativa, tirada das plantas do configurador.
- * Os fatos vêm daqui mesmo: planos, gravação de aproximadamente 10 dias, recursos premium sob
- * orçamento e proposta personalizada para infraestrutura especial. Sem condições contratuais.
- */
-export interface TextosAmbiente {
+export interface TextosSolucao {
+  /** Nome da página (aparece acima do título e nos títulos para redes sociais). */
   sobre: string;
+  /** Título principal (H1). */
   titulo: string;
+  /** Texto de apoio abaixo do título. */
   lead: string;
   /** Descrição para o Google. */
   descricao: string;
-  /** Título curto para redes sociais e para o menu. */
+  /** Nome curto da solução. */
   curto: string;
   /** Título da aba e do resultado no Google, com o que a pessoa digita na busca. */
   tituloBusca: string;
-  /** Lista curta abaixo dos botões da abertura. */
+  /** Lista curta de destaques, abaixo do texto de apoio. */
   destaques: readonly string[];
-  cameras: { titulo: string; texto: string };
-  plano: { titulo: string; texto: string; extra?: string };
-  rede?: { titulo: string; texto: string };
-  ese: { titulo: string; texto: string };
-  alarme: { texto: string };
+  /** De 2 a 4 blocos curtos de conteúdo. */
+  blocos: readonly BlocoSolucao[];
 }
 
-const textoCameras = (onde: string) =>
-  `${onde}, com gravação no próprio local por aproximadamente 10 dias e imagens no celular. Toque numa câmera para ver a imagem dela.`;
+const energiaInternet = 'Ver as imagens pelo celular depende de energia e de internet no local. Nobreak e outros recursos premium são adicionais, sob orçamento.';
+const escolhaDoPlano = 'Escolha pela quantidade de pontos que quer acompanhar, ou monte o sistema no configurador e veja o plano indicado.';
+const textoCameras = (onde: string) => `${onde}, com gravação no próprio local por aproximadamente 10 dias e imagens no celular.`;
+
+export const paginaCondominio = {
+  sobre: 'Condomínio Evoluído',
+  curto: 'Condomínio',
+  tituloBusca: 'Câmeras e controle de acesso para condomínio',
+  titulo: 'Acessos, segurança e infraestrutura do condomínio em um projeto só.',
+  lead: 'Câmeras, controle de acesso facial, interfonia, rede, nobreak e alarme pensados juntos. Cada condomínio recebe uma proposta personalizada.',
+  descricao: 'Câmeras, controle de acesso facial, interfonia, rede, nobreak e alarme funcionando juntos no condomínio. Proposta personalizada da SC Soluções em Francisco Beltrão e região.',
+  destaques: ['Câmeras', 'Controle de acesso facial', 'Interfonia', 'Nobreak e quadro técnico'],
+  blocos: [
+    {
+      titulo: 'Câmeras nas áreas comuns',
+      texto: 'Portaria, garagem, perímetro e lazer, com gravação no próprio condomínio. Na visita técnica, a SC define onde cada câmera fica.',
+    },
+    {
+      titulo: 'Acesso facial e interfonia',
+      texto: 'O leitor facial do portão de pedestres reconhece o morador cadastrado e libera a entrada. A portaria chama o apartamento pela interfonia e só libera o visitante depois que o morador confirma.',
+    },
+    {
+      titulo: 'Rede, Wi-Fi e nobreak',
+      texto: 'Câmeras, acesso e interfonia ligados ao quadro técnico, e Wi-Fi nas áreas comuns. O nobreak é dimensionado para a carga e mantém o sistema por um período na falta de energia, conforme a bateria.',
+    },
+    {
+      titulo: 'Alarme integrado às câmeras, no celular',
+      texto: 'Avisos de eventos no aplicativo: você acompanha e comanda pelo celular. Os sensores seguem o projeto de cada condomínio.',
+    },
+  ],
+  /** Mensagem do botão que abre a Sol. */
+  mensagemProposta: 'Quero uma proposta do Condomínio Evoluído para o meu condomínio.',
+} as const satisfies TextosSolucao & Record<string, unknown>;
 
 export const paginasAmbiente = {
-  nota: paginaCondominio.nota,
-  noturna: paginaCondominio.noturna,
-  pontosCegos: 'As áreas listradas ficam fora do alcance das câmeras desta maquete. Na visita técnica, a SC define onde cada câmera fica.',
-  celular: 'Ver as imagens pelo celular depende de energia e de internet no local.',
   casa: {
     sobre: 'Sua casa',
     curto: 'Casa',
     tituloBusca: 'Câmeras de segurança para casa',
     titulo: 'Sua casa protegida, do portão ao quintal.',
-    lead: 'Gire a maquete, escolha o plano e veja o que cada câmera enxerga, por dentro e por fora.',
-    descricao: 'Veja numa maquete 3D o que cada câmera enxerga numa casa e escolha o plano de locação de câmeras da SC Soluções, com gravação local e imagens no celular. Francisco Beltrão e região.',
+    lead: 'Planos de locação de câmeras para a sua casa, com gravação local e imagens no celular.',
+    descricao: 'Escolha o plano de locação de câmeras da SC Soluções para a sua casa, com gravação local e imagens no celular. Francisco Beltrão e região.',
     destaques: ['Planos de 1 a 8 câmeras', 'Gravação local', 'Imagens no celular', 'Suporte e manutenção'],
-    cameras: { titulo: 'Veja o que cada câmera enxerga. E o que fica de fora.', texto: textoCameras('Entrada, garagem, laterais, fundos e dentro de casa') },
-    plano: { titulo: 'Escolha o plano e veja a cobertura na hora.', texto: 'A maquete mostra onde ficam as câmeras de cada plano, o cabo até o gravador e o que ainda fica sem câmera.' },
-    ese: { titulo: 'E se faltar energia ou a internet cair?', texto: 'Teste as situações e veja o que continua funcionando na sua casa.' },
-    alarme: { texto: 'Avisos de eventos no aplicativo: você acompanha e comanda pelo celular. Os sensores seguem o projeto de cada casa.' },
+    blocos: [
+      { titulo: 'Câmeras onde importa', texto: textoCameras('Entrada, garagem, laterais, fundos e dentro de casa') },
+      { titulo: 'Planos de 1 a 8 câmeras', texto: escolhaDoPlano },
+      { titulo: 'Energia e internet', texto: energiaInternet },
+      { titulo: 'Alarme monitorado pelo app', texto: 'Avisos de eventos no aplicativo: você acompanha e comanda pelo celular. Os sensores seguem o projeto de cada casa.' },
+    ],
   },
   comercio: {
     sobre: 'Comércio',
     curto: 'Comércio',
     tituloBusca: 'Câmeras de segurança para comércio',
     titulo: 'Caixa, estoque e entrada à vista, de onde você estiver.',
-    lead: 'Gire a maquete da loja, escolha o plano e veja o que cada câmera enxerga.',
-    descricao: 'Veja numa maquete 3D o que cada câmera enxerga numa loja: caixa, salão, estoque e entrada. Planos de locação de câmeras da SC Soluções, rede Wi-Fi e alarme. Francisco Beltrão e região.',
+    lead: 'Planos de locação de câmeras para a sua loja, com gravação local, imagens no celular, rede Wi-Fi e alarme.',
+    descricao: 'Câmeras para loja: caixa, salão, estoque e entrada. Planos de locação de câmeras da SC Soluções, rede Wi-Fi e alarme. Francisco Beltrão e região.',
     destaques: ['Planos de 1 a 8 câmeras', 'Gravação local', 'Rede Wi-Fi sob medida', 'Alarme monitorado pelo app'],
-    cameras: { titulo: 'Veja o que cada câmera enxerga. E o que fica de fora.', texto: textoCameras('Fachada, caixa, salão, estoque e carga e descarga') },
-    plano: { titulo: 'Escolha o plano e veja a cobertura da loja.', texto: 'A maquete mostra onde ficam as câmeras de cada plano, o cabo até o gravador e o que ainda fica sem câmera.' },
-    rede: { titulo: 'Wi-Fi para a equipe e para os clientes, cada um na sua rede.', texto: 'Câmeras e Wi-Fi ligados ao mesmo rack, com a rede dos clientes separada da rede da loja. Proposta personalizada.' },
-    ese: { titulo: 'E se faltar energia ou a internet cair?', texto: 'Teste as situações e veja o que continua funcionando na loja.' },
-    alarme: { texto: 'Avisos de eventos no aplicativo: você acompanha e comanda pelo celular. Os sensores seguem o projeto de cada loja.' },
+    blocos: [
+      { titulo: 'Câmeras onde importa', texto: textoCameras('Fachada, caixa, salão, estoque e carga e descarga') },
+      { titulo: 'Planos de 1 a 8 câmeras', texto: escolhaDoPlano },
+      { titulo: 'Wi-Fi para a equipe e para os clientes', texto: 'Câmeras e Wi-Fi ligados ao mesmo rack, com a rede dos clientes separada da rede da loja. Proposta personalizada.' },
+      { titulo: 'Energia e internet', texto: energiaInternet },
+    ],
   },
   empresa: {
     sobre: 'Empresa',
     curto: 'Empresa',
     tituloBusca: 'Câmeras e rede para empresas',
     titulo: 'Segurança e rede da sua empresa no mesmo projeto.',
-    lead: 'Gire a maquete, veja o que cada câmera enxerga e como a rede liga tudo.',
-    descricao: 'Veja numa maquete 3D as câmeras, a rede e o alarme de uma empresa. Planos de locação de câmeras ou proposta personalizada da SC Soluções. Francisco Beltrão e região.',
+    lead: 'Planos de locação de câmeras ou proposta personalizada, com a rede da empresa pensada junto.',
+    descricao: 'Câmeras, rede e alarme para empresas. Planos de locação de câmeras ou proposta personalizada da SC Soluções. Francisco Beltrão e região.',
     destaques: ['Planos de 1 a 8 câmeras', 'Redes gerenciadas', 'Nobreak para o essencial', 'Proposta personalizada'],
-    cameras: { titulo: 'Veja o que cada câmera enxerga. E o que fica de fora.', texto: textoCameras('Entrada, recepção, áreas de trabalho e estacionamento') },
-    plano: {
-      titulo: 'Comece por um plano e veja a cobertura.',
-      texto: 'A maquete mostra onde ficam as câmeras de cada plano, o cabo até o gravador e o que ainda fica sem câmera.',
-      extra: 'Mais câmeras ou infraestrutura especial? A SC monta uma proposta personalizada.',
-    },
-    rede: { titulo: 'Uma rede para a equipe, as câmeras e os visitantes.', texto: 'Câmeras e Wi-Fi ligados à sala técnica, com a rede dos visitantes separada da rede da empresa. Proposta personalizada.' },
-    ese: { titulo: 'E se faltar energia ou a internet cair?', texto: 'Teste as situações e veja o que continua funcionando na empresa.' },
-    alarme: { texto: 'Avisos de eventos no aplicativo: você acompanha e comanda pelo celular. Os sensores seguem o projeto de cada empresa.' },
+    blocos: [
+      { titulo: 'Câmeras onde importa', texto: textoCameras('Entrada, recepção, áreas de trabalho e estacionamento') },
+      { titulo: 'Comece por um plano', texto: `${escolhaDoPlano} Mais câmeras ou infraestrutura especial? A SC monta uma proposta personalizada.` },
+      { titulo: 'Uma rede para a equipe, as câmeras e os visitantes', texto: 'Câmeras e Wi-Fi ligados à sala técnica, com a rede dos visitantes separada da rede da empresa. Proposta personalizada.' },
+      { titulo: 'Energia e internet', texto: energiaInternet },
+    ],
   },
-} as const satisfies Record<'casa' | 'comercio' | 'empresa', TextosAmbiente> & Record<string, unknown>;
+} as const satisfies Record<'casa' | 'comercio' | 'empresa', TextosSolucao>;
 
 /* ---------- utilidades usadas no site ---------- */
 

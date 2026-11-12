@@ -15,7 +15,7 @@ describe('links do menu entre páginas', () => {
     expect(hrefSecao('/condominio/', false)).toBe('/condominio/');
   });
 
-  it('o menu "Soluções" leva às quatro páginas com maquete', () => {
+  it('o menu "Soluções" leva às quatro páginas de solução', () => {
     expect(solucoes.map((s) => s.href)).toEqual(['/casa/', '/comercio/', '/empresa/', '/condominio/']);
     expect(links.some((l) => 'grupo' in l && l.itens === solucoes)).toBe(true);
     // Fora do grupo, só seções da inicial e o configurador, que tem página própria desde 17/10/2026.

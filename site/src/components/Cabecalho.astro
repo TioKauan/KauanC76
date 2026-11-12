@@ -48,12 +48,12 @@ const naSolucao = solucoes.some((s) => s.href === Astro.url.pathname);
   <div class="menu-celular" id="menu-celular" hidden>
     <nav aria-label="Navegação no celular">
       {secoes.map((l, i) => <a href={hrefSecao(l.href, naInicial)} aria-current={atual(l.href)}><span>0{i + 1}</span>{l.rotulo}<Icone nome="arrow-right" tamanho={18} /></a>)}
+      <a href="#contato"><span>0{secoes.length + 1}</span>Contato<Icone nome="arrow-right" tamanho={18} /></a>
     </nav>
-    <p class="menu-celular-titulo">Soluções em 3D</p>
+    <p class="menu-celular-titulo">Soluções</p>
     <div class="menu-celular-solucoes">
       {solucoes.map((s) => <a href={s.href} aria-current={atual(s.href)}><Icone nome={s.icone} tamanho={18} />{s.rotulo}</a>)}
     </div>
-    <a class="btn btn-primario" href="#contato">Fale com a SC</a>
     <p class="menu-nota">{contato.atendimento} · {empresa.regiao}</p>
   </div>
 </header>

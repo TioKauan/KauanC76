@@ -1,0 +1,91 @@
+---
+/**
+ * Página de solução (/casa/, /comercio/, /empresa/, /condominio/): título, texto de apoio, destaques,
+ * blocos curtos e botões. Só HTML e CSS; os textos ficam em src/lib/dados.ts.
+ * Casa, Comércio e Empresa levam aos planos e ao configurador; o Condomínio é proposta personalizada
+ * pela Sol (sem JavaScript, o botão leva a "Fale com a SC").
+ * Ponto de entrada para uma ferramenta própria da página: o slot "ferramenta" (seção #ferramenta).
+ */
+import Base from '../layouts/Base.astro';
+import Cabecalho from './Cabecalho.astro';
+import ContatoFinal from './ContatoFinal.astro';
+import Rodape from './Rodape.astro';
+import BarraFixa from './BarraFixa.astro';
+import Icone from './Icone.astro';
+import Sol from './Sol.astro';
+import '../styles/solucao.css';
+import { empresa, paginaCondominio, paginasAmbiente, type TextosSolucao } from '../lib/dados';
+import { dadosPagina, separarCidade } from '../lib/buscadores';
+
+interface Props {
+  id: 'casa' | 'comercio' | 'empresa' | 'condominio';
+}
+const { id } = Astro.props;
+const condominio = id === 'condominio';
+const t: TextosSolucao = id === 'condominio' ? paginaCondominio : paginasAmbiente[id];
+const municipio = separarCidade(empresa.cidade).municipio;
+const comFerramenta = Astro.slots.has('ferramenta');
+---
+
+<Base
+  titulo={`${t.tituloBusca} | ${empresa.nome}, ${municipio}`}
+  descricao={t.descricao}
+  tituloSocial={`${t.sobre} | ${empresa.nome}`}
+  descricaoSocial={t.lead}
+  dadosEstruturados={dadosPagina(`/${id}/`, t.tituloBusca, t.descricao)}
+>
+  <Cabecalho naInicial={false} />
+  <main id="conteudo">
+    <section class="solucao-abertura wrap" aria-labelledby="solucao-titulo">
+      <p class="sobretitulo">{t.sobre}</p>
+      <h1 id="solucao-titulo" class="titulo-secao">{t.titulo}</h1>
+      <p class="solucao-lead">{t.lead}</p>
+      <ul class="solucao-destaques">
+        {t.destaques.map((d) => <li><Icone nome="check" tamanho={16} traco={2.2} />{d}</li>)}
+      </ul>
+      <div class="solucao-acoes">
+        {
+          condominio ? (
+            <>
+              <a class="btn btn-primario btn-g" href="#contato" data-sol-abrir data-sol-mensagem={paginaCondominio.mensagemProposta}>
+                <span class="sol-orbe sol-orbe-p" aria-hidden="true"></span> Pedir proposta<span class="sr"> (abre o chat da Sol)</span>
+              </a>
+              <a class="btn btn-contorno btn-g" href="/monte-seu-sistema/?ambiente=condominio">Montar a proposta no configurador</a>
+            </>
+          ) : (
+            <>
+              <a class="btn btn-primario btn-g" href="/#planos">Ver os planos de locação <Icone nome="arrow-right" tamanho={18} traco={2} /></a>
+              <a class="btn btn-contorno btn-g" href={`/monte-seu-sistema/?ambiente=${id}`}><Icone nome="mouse-pointer-click" tamanho={18} /> Montar no configurador</a>
+            </>
+          )
+        }
+      </div>
+    </section>
+
+    {
+      comFerramenta && (
+        <section id="ferramenta" class="solucao-ferramenta wrap" aria-label="Ferramenta">
+          <slot name="ferramenta" />
+        </section>
+      )
+    }
+
+    <section class="solucao-blocos wrap" aria-label={`${t.curto}: o que a SC entrega`}>
+      {
+        t.blocos.map((b) => (
+          <article class="cartao solucao-bloco">
+            <h2>{b.titulo}</h2>
+            <p>{b.texto}</p>
+          </article>
+        ))
+      }
+    </section>
+    <ContatoFinal />
+  </main>
+  <Rodape naInicial={false} />
+  <BarraFixa sub={condominio ? 'Peça a proposta do condomínio' : 'Escolha o plano com a Sol'} />
+  <Sol />
+  <script>
+    import '../scripts/solucao';
+  </script>
+</Base>

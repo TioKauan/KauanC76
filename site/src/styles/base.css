@@ -141,7 +141,6 @@ p { margin: 0; }
 .menu-celular nav a { display: flex; align-items: center; gap: 14px; min-height: 56px; border-bottom: 1px solid var(--linha); font-size: 17px; }
 .menu-celular nav a span { font-size: 12px; color: var(--texto-3); }
 .menu-celular nav a .ic { margin-left: auto; color: var(--ciano); }
-.menu-celular .btn { width: 100%; }
 .menu-nota { font-size: 13px; color: var(--texto-3); margin-top: 14px; text-align: center; }
 
 /* Fio condutor entre seções */

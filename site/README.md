@@ -18,9 +18,7 @@ npm run build      # checagem de tipos + dist/
 npm run preview    # serve o dist/ em http://localhost:4173
 npm run validar    # tipos, build, testes, acessibilidade (axe) e conferências em navegador → docs/inovacao/RELATORIO-VALIDACAO.md
 npm run validar -- --fotos   # + fotos em docs/inovacao/site-final/ e lado a lado com os mockups em comparacao/
-                             #   (e as do condomínio em docs/inovacao/condominio/site-final/ e comparacao/)
-npm run imagens-maquete      # depois de npm run build: refaz as imagens prontas das maquetes (public/<página>/)
-                             #   (ou só algumas: npm run imagens-maquete -- casa comercio)
+                             #   (e as das páginas de solução, sem mockup: 06-solucao-*.png e 07-celular-solucao-*.png)
 ```
 
 ## Arquitetura
@@ -29,8 +27,8 @@ npm run imagens-maquete      # depois de npm run build: refaz as imagens prontas
 src/
   pages/index.astro        página inicial (compõe as seções; importa os estilos e o script dela)
   pages/monte-seu-sistema.astro  configurador "Monte seu sistema" (desde 17/10/2026; ?cameras=N e ?ambiente=; /#monte redireciona)
-  pages/condominio.astro   Condomínio Evoluído: capítulos + maquete 3D (plano em docs/inovacao/condominio/)
-  pages/[ambiente].astro   Casa, Comércio e Empresa (/casa/, /comercio/, /empresa/): mesma maquete 3D, com "Escolha o plano"
+  pages/casa.astro, comercio.astro, empresa.astro, condominio.astro
+                           páginas leves de solução (só texto, sem canvas): cada uma chama components/PaginaSolucao.astro
   pages/privacidade.astro  política de privacidade
   pages/robots.txt.ts      robots.txt gerado no build (aponta o sitemap)
                            (sitemap: @astrojs/sitemap gera sitemap-index.xml e sitemap-0.xml; o astro.config.mjs copia
@@ -38,36 +36,26 @@ src/
   pages/404.astro          endereço que não existe: caminhos para o site (fora do Google; ver Publicação)
   layouts/Base.astro       <head>, fonte e estilos-base comuns a todas as páginas
   components/*.astro       uma seção por componente (Abertura, Planos, Configurador, ComoFunciona…)
-  components/maquete/      Palco (maquete, monitor, camadas), Trilho (capítulos) e Ese ("E se…?"), comuns às páginas 3D
-  components/condominio/   Capitulos do condomínio (todo o texto da página)
-  components/ambiente/     Capitulos de casa, comércio e empresa (com o seletor de plano)
+  components/PaginaSolucao.astro  página de solução: título, texto de apoio, destaques, blocos e botões; o slot
+                           "ferramenta" (seção #ferramenta, só aparece se for preenchido) é o ponto de entrada de uma ferramenta própria
   lib/                     dados e regras, sem DOM (rodam no build e no navegador)
-    dados.ts               conteúdo comercial: planos, preços, condições, dúvidas, contato
-    cenarios.ts            estados do "E se…?" por ambiente e situação
-    cenas.ts + iso.ts      cenas isométricas geradas como SVG no build
+    dados.ts               conteúdo comercial: planos, preços, condições, dúvidas, contato, textos das páginas de solução
     configurador-dados.ts  plantas, zonas e pontos sugeridos
     configurador-logica.ts cabo estimado, recomendação de plano, nomes, mensagem do WhatsApp
     busca.ts               busca nas dúvidas (sinônimos, peso por raridade, intenção de preço)
     buscadores.ts          dados da empresa para o Google (schema.org), tirados de dados.ts
     plantas-svg.ts         desenho das plantas do configurador
     icones.ts              subconjunto do Lucide
-    maquete/               tipos.ts (como se descreve uma maquete: prédios, imóveis em corte, móveis, camadas)
-                           e cobertura.ts (campo de visão e pontos cegos de qualquer maquete)
-    condominio/            maquete.ts (lote, prédios, câmeras), cobertura.ts, capitulos.ts (camadas e
-                           enquadramentos), proposta.ts (mensagem para a Sol)
-    ambientes/             maquetes.ts (casa, loja e empresa tiradas das plantas do configurador),
-                           capitulos.ts, plano.ts (câmeras de cada plano e cabo estimado)
-  scripts/*.ts             interação no navegador (sem framework de cliente)
-  scripts/maquete/         cena.ts (o motor Three.js, baixado só se o aparelho tiver WebGL 2 e não estiver
-                           economizando dados) e roteiro.ts (capítulos por rolagem, camadas, E se…?, explorar)
-  scripts/condominio/      pagina.ts (formulário da proposta) e etiquetas.ts
-  scripts/ambiente/        pagina.ts (Escolha o plano) e etiquetas.ts
+  scripts/*.ts             interação no navegador (sem framework de cliente); solucao.ts liga o menu, a barra fixa e a Sol
+                           nas páginas de solução
   styles/*.css             estilos por seção; tokens de cor da logo em base.css
 tests/*.test.ts            Vitest (regras de negócio)
 scripts/validar.mjs        validador de ponta a ponta (Playwright)
 scripts/gerar-marca.mjs    favicon, ícone e imagem Open Graph a partir da logo oficial
-scripts/gerar-imagens-maquete.mjs    imagens prontas das maquetes (aparecem antes do 3D e no lugar dele)
 ```
+
+Retirado em 11/11/2026: as maquetes 3D (Three.js) e a cena isométrica da abertura. Os endereços
+`/casa/`, `/comercio/`, `/empresa/` e `/condominio/` continuam, agora como páginas de texto.
 
 Princípios:
 
@@ -88,12 +76,9 @@ Princípios:
 | Trocar o número do WhatsApp | `src/lib/dados.ts` → `contato.whatsapp` |
 | Editar as dúvidas frequentes | `src/lib/dados.ts` → `duvidas` (e sinônimos em `src/lib/busca.ts`) |
 | Mudar pontos sugeridos do configurador | `src/lib/configurador-dados.ts` |
-| Mudar textos da página do condomínio | `src/lib/dados.ts` → `paginaCondominio` (os sistemas vêm de `servicosProposta` e do configurador) |
-| Mudar prédios ou câmeras da maquete do condomínio | `src/lib/condominio/maquete.ts`; depois `npm run build && npm run imagens-maquete -- condominio` |
-| Mudar paredes, móveis ou detalhes da casa, loja ou empresa | `src/lib/ambientes/maquetes.ts` (câmeras e cômodos vêm das plantas do configurador); depois `npm run build && npm run imagens-maquete` |
+| Mudar textos da página do condomínio | `src/lib/dados.ts` → `paginaCondominio` (os destaques são os itens de `servicosProposta`) |
 | Mudar textos das páginas Casa, Comércio e Empresa | `src/lib/dados.ts` → `paginasAmbiente` |
-| Mudar o enquadramento de um capítulo de casa, comércio ou empresa | `src/lib/ambientes/capitulos.ts` |
-| Mudar o enquadramento de um capítulo | `src/lib/condominio/capitulos.ts` (`vista` e `vistaCelular`) |
+| Mudar a estrutura das quatro páginas de solução | `src/components/PaginaSolucao.astro` e `src/styles/solucao.css` |
 | Mudar a taxa de instalação (hoje, 1 mensalidade) | `src/lib/dados.ts` → `taxaInstalacaoMensalidades` |
 | Mudar o que aparece em "Simples de contratar" | `src/lib/dados.ts` → `condicoes` |
 | Trocar CNPJ, cidade ou e-mail do rodapé | `src/lib/dados.ts` → `empresa` e `contato.email` (os dados para o Google acompanham) |

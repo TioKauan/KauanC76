@@ -1,0 +1,22 @@
+/* Páginas de solução (src/components/PaginaSolucao.astro) */
+.solucao-abertura { padding-block: 56px 32px; }
+.solucao-abertura .titulo-secao { max-width: 22ch; }
+.solucao-lead { margin-top: 18px; color: var(--texto-2); font-size: 18px; line-height: 1.7; max-width: 60ch; }
+.solucao-destaques { list-style: none; margin: 24px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px 22px; font-size: 15px; }
+.solucao-destaques li { display: flex; align-items: center; gap: 8px; }
+.solucao-destaques .ic { color: var(--ciano); }
+.solucao-acoes { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+
+.solucao-ferramenta { padding-block: 24px; }
+
+.solucao-blocos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; padding-block: 24px 56px; }
+.solucao-bloco { padding: 26px; }
+.solucao-bloco h2 { font-size: 20px; letter-spacing: -0.03em; }
+.solucao-bloco p { margin-top: 10px; color: var(--texto-2); line-height: 1.7; }
+
+@media (max-width: 800px) {
+  .solucao-abertura { padding-block: 32px 24px; }
+  .solucao-lead { font-size: 16px; }
+  .solucao-acoes .btn { width: 100%; }
+  .solucao-blocos { grid-template-columns: 1fr; padding-block: 16px 40px; }
+}

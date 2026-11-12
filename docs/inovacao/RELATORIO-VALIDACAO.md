@@ -1,23 +1,23 @@
 # Relatório de validação do site
 
-Gerado por `npm run validar` em 29/10/2026, 12:33:20.
-Resultado: **159 de 159 itens ✅** — checklist completa.
+Gerado por `npm run validar` em 11/11/2026, 21:25:21.
+Resultado: **157 de 157 itens ✅** — checklist completa.
 
 ## Geral
 
 | | Item | Detalhe |
 |---|---|---|
 | ✅ | Tipos conferidos (astro check) e build sem erro |  |
-| ✅ | Testes unitários das regras (Vitest) passam | 194 testes |
-| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 347 KB em 11 arquivos; maiores: / 165 KB, /marca/sc-logo.webp 52 KB, /assets/sol.o05Wpb7B.js 44 KB |
+| ✅ | Testes unitários das regras (Vitest) passam | 155 testes |
+| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 250 KB em 9 arquivos; maiores: / 80 KB, /marca/sc-logo.webp 52 KB, /assets/sol.CBCAuobH.js 39 KB |
 | ✅ | Todo link interno leva a uma seção que existe | 6 destinos conferidos |
-| ✅ | Todo WhatsApp usa wa.me/5546991331306 com mensagem preenchida | 1 links |
+| ✅ | Todo WhatsApp usa wa.me/5546991331306 com mensagem preenchida | 6 links |
 | ✅ | Todo botão de WhatsApp mostra o ícone do WhatsApp |  |
-| ✅ | WhatsApp da equipe só na seção "Fale com a SC" |  |
-| ✅ | Topo e menu do celular: "Fale com a SC" leva à seção de contato | [{"href":"#contato","texto":"Fale com a SC"},{"href":"#contato","texto":"Fale com a SC"}] |
+| ✅ | WhatsApp da equipe só em "Fale com a SC" e nos botões "Quero este plano" |  |
+| ✅ | Cabeçalho: "Fale com a SC" aparece uma vez só e leva à seção de contato; o menu do celular tem o item "Contato" e o título "Soluções" | {"botoes":[{"href":"#contato","texto":"Fale com a SC"}],"ocorrencias":1,"menuContato":["Contato"],"menuTitulo":"Soluções","menuBotao":0} |
 | ✅ | Número antigo (46) 99113-8360 não aparece |  |
 | ✅ | Rodapé identifica a empresa (CNPJ, cidade, e-mail) |  |
-| ✅ | Todo preço na página bate com dados.ts | 11 preços encontrados |
+| ✅ | Todo preço na página bate com dados.ts | 18 preços encontrados |
 | ✅ | Cores-base iguais às da logo | #09a0f6 #6de9f6 #ff6a00 #020710 |
 | ✅ | Contraste do texto secundário ≥ 4,5:1 (fundo e cartões) | menor: 6.02:1; texto principal 18.8:1 |
 | ✅ | Todo controle tem nome acessível |  |
@@ -33,7 +33,7 @@ Resultado: **159 de 159 itens ✅** — checklist completa.
 | ✅ | Sem rolagem horizontal em 1440 px |  |
 | ✅ | "Reduzir movimento": nenhuma animação contínua roda | 0 animações contínuas |
 | ✅ | "Reduzir movimento": todo conteúdo aparece sem animação | 0 blocos escondidos |
-| ✅ | Sem JavaScript o conteúdo aparece e os contatos funcionam (botões de venda levam a "Fale com a SC") | {"planos":5,"duvidas":7,"escondidos":0,"vendas":9,"whatsContato":true,"solEscondida":true} |
+| ✅ | Sem JavaScript o conteúdo aparece e os contatos funcionam (botões de venda levam a "Fale com a SC") | {"planos":5,"duvidas":10,"escondidos":0,"vendas":4,"whatsContato":true,"solEscondida":true} |
 | ✅ | Rodapé tem link para a Política de privacidade |  |
 | ✅ | /privacidade/ abre com as 9 seções, sem erro no console e sem rolagem lateral | 9 seções; erros: 0; sobra 0 px |
 | ✅ | Buscadores: robots.txt aponta o sitemap, e o sitemap lista todas as páginas | páginas: /, /calculadoras/, /casa/, /comercio/, /condominio/, /empresa/, /monte-seu-sistema/, /privacidade/; no sitemap: /, /calculadoras/, /casa/, /comercio/, /condominio/, /empresa/, /monte-seu-sistema/, /privacidade/ |
@@ -44,7 +44,7 @@ Resultado: **159 de 159 itens ✅** — checklist completa.
 | | Item | Detalhe |
 |---|---|---|
 | ✅ | Inicial tem os dados da empresa para o Google (schema.org): nome, CNPJ, cidade e e-mail iguais aos do rodapé | SC Soluções · 62.768.829/0001-96 · Francisco Beltrão · somoscella@gmail.com |
-| ✅ | FAQPage (Google) tem as mesmas dúvidas do site, na mesma ordem | 7 no JSON; 7 <details> reconhecidos na tela |
+| ✅ | FAQPage (Google) tem as mesmas dúvidas do site, na mesma ordem | 10 no JSON; 10 <details> reconhecidos na tela |
 | ✅ | Título das páginas de venda cita Francisco Beltrão; todas citam a cidade no título ou na descrição | sem cidade: nenhuma |
 | ✅ | IndexNow: o arquivo da chave sai no build, com só a chave, e não está no sitemap | 91de491704f9e409970a313cb9196254 |
 | ✅ | Só a página 404 fica fora do Google (noindex); as outras são indexadas |  |
@@ -55,10 +55,11 @@ Resultado: **159 de 159 itens ✅** — checklist completa.
 
 | | Item | Detalhe |
 |---|---|---|
-| ✅ | Os 4 ambientes trocam a cena e os rótulos | 4/4 |
+| ✅ | Abertura da inicial: sem cena, sem chips "Veja no seu ambiente" e sem convites para as páginas de solução | {"cena":false,"chips":0,"convites":0,"rotulosSistema":0} |
+| ✅ | Abertura da inicial não promete energia no plano (o nobreak é adicional, sob orçamento) | INTEGRADORA DE SEGURANÇA E TECNOLOGIA Câmeras em locação em Francisco Beltrão. Tecnologia que funciona. Planos a partir de R$ 49,90/mês, sem comprar os equipamentos. Câmeras com gravação local e imagens no celular. Rede, |
 | ✅ | Inicial enxuta: sem "E se…?", faixa de serviços, configurador, "Personalize" e Área do cliente; botão leva a /monte-seu-sistema/ | {"ese":false,"faixa":false,"monte":false,"cliente":false,"personalize":false,"botaoMonte":"/monte-seu-sistema/"} |
-| ✅ | "A partir de R$ 49,90/mês" visível sem rolar em 1440 px | fim do bloco em 883 de 900 px |
-| ✅ | "A partir de R$ 49,90/mês" visível sem rolar em 390 px | fim do bloco em 683 de 768 px |
+| ✅ | "A partir de R$ 49,90/mês" visível sem rolar em 1440 px | fim do bloco em 652 de 900 px |
+| ✅ | "A partir de R$ 49,90/mês" visível sem rolar em 390 px | fim do bloco em 442 de 768 px |
 
 ## Tela 2 · Planos
 
@@ -68,8 +69,9 @@ Resultado: **159 de 159 itens ✅** — checklist completa.
 | ✅ | Destaque "Cobertura completa" só no plano de 4 câmeras |  |
 | ✅ | "Simples de contratar": assinatura eletrônica, taxa de instalação, mensalidades na ativação, pagamento |  |
 | ✅ | Cada plano mostra a taxa de instalação (1 mensalidade) e nada diz que a instalação é grátis | 5/5 |
-| ✅ | Condições contratuais ficam no contrato (sem prazo mínimo, multa ou cobranças extras no site) |  |
-| ✅ | "Quero este plano" abre a Sol com o plano (orbe, sem WhatsApp; sem JavaScript leva a "Fale com a SC") | 5/5 |
+| ✅ | Bloco "Condições do contrato" mostra prazo, multa, reajuste, propriedade e foro |  |
+| ✅ | Nenhuma condição antiga ou promessa fora do documento (50%, renovação automática, garantia contra raio) |  |
+| ✅ | "Quero este plano" abre o WhatsApp da equipe com o plano, o valor e a pergunta da instalação | 5/5 |
 | ✅ | "Ver no configurador" leva à página /monte-seu-sistema/ com a quantidade de câmeras do plano | 5/5 |
 | ✅ | Abas de proposta funcionam (clique e setas do teclado) |  |
 
@@ -86,14 +88,14 @@ Resultado: **159 de 159 itens ✅** — checklist completa.
 | ✅ | Mensagem para a Sol leva ambiente, quantidade, pontos, plano, valor e recursos | Olá! Montei meu sistema no site da SC. / Ambiente: Casa / Câmeras: 8 (entrada principal, garagem e portão, fundos / quintal, lateral esquerda, fundos / quintal  |
 | ✅ | Condomínio vai para proposta personalizada |  |
 | ✅ | ?ambiente=condominio abre o configurador no condomínio (link da aba Condomínio) | true |
-| ✅ | Link antigo /#monte leva a /monte-seu-sistema/ | http://127.0.0.1:51784/monte-seu-sistema/ |
+| ✅ | Link antigo /#monte leva a /monte-seu-sistema/ | http://127.0.0.1:55257/monte-seu-sistema/ |
 
 ## Tela 4 · Como funciona
 
 | | Item | Detalhe |
 |---|---|---|
 | ✅ | Linha do tempo acende etapa por etapa | 0 → 1 → 2 → 3 → 4 → 4 → 5 |
-| ✅ | 7 perguntas; a busca "celular" mostra a resposta certa | Consigo ver as câmeras pelo celular? |
+| ✅ | 10 perguntas; a busca "celular" mostra a resposta certa | Consigo ver as câmeras pelo celular? |
 | ✅ | Busca sem resultado oferece perguntar para a Sol (sem WhatsApp) |  |
 
 ## Tela 5 · Celular
@@ -128,67 +130,58 @@ Resultado: **159 de 159 itens ✅** — checklist completa.
 | ✅ | Recarregar no meio do roteiro volta na mesma pergunta |  |
 | ✅ | Zero erros no console com o chat |  |
 | ✅ | Pergunta da caixa de dúvidas antes do roteiro fica guardada e vira a primeira mensagem para a Sol | ["lead","xyzabc qwerty?"] |
-| ✅ | "Quero este plano" da página abre a Sol e, depois do roteiro, vai com o plano; a página não sai do lugar | ["lead","Quero o plano de 4 câmeras (plano 4)"] |
+| ✅ | Botão de venda com plano escolhido abre a Sol e, depois do roteiro, vai com o plano; a página não sai do lugar | ["lead","Quero o plano de 4 câmeras (plano 4)"] |
 | ✅ | Celular: Sol na barra fixa, chat em tela cheia, sem rolagem lateral e toques ≥ 44 px (roteiro e conversa) |  |
 | ✅ | Celular: a última mensagem fica à vista com os botões rápidos na tela (roteiro e conversa) | {"vistaRoteiro":true,"vistaConversa":true} |
 | ✅ | Zero erros no console com o chat (celular) |  |
 
-## Condomínio · maquete 3D
+## Páginas de solução
 
 | | Item | Detalhe |
 |---|---|---|
-| ✅ | A maquete 3D desenha de verdade (WebGL) e o monitor mostra 4 câmeras na abertura | 16 cores distintas na amostra; 4 câmeras no monitor |
-| ✅ | Cada capítulo, ao rolar, acende as suas camadas e as suas câmeras no monitor | 8 capítulos |
-| ✅ | Escolher câmera pelo teclado ou tocando no número dela na maquete mostra a imagem dela | teclado → 5 (CAM 05 · Perímetro dos fundos); toque → 7 |
-| ✅ | Pontos cegos aparecem no capítulo das câmeras e dá para esconder |  |
-| ✅ | "E se…?" do condomínio: textos iguais aos da inicial e a maquete apaga sem energia | Sem reserva, os sistemas ficam sem energia. / Com nobreak, os sistemas seguem funcionando. / A gravação continua. Só o celular fica sem imagens. |
-| ✅ | Proposta: marcar sistemas muda a maquete e a mensagem vai pronta para a Sol (orbe; sem JavaScript leva a "Fale com a SC") | Olá! Quero uma proposta de Condomínio Evoluído. / Sistemas de interesse: câmeras nas áreas comuns, controle de acesso facial, rede e wi-fi, nobreak e quadro técnico. / O condomínio tem 3 blocos e 72 apartamentos. / Podemos conversar? |
-| ✅ | "Enviar para a SC pela Sol" abre o chat |  |
-| ✅ | "Explorar a maquete" abre em tela cheia e Esc volta ao roteiro (com o foco no botão) | {"explorando":{"modo":true,"foco":true,"fixo":"fixed"},"saiu":{"modo":false,"foco":true}} |
-| ✅ | "Reduzir movimento": a maquete não anima sozinha (desenha só quando algo muda) | 0 quadros em 1,5 s parada |
-| ✅ | WhatsApp da equipe só em "Fale com a SC" também nesta página | 1 no contato, 0 fora |
-| ✅ | Sem preço, prazo de contrato nem "instalação inclusa" na página do condomínio |  |
-| ✅ | Zero erros no console (maquete 3D, computador) |  |
-| ✅ | Peso: primeira visão ≤ 300 KB e maquete 3D ≤ 700 KB (baixada depois, sem compactação) | primeira visão 276 KB; maquete 640 KB |
-| ✅ | Celular: maquete no alto da tela, sem rolagem lateral, toques ≥ 44 px e sem erros | {"sobra":0,"alturaPalco":354,"pequenos":[],"erros":[]} |
-| ✅ | Condomínio sem 3D: imagem da maquete, os 8 capítulos e o contato; controles da maquete escondidos | {"imagem":true,"capitulos":8,"so3d":0,"canvas":false,"contato":true} |
-| ✅ | Condomínio sem JavaScript: imagem da maquete, os 8 capítulos e o contato; controles da maquete escondidos | {"imagem":true,"capitulos":8,"so3d":0,"canvas":false,"contato":true} |
-| ✅ | Inicial leva às páginas 3D: convite na abertura (um por ambiente), aba dos planos e menu "Soluções"; o configurador também | {"escondidoAntes":true,"linkAbertura":"/condominio/","planos":true,"menu":true,"configurador":true} |
-
-## Casa, Comércio e Empresa · maquetes 3D
-
-| | Item | Detalhe |
-|---|---|---|
-| ✅ | Casa: a maquete 3D desenha (WebGL) e o monitor mostra as 4 câmeras do plano de 4 na abertura | 15 cores; 4 câmeras no monitor |
-| ✅ | Casa: cada capítulo, ao rolar, acende as suas camadas (abertura, cameras, plano, ese, alarme) |  |
-| ✅ | Casa: escolher uma câmera pelo teclado mostra a imagem dela no monitor |  |
-| ✅ | Casa: escolher o plano instala as câmeras dele na maquete e atualiza preço, cabo e o "Quero este plano" (Sol) | Plano de 8 câmeras R$ 159,90/mês · ≈ 121 m de 100 m inclusos → Plano de 1 câmera |
-| ✅ | Casa: "E se…?" com os textos da inicial; na visita, o visitante e o acesso acendem |  |
-| ✅ | Casa: "reduzir movimento" sem animação, WhatsApp só em "Fale com a SC", sem condição contratual nem "instalação inclusa", zero erros | 0 quadros parada; WhatsApp 1/0; erros: 0 |
-| ✅ | Casa: primeira visão ≤ 300 KB e maquete 3D ≤ 700 KB (baixada depois) | primeira visão 270 KB; maquete 640 KB |
-| ✅ | Casa no celular: maquete no alto, sem rolagem lateral, toques ≥ 44 px e sem erros | {"sobra":0,"alturaPalco":354,"pequenos":[],"erros":[]} |
-| ✅ | Casa sem 3D: imagem da maquete, os 5 capítulos, o plano de 4 e o contato | {"imagem":true,"capitulos":5,"so3d":0,"plano":"Plano de 4 câmeras","contato":true} |
-| ✅ | Casa sem JavaScript: imagem da maquete, os 5 capítulos, o plano de 4 e o contato | {"imagem":true,"capitulos":5,"so3d":0,"plano":"Plano de 4 câmeras","contato":true} |
-| ✅ | Comércio: a maquete 3D desenha (WebGL) e o monitor mostra as 4 câmeras do plano de 4 na abertura | 14 cores; 4 câmeras no monitor |
-| ✅ | Comércio: cada capítulo, ao rolar, acende as suas camadas (abertura, cameras, plano, rede, ese, alarme) |  |
-| ✅ | Comércio: escolher uma câmera pelo teclado mostra a imagem dela no monitor |  |
-| ✅ | Comércio: escolher o plano instala as câmeras dele na maquete e atualiza preço, cabo e o "Quero este plano" (Sol) | Plano de 8 câmeras R$ 159,90/mês · ≈ 158 m de 100 m inclusos → Plano de 1 câmera |
-| ✅ | Comércio: "E se…?" com os textos da inicial; na visita, o visitante e o acesso acendem |  |
-| ✅ | Comércio: "reduzir movimento" sem animação, WhatsApp só em "Fale com a SC", sem condição contratual nem "instalação inclusa", zero erros | 0 quadros parada; WhatsApp 1/0; erros: 0 |
-| ✅ | Comércio: primeira visão ≤ 300 KB e maquete 3D ≤ 700 KB (baixada depois) | primeira visão 271 KB; maquete 640 KB |
-| ✅ | Comércio no celular: maquete no alto, sem rolagem lateral, toques ≥ 44 px e sem erros | {"sobra":0,"alturaPalco":354,"pequenos":[],"erros":[]} |
-| ✅ | Comércio sem 3D: imagem da maquete, os 6 capítulos, o plano de 4 e o contato | {"imagem":true,"capitulos":6,"so3d":0,"plano":"Plano de 4 câmeras","contato":true} |
-| ✅ | Comércio sem JavaScript: imagem da maquete, os 6 capítulos, o plano de 4 e o contato | {"imagem":true,"capitulos":6,"so3d":0,"plano":"Plano de 4 câmeras","contato":true} |
-| ✅ | Empresa: a maquete 3D desenha (WebGL) e o monitor mostra as 4 câmeras do plano de 4 na abertura | 14 cores; 4 câmeras no monitor |
-| ✅ | Empresa: cada capítulo, ao rolar, acende as suas camadas (abertura, cameras, plano, rede, ese, alarme) |  |
-| ✅ | Empresa: escolher uma câmera pelo teclado mostra a imagem dela no monitor |  |
-| ✅ | Empresa: escolher o plano instala as câmeras dele na maquete e atualiza preço, cabo e o "Quero este plano" (Sol) | Plano de 8 câmeras R$ 159,90/mês · ≈ 158 m de 100 m inclusos → Plano de 1 câmera |
-| ✅ | Empresa: "E se…?" com os textos da inicial; na visita, o visitante e o acesso acendem |  |
-| ✅ | Empresa: "reduzir movimento" sem animação, WhatsApp só em "Fale com a SC", sem condição contratual nem "instalação inclusa", zero erros | 0 quadros parada; WhatsApp 1/0; erros: 0 |
-| ✅ | Empresa: primeira visão ≤ 300 KB e maquete 3D ≤ 700 KB (baixada depois) | primeira visão 269 KB; maquete 640 KB |
-| ✅ | Empresa no celular: maquete no alto, sem rolagem lateral, toques ≥ 44 px e sem erros | {"sobra":0,"alturaPalco":354,"pequenos":[],"erros":[]} |
-| ✅ | Empresa sem 3D: imagem da maquete, os 6 capítulos, o plano de 4 e o contato | {"imagem":true,"capitulos":6,"so3d":0,"plano":"Plano de 4 câmeras","contato":true} |
-| ✅ | Empresa sem JavaScript: imagem da maquete, os 6 capítulos, o plano de 4 e o contato | {"imagem":true,"capitulos":6,"so3d":0,"plano":"Plano de 4 câmeras","contato":true} |
+| ✅ | Casa: a página responde (200), tem um só título principal, 2 a 4 blocos, destaques e nenhum canvas | {"status":200,"h1":["Sua casa protegida, do portão ao quintal."],"canvas":0,"destaques":4,"blocos":4,"ancorasQuebradas":[]} |
+| ✅ | Casa: WhatsApp da equipe só em "Fale com a SC" e zero erros no console | 1 no contato, 0 fora; erros: 0 |
+| ✅ | Casa: "reduzir movimento": nenhuma animação contínua roda | 0 animações contínuas |
+| ✅ | Casa: nada fala de maquete, 3D nem "instalação inclusa"; menu "Soluções" leva às quatro páginas |  |
+| ✅ | Casa: dados estruturados (schema.org) da página e título com a cidade | 1 bloco(s); Câmeras de segurança para casa / SC Soluções, Francisco Beltrão |
+| ✅ | Casa: página leve (peso total ≤ 300 KB, sem compactação) | 160 KB em 7 arquivos |
+| ✅ | Casa: planos de 1 a 8 câmeras, gravação de aproximadamente 10 dias, imagens no celular dependem de energia e internet, premium sob orçamento |  |
+| ✅ | Casa: botões levam aos planos (/#planos) e ao configurador (?ambiente=casa) | {"planos":"Ver os planos de locação","config":"Montar no configurador","whats":0} |
+| ✅ | Casa no celular: sem rolagem lateral, toques ≥ 44 px, item "Contato" no menu e sem erros | {"sobra":0,"pequenos":[],"contatoNoMenu":true,"erros":[]} |
+| ✅ | Casa sem JavaScript: texto, blocos, contato e botões funcionam | {"h1":1,"blocos":4,"contato":true,"botoes":"/#planos /monte-seu-sistema/?ambiente=casa"} |
+| ✅ | Comércio: a página responde (200), tem um só título principal, 2 a 4 blocos, destaques e nenhum canvas | {"status":200,"h1":["Caixa, estoque e entrada à vista, de onde você estiver."],"canvas":0,"destaques":4,"blocos":4,"ancorasQuebradas":[]} |
+| ✅ | Comércio: WhatsApp da equipe só em "Fale com a SC" e zero erros no console | 1 no contato, 0 fora; erros: 0 |
+| ✅ | Comércio: "reduzir movimento": nenhuma animação contínua roda | 0 animações contínuas |
+| ✅ | Comércio: nada fala de maquete, 3D nem "instalação inclusa"; menu "Soluções" leva às quatro páginas |  |
+| ✅ | Comércio: dados estruturados (schema.org) da página e título com a cidade | 1 bloco(s); Câmeras de segurança para comércio / SC Soluções, Francisco Beltrão |
+| ✅ | Comércio: página leve (peso total ≤ 300 KB, sem compactação) | 161 KB em 7 arquivos |
+| ✅ | Comércio: planos de 1 a 8 câmeras, gravação de aproximadamente 10 dias, imagens no celular dependem de energia e internet, premium sob orçamento |  |
+| ✅ | Comércio: botões levam aos planos (/#planos) e ao configurador (?ambiente=comercio) | {"planos":"Ver os planos de locação","config":"Montar no configurador","whats":0} |
+| ✅ | Comércio no celular: sem rolagem lateral, toques ≥ 44 px, item "Contato" no menu e sem erros | {"sobra":0,"pequenos":[],"contatoNoMenu":true,"erros":[]} |
+| ✅ | Comércio sem JavaScript: texto, blocos, contato e botões funcionam | {"h1":1,"blocos":4,"contato":true,"botoes":"/#planos /monte-seu-sistema/?ambiente=comercio"} |
+| ✅ | Empresa: a página responde (200), tem um só título principal, 2 a 4 blocos, destaques e nenhum canvas | {"status":200,"h1":["Segurança e rede da sua empresa no mesmo projeto."],"canvas":0,"destaques":4,"blocos":4,"ancorasQuebradas":[]} |
+| ✅ | Empresa: WhatsApp da equipe só em "Fale com a SC" e zero erros no console | 1 no contato, 0 fora; erros: 0 |
+| ✅ | Empresa: "reduzir movimento": nenhuma animação contínua roda | 0 animações contínuas |
+| ✅ | Empresa: nada fala de maquete, 3D nem "instalação inclusa"; menu "Soluções" leva às quatro páginas |  |
+| ✅ | Empresa: dados estruturados (schema.org) da página e título com a cidade | 1 bloco(s); Câmeras e rede para empresas / SC Soluções, Francisco Beltrão |
+| ✅ | Empresa: página leve (peso total ≤ 300 KB, sem compactação) | 161 KB em 7 arquivos |
+| ✅ | Empresa: planos de 1 a 8 câmeras, gravação de aproximadamente 10 dias, imagens no celular dependem de energia e internet, premium sob orçamento |  |
+| ✅ | Empresa: botões levam aos planos (/#planos) e ao configurador (?ambiente=empresa) | {"planos":"Ver os planos de locação","config":"Montar no configurador","whats":0} |
+| ✅ | Empresa no celular: sem rolagem lateral, toques ≥ 44 px, item "Contato" no menu e sem erros | {"sobra":0,"pequenos":[],"contatoNoMenu":true,"erros":[]} |
+| ✅ | Empresa sem JavaScript: texto, blocos, contato e botões funcionam | {"h1":1,"blocos":4,"contato":true,"botoes":"/#planos /monte-seu-sistema/?ambiente=empresa"} |
+| ✅ | Condomínio: a página responde (200), tem um só título principal, 2 a 4 blocos, destaques e nenhum canvas | {"status":200,"h1":["Acessos, segurança e infraestrutura do condomínio em um projeto só."],"canvas":0,"destaques":4,"blocos":4,"ancorasQuebradas":[]} |
+| ✅ | Condomínio: WhatsApp da equipe só em "Fale com a SC" e zero erros no console | 1 no contato, 0 fora; erros: 0 |
+| ✅ | Condomínio: "reduzir movimento": nenhuma animação contínua roda | 0 animações contínuas |
+| ✅ | Condomínio: nada fala de maquete, 3D nem "instalação inclusa"; menu "Soluções" leva às quatro páginas |  |
+| ✅ | Condomínio: dados estruturados (schema.org) da página e título com a cidade | 1 bloco(s); Câmeras e controle de acesso para condomínio / SC Soluções, Francisco Beltrão |
+| ✅ | Condomínio: página leve (peso total ≤ 300 KB, sem compactação) | 160 KB em 7 arquivos |
+| ✅ | Condomínio: sem preço, dias de gravação, quantidade de câmeras, prazo de contrato nem "instalação inclusa" |  |
+| ✅ | Condomínio: o botão de proposta tem o orbe da Sol, leva a #contato sem JavaScript e abre o chat da Sol | {"href":"#contato","msg":"Quero uma proposta do Condomínio Evoluído para o meu condomínio.","orbe":true,"whats":false,"config":true} |
+| ✅ | Condomínio: "Pedir proposta" abre a Sol e a página não sai do lugar | http://127.0.0.1:55257/condominio/ |
+| ✅ | Condomínio no celular: sem rolagem lateral, toques ≥ 44 px, item "Contato" no menu e sem erros | {"sobra":0,"pequenos":[],"contatoNoMenu":true,"erros":[]} |
+| ✅ | Condomínio sem JavaScript: texto, blocos, contato e botões funcionam | {"h1":1,"blocos":4,"contato":true,"botoes":"#contato /monte-seu-sistema/?ambiente=condominio"} |
+| ✅ | Inicial leva às páginas de solução: aba "Condomínio" dos planos, menu "Soluções" e rodapé; o configurador também (sem falar em 3D) | {"planos":"Conhecer o Condomínio Evoluído","menu":true,"rodape":true,"configurador":"Conhecer o Condomínio Evoluído"} |
+| ✅ | Pacote gerado (dist): sem Three.js, sem arquivo de maquete e sem canvas nas páginas de solução | três: 0; maquete: 0; canvas: 0 |
 
 ## Acessibilidade (axe)
 
@@ -217,7 +210,7 @@ Resultado: **159 de 159 itens ✅** — checklist completa.
 | ✅ | Calculadoras: energia com os valores iniciais dá 70 W, fonte de 10 A e bateria de 65 Ah | Potência total70 WCorrente a 12 V5,83 A (7 A com folga)Fonte indicada10 ABateria para 4 h54,9 Ah necessários → 65 Ah |
 | ✅ | Calculadoras: rede com os valores iniciais dá 57,6 Mbps e enlace de 100 Mbps | Câmeras somadas48 MbpsCom a folga de protocolo57,6 MbpsEnlace até o gravador100 Mbps (usa até 70 %)Upload para ver de fora1,2 Mbps |
 | ✅ | Calculadoras: manifesto, rodapé, orbe da Sol, um h1, WhatsApp só em "Fale com a SC" e fora do menu do topo | {"manifesto":"/calculadoras/manifest.webmanifest","whatsFora":0,"h1":1,"orbe":true,"rodape":true,"menuTopo":false} |
-| ✅ | Calculadoras: service worker só em /calculadoras/ e a página abre e calcula sem internet | http://127.0.0.1:51784/calculadoras/; Calculadoras para instalação de câmeras / SC Soluções, Francisco Beltrão |
+| ✅ | Calculadoras: service worker só em /calculadoras/ e a página abre e calcula sem internet | http://127.0.0.1:55257/calculadoras/; Calculadoras para instalação de câmeras / SC Soluções, Francisco Beltrão |
 | ✅ | Calculadoras: o service worker é versionado, limpa caches velhos e usa rede primeiro para a página |  |
 | ✅ | Calculadoras: zero erros no console |  |
 | ✅ | Calculadoras no celular: sem rolagem lateral e campos/botões ≥ 44 px | sobra 0; pequenos 0 |

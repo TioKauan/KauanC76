@@ -70,8 +70,7 @@ const servidor = createServer((req, res) => {
 await new Promise((r) => servidor.listen(0, '127.0.0.1', r));
 const endereco = `http://127.0.0.1:${servidor.address().port}/`;
 
-// WebGL por software (SwiftShader) para a maquete 3D do condomínio.
-const navegador = await chromium.launch({ args: ['--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+const navegador = await chromium.launch();
 const abrir = async (largura, extras = {}, caminho = '') => {
   const celular = largura <= 800;
   const contexto = await navegador.newContext({ viewport: { width: largura, height: celular ? 844 : 900 }, deviceScaleFactor: celular ? 2 : 1, hasTouch: celular, isMobile: celular && largura < 600, ...extras });
@@ -117,10 +116,17 @@ const rolarTudo = (pagina) => pagina.evaluate(async () => {
   const foraPermitido = await pagina.evaluate(() => [...document.querySelectorAll('a[href*="wa.me"]')]
     .filter((a) => !a.closest('#contato') && !a.matches('.plano-cta')).map((a) => a.textContent.trim().slice(0, 30)));
   conferir('WhatsApp da equipe só em "Fale com a SC" e nos botões "Quero este plano"', whats.length > 0 && foraPermitido.length === 0, foraPermitido.join(' | '));
-  const topoContato = await pagina.evaluate(() => [...document.querySelectorAll('.cabecalho-cta, #menu-celular a.btn')]
-    .map((a) => ({ href: a.getAttribute('href'), texto: a.textContent.trim() })));
-  conferir('Topo e menu do celular: "Fale com a SC" leva à seção de contato', topoContato.length === 2
-    && topoContato.every((a) => a.href === '#contato' && a.texto === 'Fale com a SC'), JSON.stringify(topoContato));
+  // O botão "Fale com a SC" existe uma vez só no cabeçalho (barra de cima); o menu do celular tem o item "Contato".
+  const topoContato = await pagina.evaluate(() => ({
+    botoes: [...document.querySelectorAll('.cabecalho-cta')].map((a) => ({ href: a.getAttribute('href'), texto: a.textContent.trim() })),
+    ocorrencias: (document.querySelector('.cabecalho').textContent.match(/Fale com a SC/g) ?? []).length,
+    menuContato: [...document.querySelectorAll('#menu-celular nav a[href="#contato"]')].map((a) => a.textContent.trim().replace(/^\d+/, '')),
+    menuTitulo: document.querySelector('#menu-celular .menu-celular-titulo')?.textContent.trim(),
+    menuBotao: document.querySelectorAll('#menu-celular a.btn').length,
+  }));
+  conferir('Cabeçalho: "Fale com a SC" aparece uma vez só e leva à seção de contato; o menu do celular tem o item "Contato" e o título "Soluções"',
+    topoContato.botoes.length === 1 && topoContato.botoes[0].href === '#contato' && topoContato.botoes[0].texto === 'Fale com a SC' && topoContato.ocorrencias === 1
+      && topoContato.menuContato.join() === 'Contato' && topoContato.menuTitulo === 'Soluções' && topoContato.menuBotao === 0, JSON.stringify(topoContato));
   const html = readFileSync(path.join(dist, 'index.html'), 'utf8');
   const textoTodo = await pagina.evaluate(() => document.body.innerText);
   conferir('Número antigo (46) 99113-8360 não aparece', !/99113.?8360|991138360/.test(html + textoTodo));
@@ -320,17 +326,23 @@ grupo('Buscadores');
 grupo('Tela 1 · Abertura');
 {
   const { pagina, contexto } = await abrir(1440);
-  const ambientes = await pagina.$$eval('.ambientes .chip', (b) => b.map((x) => x.dataset.ambiente));
-  let trocas = 0;
-  for (const a of ambientes) {
-    await pagina.click(`.ambientes .chip[data-ambiente="${a}"]`);
-    const visivel = await pagina.$$eval('.cena-ambiente', (els) => els.filter((e) => !e.hidden).map((e) => e.dataset.ambiente));
-    const rotulos = await pagina.$$eval(`.cena-ambiente[data-ambiente="${a}"] .rotulo`, (r) => r.length);
-    if (visivel.length === 1 && visivel[0] === a && rotulos === 5) trocas++;
-  }
-  conferir('Os 4 ambientes trocam a cena e os rótulos', ambientes.length === 4 && trocas === 4, `${trocas}/4`);
+  // Abertura simples de uma coluna: sem cena, sem chips de ambiente e sem convites para as páginas de solução.
+  const simples = await pagina.evaluate(() => {
+    const inicio = document.querySelector('#inicio');
+    return {
+      cena: Boolean(document.querySelector('.cena, .cena-ambiente, .abertura-cena, #inicio svg.cena-svg')),
+      chips: document.querySelectorAll('#inicio .chip, #inicio [data-ambiente], .ambientes').length,
+      convites: document.querySelectorAll('#inicio [data-link-ambiente], #inicio .link-condominio, #inicio a[href="/casa/"], #inicio a[href="/comercio/"], #inicio a[href="/empresa/"], #inicio a[href="/condominio/"]').length,
+      rotulosSistema: document.querySelectorAll('#inicio .rotulo, #inicio .rotulo-linha').length,
+      texto: inicio.innerText,
+    };
+  });
+  conferir('Abertura da inicial: sem cena, sem chips "Veja no seu ambiente" e sem convites para as páginas de solução',
+    !simples.cena && simples.chips === 0 && simples.convites === 0 && simples.rotulosSistema === 0 && !/Veja no seu ambiente|em 3D|maquete/i.test(simples.texto),
+    JSON.stringify({ ...simples, texto: undefined }));
+  conferir('Abertura da inicial não promete energia no plano (o nobreak é adicional, sob orçamento)', !/energia/i.test(simples.texto), simples.texto.replace(/\s+/g, ' ').slice(0, 220));
 
-  // Inicial enxuta (17/10/2026): o "E se…?" e a faixa de serviços ficam fora da inicial; o "E se…?" segue nas páginas 3D.
+  // Inicial enxuta (17/10/2026): o "E se…?" e a faixa de serviços ficam fora da inicial.
   const enxuta = await pagina.evaluate(() => ({
     ese: Boolean(document.querySelector('#inicio .ese, #inicio [data-situacao]')),
     faixa: Boolean(document.querySelector('.faixa-servicos')),
@@ -775,8 +787,15 @@ grupo('Sol · chat do site');
     const pedidosPlano = [];
     const { pagina: p, contexto: c } = await abrir(1440);
     await simular(p, pedidosPlano);
-    await p.evaluate(() => document.getElementById('plano-4').scrollIntoView({ block: 'center', behavior: 'instant' }));
-    await p.click('#plano-4 [data-plano-cta]');
+    // Desde 02/11/2026 o "Quero este plano" dos cartões abre o WhatsApp (conferido em "Tela 2").
+    // Aqui fica a conferência do mecanismo da Sol: um botão de venda com plano escolhido
+    // (data-sol-mensagem + data-sol-plano, lidos na hora do toque) abre o chat e guarda a escolha.
+    await p.evaluate(() => {
+      const g = document.querySelector('[data-sol-abrir]:not([data-sol-pergunta])');
+      g.dataset.solMensagem = 'Quero o plano de 4 câmeras';
+      g.dataset.solPlano = '4';
+      g.click();
+    });
     await p.waitForSelector('.sol-painel.sol-painel-visivel');
     await esperarSol(p);
     const tPlano = await tela(p);
@@ -784,7 +803,7 @@ grupo('Sol · chat do site');
     await capturar(p);
     await p.waitForSelector('.sol-avisado', { timeout: 8000 });
     await esperarSol(p);
-    conferir('"Quero este plano" da página abre a Sol e, depois do roteiro, vai com o plano; a página não sai do lugar',
+    conferir('Botão de venda com plano escolhido abre a Sol e, depois do roteiro, vai com o plano; a página não sai do lugar',
       tPlano.minhas[0] === 'Quero o plano de 4 câmeras' && tPlano.ultimaSol === 'Já te respondo! Antes, como posso te chamar?'
         && !url.endsWith('#contato') && pedidosPlano[0]?.tipo === 'lead'
         && pedidosPlano[1]?.mensagem === 'Quero o plano de 4 câmeras' && pedidosPlano[1]?.plano === 4,
@@ -830,287 +849,140 @@ grupo('Sol · chat do site');
   await cel.contexto.close();
 }
 
-/* ---------- Condomínio Evoluído (/condominio/) ---------- */
-grupo('Condomínio · maquete 3D');
+/* ---------- Páginas de solução (/casa/, /comercio/, /empresa/, /condominio/) ---------- */
+// Páginas leves, só de texto: sem canvas, sem maquete. Textos em src/lib/dados.ts.
+grupo('Páginas de solução');
 {
-  // As regras do condomínio importam outros módulos sem extensão: quem carrega é o Vite (o mesmo do Astro).
-  const { createServer: criarVite } = await import('vite');
-  const vite = await criarVite({ root: raizSite, logLevel: 'silent', appType: 'custom', server: { middlewareMode: true, hmr: false } });
-  const { CAPITULOS } = await vite.ssrLoadModule('/src/lib/condominio/capitulos.ts');
-  const { mensagemProposta } = await vite.ssrLoadModule('/src/lib/condominio/proposta.ts');
-  const { estadoCena } = await vite.ssrLoadModule('/src/lib/cenarios.ts');
-  await vite.close();
-  const esperar3D = (p) => p.waitForFunction(() => Number(document.querySelector('[data-maquete]')?.dataset.quadros) > 1, null, { timeout: 90000 });
-  const estado = (p) => p.evaluate(() => window.__maquete());
-  const irPara = async (p, id) => {
-    await p.evaluate((i) => { const el = document.getElementById(i); scrollTo({ top: el.getBoundingClientRect().top + scrollY - 60, behavior: 'instant' }); }, id);
-    await p.waitForTimeout(500);
-  };
-
-  const { pagina, contexto, erros, bytes } = await abrir(1440, { reducedMotion: 'reduce' }, 'condominio/');
-  await esperar3D(pagina);
-  const cores = await pagina.evaluate(() => window.__maquetePixels());
-  const pronto = await pagina.evaluate(() => ({ canvas: !document.querySelector('[data-maquete]').hidden, marca: document.documentElement.hasAttribute('data-3d'), monitor: document.querySelectorAll('[data-monitor-grade] .feed').length }));
-  conferir('A maquete 3D desenha de verdade (WebGL) e o monitor mostra 4 câmeras na abertura',
-    pronto.canvas && pronto.marca && new Set(cores).size >= 6 && pronto.monitor === 4, `${new Set(cores).size} cores distintas na amostra; ${pronto.monitor} câmeras no monitor`);
-
-  const errados = [];
-  for (const c of CAPITULOS) {
-    await irPara(pagina, c.id);
-    const e = await estado(pagina);
-    const esperadas = c.id === 'proposta' ? null : [...c.camadas].sort().join();
-    if (e.capitulo !== c.id || (esperadas && e.camadas.sort().join() !== esperadas) || e.monitor.join() !== c.monitor.join()) errados.push(`${c.id}→${e.capitulo}`);
-  }
-  conferir('Cada capítulo, ao rolar, acende as suas camadas e as suas câmeras no monitor', errados.length === 0, errados.join(', ') || `${CAPITULOS.length} capítulos`);
-
-  await irPara(pagina, 'cameras');
-  await pagina.focus('[data-camera="5"]');
-  await pagina.keyboard.press('Enter');
-  const porTeclado = await estado(pagina);
-  const nomeFeed = await pagina.$eval('[data-monitor-grade] .feed-nome', (el) => el.textContent);
-  await pagina.click('.rotulo-camera[aria-label^="CAM 07"]');
-  const porToque = await estado(pagina);
-  conferir('Escolher câmera pelo teclado ou tocando no número dela na maquete mostra a imagem dela',
-    porTeclado.selecionada === 5 && porTeclado.monitor.join() === '5' && nomeFeed.startsWith('CAM 05') && porToque.selecionada === 7, `teclado → ${porTeclado.selecionada} (${nomeFeed}); toque → ${porToque.selecionada}`);
-  const cegosAntes = (await estado(pagina)).pontosCegos;
-  await pagina.click('[data-pontos-cegos]');
-  const cegosDepois = (await estado(pagina)).pontosCegos;
-  conferir('Pontos cegos aparecem no capítulo das câmeras e dá para esconder', cegosAntes === true && cegosDepois === false);
-
-  await irPara(pagina, 'energia');
-  const ese = async (situacao, nobreak) => {
-    await pagina.click(`[data-ese-situacao="${situacao}"]`);
-    if (nobreak) await pagina.click('[data-ese-nobreak]');
-    return { titulo: await pagina.textContent('[data-ese-titulo]'), e: await estado(pagina) };
-  };
-  const semLuz = await ese('energia', false);
-  const comNobreak = await ese('energia', true);
-  const internet = await ese('internet', false);
-  const esperado = (s, r) => estadoCena('condominio', s, r).titulo;
-  conferir('"E se…?" do condomínio: textos iguais aos da inicial e a maquete apaga sem energia',
-    semLuz.titulo === esperado('energia', false) && !semLuz.e.nobreak && comNobreak.titulo === esperado('energia', true) && comNobreak.e.nobreak && internet.titulo === esperado('internet', false),
-    `${semLuz.titulo} / ${comNobreak.titulo} / ${internet.titulo}`);
-
-  await irPara(pagina, 'proposta');
-  await pagina.click('[data-proposta-sistema][value="rede"] ~ .caixinha');
-  await pagina.click('[data-proposta-sistema][value="interfonia"] ~ .caixinha');
-  await pagina.fill('[data-proposta-blocos]', '3');
-  await pagina.fill('[data-proposta-apartamentos]', '72');
-  const prop = await pagina.evaluate(() => ({
-    texto: document.querySelector('[data-proposta-mensagem]').textContent,
-    sol: document.querySelector('[data-proposta-enviar]').dataset.solMensagem,
-    orbe: Boolean(document.querySelector('[data-proposta-enviar] .sol-orbe')),
-    href: document.querySelector('[data-proposta-enviar]').getAttribute('href'),
-  }));
-  const eProp = await estado(pagina);
-  const msgEsperada = mensagemProposta({ sistemas: ['cameras', 'facial', 'rede', 'nobreak'], blocos: 3, apartamentos: 72 });
-  conferir('Proposta: marcar sistemas muda a maquete e a mensagem vai pronta para a Sol (orbe; sem JavaScript leva a "Fale com a SC")',
-    prop.texto === msgEsperada && prop.sol === msgEsperada && prop.orbe && prop.href === '#contato' && eProp.camadas.sort().join() === 'acesso,cameras,energia,rede',
-    prop.texto.replace(/\n/g, ' / '));
-  await pagina.click('[data-proposta-enviar]');
-  await pagina.waitForSelector('.sol-painel.sol-painel-visivel', { timeout: 5000 });
-  conferir('"Enviar para a SC pela Sol" abre o chat', true);
-  await pagina.keyboard.press('Escape');
-
-  await irPara(pagina, 'abertura');
-  await pagina.click('[data-explorar]');
-  const explorando = await pagina.evaluate(() => ({ modo: document.querySelector('[data-tour]').hasAttribute('data-explorar'), foco: document.activeElement?.hasAttribute('data-explorar-sair'), fixo: getComputedStyle(document.querySelector('[data-palco]')).position }));
-  await pagina.keyboard.press('Escape');
-  const saiu = await pagina.evaluate(() => ({ modo: document.querySelector('[data-tour]').hasAttribute('data-explorar'), foco: document.activeElement?.hasAttribute('data-explorar') }));
-  conferir('"Explorar a maquete" abre em tela cheia e Esc volta ao roteiro (com o foco no botão)', explorando.modo && explorando.foco && explorando.fixo === 'fixed' && !saiu.modo && saiu.foco, JSON.stringify({ explorando, saiu }));
-
-  // "Reduzir movimento": a maquete só desenha quando algo muda
-  const q1 = await pagina.$eval('[data-maquete]', (c) => Number(c.dataset.quadros));
-  await pagina.waitForTimeout(1500);
-  const q2 = await pagina.$eval('[data-maquete]', (c) => Number(c.dataset.quadros));
-  conferir('"Reduzir movimento": a maquete não anima sozinha (desenha só quando algo muda)', q2 - q1 <= 1, `${q2 - q1} quadros em 1,5 s parada`);
-
-  const whatsFora = await pagina.evaluate(() => [...document.querySelectorAll('a[href*="wa.me"]')].filter((a) => !a.closest('#contato')).length);
-  const whatsContato = await pagina.evaluate(() => document.querySelectorAll('#contato a[href*="wa.me"]').length);
-  conferir('WhatsApp da equipe só em "Fale com a SC" também nesta página', whatsFora === 0 && whatsContato > 0, `${whatsContato} no contato, ${whatsFora} fora`);
-  const texto = await pagina.evaluate(() => document.body.innerText);
-  conferir('Sem preço, prazo de contrato nem "instalação inclusa" na página do condomínio', !/R\$|instalação inclusa|sem investimento|24 meses|multa/i.test(texto));
-  conferir('Zero erros no console (maquete 3D, computador)', erros.length === 0, erros.slice(0, 2).join(' | '));
-
-  // Peso: a primeira visão é leve; a maquete 3D chega depois, num arquivo só
-  const tamanhos = [...bytes.urls].map((u) => { const f = path.join(dist, u.endsWith('/') ? `${u}index.html` : u); return existsSync(f) && statSync(f).isFile() ? { u, t: statSync(f).size } : null; }).filter(Boolean);
-  const cena = tamanhos.filter((x) => /\/assets\/cena\./.test(x.u));
-  const inicial = tamanhos.filter((x) => !/\/assets\/cena\./.test(x.u) && !/maquete-celular/.test(x.u)).reduce((s, x) => s + x.t, 0);
-  const pesoCena = cena.reduce((s, x) => s + x.t, 0);
-  conferir('Peso: primeira visão ≤ 300 KB e maquete 3D ≤ 700 KB (baixada depois, sem compactação)', inicial <= 300 * 1024 && pesoCena > 0 && pesoCena <= 700 * 1024, `primeira visão ${(inicial / 1024).toFixed(0)} KB; maquete ${(pesoCena / 1024).toFixed(0)} KB`);
-  await contexto.close();
-
-  // Celular: maquete no alto, sem rolagem lateral, toques ≥ 44 px, sem erros
-  const cel = await abrir(390, {}, 'condominio/');
-  await esperar3D(cel.pagina);
-  await rolarTudo(cel.pagina);
-  const celInfo = await cel.pagina.evaluate(() => {
-    const palco = document.querySelector('[data-palco]').getBoundingClientRect();
-    // As caixinhas da proposta ficam escondidas: quem recebe o toque é o rótulo inteiro (.proposta-opcao).
-    const alvo = '.capitulos button, .capitulos a.btn, .capitulos .proposta-opcao, .capitulos input:not([type="checkbox"]), .ese-opcao, .ese-nobreak';
-    const pequenos = [...document.querySelectorAll(alvo)].filter((el) => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== 'hidden' && r.height < 44; }).map((el) => `${el.className || el.tagName} ${Math.round(el.getBoundingClientRect().height)}`);
-    return { sobra: document.documentElement.scrollWidth - innerWidth, alturaPalco: Math.round(palco.height), pequenos };
-  });
-  conferir('Celular: maquete no alto da tela, sem rolagem lateral, toques ≥ 44 px e sem erros',
-    celInfo.sobra <= 0 && celInfo.alturaPalco > 250 && celInfo.alturaPalco < 500 && celInfo.pequenos.length === 0 && cel.erros.length === 0,
-    JSON.stringify({ ...celInfo, pequenos: celInfo.pequenos.slice(0, 3), erros: cel.erros.slice(0, 1) }));
-  await cel.contexto.close();
-  for (const largura of [360, 768, 1024]) {
-    const t = await abrir(largura, {}, 'condominio/?sem3d');
-    const sobra = await t.pagina.evaluate(() => document.documentElement.scrollWidth - innerWidth);
-    if (sobra > 0) conferir(`Condomínio sem rolagem horizontal em ${largura} px`, false, `${sobra} px`);
-    await t.contexto.close();
-  }
-
-  // Sem 3D (aparelho sem WebGL ou economizando dados) e sem JavaScript: imagem pronta e todo o texto
-  for (const [rotulo, extras, caminho] of [['sem 3D', {}, 'condominio/?sem3d'], ['sem JavaScript', { javaScriptEnabled: false }, 'condominio/']]) {
-    const t = await abrir(1440, extras, caminho);
-    const info = await t.pagina.evaluate(() => ({
-      imagem: (() => { const img = document.querySelector('[data-palco-imagem] img'); return img.complete && img.naturalWidth > 0 && getComputedStyle(img).opacity !== '0'; })(),
-      capitulos: document.querySelectorAll('[data-capitulo] h1, [data-capitulo] h2').length,
-      so3d: [...document.querySelectorAll('[data-so-3d]')].filter((el) => el.getBoundingClientRect().width > 0).length,
-      canvas: !document.querySelector('[data-maquete]').hidden,
-      contato: Boolean(document.querySelector('#contato a[href*="wa.me"]')),
-    }));
-    conferir(`Condomínio ${rotulo}: imagem da maquete, os 8 capítulos e o contato; controles da maquete escondidos`,
-      info.imagem && info.capitulos === CAPITULOS.length && info.so3d === 0 && !info.canvas && info.contato && t.erros.length === 0, JSON.stringify(info));
-    await t.contexto.close();
-  }
-
-  // Na inicial: os três caminhos até a página nova
-  const ini = await abrir(1440);
-  const visiveis = () => ini.pagina.$$eval('[data-link-ambiente]', (as) => as.filter((a) => !a.hidden).map((a) => a.getAttribute('href')).join());
-  const escondidoAntes = (await visiveis()) === '/casa/';
-  await ini.pagina.click('.ambientes .chip[data-ambiente="condominio"]');
-  const linkAbertura = await visiveis();
-  const outros = await ini.pagina.evaluate(() => ({
-    planos: Boolean(document.querySelector('#aba-condominio a[href="/condominio/"]')),
+  const paginasSolucao = [
+    { id: 'casa', nome: 'Casa' },
+    { id: 'comercio', nome: 'Comércio' },
+    { id: 'empresa', nome: 'Empresa' },
+    { id: 'condominio', nome: 'Condomínio' },
+  ];
+  // O que a pessoa lê na página (o texto invisível não conta).
+  const lerPagina = (p) => p.evaluate(() => ({
+    titulo: document.title,
+    h1: [...document.querySelectorAll('h1')].map((h) => h.textContent.trim()),
+    canvas: document.querySelectorAll('canvas').length,
+    restoDoRecurso: document.querySelectorAll('[data-maquete], [data-palco], [data-tour], [data-capitulo]').length,
+    destaques: document.querySelectorAll('.solucao-destaques li').length,
+    blocos: [...document.querySelectorAll('.solucao-bloco')].map((b) => ({ h2: b.querySelector('h2')?.textContent.trim(), p: b.querySelector('p')?.textContent.trim() })),
+    whatsFora: [...document.querySelectorAll('a[href*="wa.me"]')].filter((a) => !a.closest('#contato')).length,
+    whatsDentro: document.querySelectorAll('#contato a[href*="wa.me"]').length,
+    ancorasQuebradas: [...document.querySelectorAll('a[href^="#"]')].map((a) => a.getAttribute('href')).filter((h) => h.length > 1 && !document.querySelector(h)),
+    texto: document.body.innerText,
+    jsonld: [...document.querySelectorAll('script[type="application/ld+json"]')].map((s) => s.textContent),
     menu: ['/casa/', '/comercio/', '/empresa/', '/condominio/'].every((h) => document.querySelector(`.nav-menu a[href="${h}"]`) && document.querySelector(`.menu-celular-solucoes a[href="${h}"]`)),
   }));
-  await ini.pagina.goto(`${endereco}monte-seu-sistema/`, { waitUntil: 'networkidle' });
-  outros.configurador = await ini.pagina.evaluate(() => Boolean(document.querySelector('[data-condominio] a[href="/condominio/"]')));
-  conferir('Inicial leva às páginas 3D: convite na abertura (um por ambiente), aba dos planos e menu "Soluções"; o configurador também',
-    escondidoAntes && linkAbertura === '/condominio/' && outros.planos && outros.configurador && outros.menu, JSON.stringify({ escondidoAntes, linkAbertura, ...outros }));
-  await ini.contexto.close();
-}
+  const cidadeNome = empresa.cidade.replace(/\s+/g, ' ').split(' - ')[0];
 
-/* ---------- Casa, Comércio e Empresa (/casa/, /comercio/, /empresa/) ---------- */
-grupo('Casa, Comércio e Empresa · maquetes 3D');
-{
-  const { createServer: criarVite } = await import('vite');
-  const vite = await criarVite({ root: raizSite, logLevel: 'silent', appType: 'custom', server: { middlewareMode: true, hmr: false } });
-  const { capitulosDe } = await vite.ssrLoadModule('/src/lib/ambientes/capitulos.ts');
-  const { camerasDoPlano, resumoPlano } = await vite.ssrLoadModule('/src/lib/ambientes/plano.ts');
-  const { estadoCena } = await vite.ssrLoadModule('/src/lib/cenarios.ts');
-  const { mensagemQueroPlano } = await vite.ssrLoadModule('/src/lib/sol.ts');
-  await vite.close();
-  const esperar3D = (p) => p.waitForFunction(() => Number(document.querySelector('[data-maquete]')?.dataset.quadros) > 1, null, { timeout: 90000 });
-  const estado = (p) => p.evaluate(() => window.__maquete());
-  const irPara = async (p, id) => {
-    await p.evaluate((i) => { const el = document.getElementById(i); scrollTo({ top: el.getBoundingClientRect().top + scrollY - 60, behavior: 'instant' }); }, id);
-    await p.waitForTimeout(450);
-  };
-  for (const ambiente of ['casa', 'comercio', 'empresa']) {
-    const nome = { casa: 'Casa', comercio: 'Comércio', empresa: 'Empresa' }[ambiente];
-    const caps = capitulosDe(ambiente);
-    const { pagina, contexto, erros, bytes } = await abrir(1440, { reducedMotion: 'reduce' }, `${ambiente}/`);
-    await esperar3D(pagina);
-    const cores = await pagina.evaluate(() => window.__maquetePixels());
-    const feeds = await pagina.evaluate(() => document.querySelectorAll('[data-monitor-grade] .feed').length);
-    conferir(`${nome}: a maquete 3D desenha (WebGL) e o monitor mostra as 4 câmeras do plano de 4 na abertura`, new Set(cores).size >= 6 && feeds === 4, `${new Set(cores).size} cores; ${feeds} câmeras no monitor`);
+  for (const { id, nome } of paginasSolucao) {
+    const { pagina, contexto, erros, bytes } = await abrir(1440, { reducedMotion: 'reduce' }, `${id}/`);
+    const r = await lerPagina(pagina);
+    const status = (await pagina.request.get(`${endereco}${id}/`)).status();
+    conferir(`${nome}: a página responde (200), tem um só título principal, 2 a 4 blocos, destaques e nenhum canvas`,
+      status === 200 && r.h1.length === 1 && r.h1[0].length > 10 && r.canvas === 0 && r.restoDoRecurso === 0 && r.destaques >= 3 && r.blocos.length >= 2 && r.blocos.length <= 4
+        && r.blocos.every((b) => b.h2 && b.p) && r.ancorasQuebradas.length === 0,
+      JSON.stringify({ status, h1: r.h1, canvas: r.canvas, destaques: r.destaques, blocos: r.blocos.length, ancorasQuebradas: r.ancorasQuebradas }));
+    conferir(`${nome}: WhatsApp da equipe só em "Fale com a SC" e zero erros no console`, r.whatsFora === 0 && r.whatsDentro > 0 && erros.length === 0,
+      `${r.whatsDentro} no contato, ${r.whatsFora} fora; erros: ${erros.slice(0, 1).join('') || 0}`);
+    const infinitas = await pagina.evaluate(() => document.getAnimations().filter((a) => a.playState === 'running' && a.effect?.getTiming().iterations === Infinity).length);
+    conferir(`${nome}: "reduzir movimento": nenhuma animação contínua roda`, infinitas === 0, `${infinitas} animações contínuas`);
+    conferir(`${nome}: nada fala de maquete, 3D nem "instalação inclusa"; menu "Soluções" leva às quatro páginas`,
+      !/maquete|3D|girar|gire|pontos cegos|instalação inclu|sem investimento/i.test(r.texto) && r.menu, '');
+    const ld = r.jsonld.map((j) => { try { return JSON.parse(j)['@graph']; } catch { return []; } }).flat();
+    const pagLd = ld.find((g) => g['@type'] === 'WebPage');
+    const trilha = ld.find((g) => g['@type'] === 'BreadcrumbList');
+    conferir(`${nome}: dados estruturados (schema.org) da página e título com a cidade`,
+      r.jsonld.length === 1 && pagLd?.url === `${empresa.site}/${id}/` && trilha?.itemListElement?.length === 2 && r.titulo.includes(cidadeNome), `${r.jsonld.length} bloco(s); ${r.titulo}`);
 
-    const errados = [];
-    for (const c of caps) {
-      await irPara(pagina, c.id);
-      const e = await estado(pagina);
-      if (e.capitulo !== c.id || e.camadas.slice().sort().join() !== [...c.camadas].sort().join()) errados.push(`${c.id}→${e.capitulo}`);
-    }
-    conferir(`${nome}: cada capítulo, ao rolar, acende as suas camadas (${caps.map((c) => c.id).join(', ')})`, errados.length === 0, errados.join(', '));
-
-    await irPara(pagina, 'cameras');
-    await pagina.focus('[data-camera="6"]');
-    await pagina.keyboard.press('Enter');
-    const tec = await estado(pagina);
-    conferir(`${nome}: escolher uma câmera pelo teclado mostra a imagem dela no monitor`, tec.selecionada === 6 && tec.monitor.join() === '6');
-
-    await irPara(pagina, 'plano');
-    const escolher = async (n) => {
-      await pagina.click(`[data-plano-opcao="${n}"]`);
-      await pagina.waitForTimeout(150);
-      return { e: await estado(pagina), cartao: await pagina.evaluate(() => ({
-        nome: document.querySelector('[data-plano-nome]').textContent, preco: document.querySelector('[data-plano-preco]').textContent,
-        cabo: document.querySelector('[data-plano-cabo-texto]').textContent, cameras: document.querySelectorAll('[data-plano-cameras] li').length,
-        sol: document.querySelector('[data-plano-cta]').dataset.solMensagem, plano: document.querySelector('[data-plano-cta]').dataset.solPlano,
-        orbe: Boolean(document.querySelector('[data-plano-cta] .sol-orbe')), href: document.querySelector('[data-plano-cta]').getAttribute('href'),
-      })) };
-    };
-    const oito = await escolher(8);
-    const um = await escolher(1);
-    const r8 = resumoPlano(ambiente, 8);
-    conferir(`${nome}: escolher o plano instala as câmeras dele na maquete e atualiza preço, cabo e o "Quero este plano" (Sol)`,
-      oito.e.instaladas.join() === camerasDoPlano(ambiente, 8).join() && oito.cartao.nome === 'Plano de 8 câmeras' && oito.cartao.preco.includes(formatarPreco(r8.plano.preco))
-        && oito.cartao.cabo.includes(`${r8.caboEstimado} m`) && oito.cartao.cameras === 8 && oito.cartao.sol === mensagemQueroPlano(8) && oito.cartao.plano === '8'
-        && um.e.instaladas.join() === camerasDoPlano(ambiente, 1).join() && um.cartao.cameras === 1 && um.cartao.orbe && um.cartao.href === '#contato',
-      `${oito.cartao.nome} ${oito.cartao.preco} · ${oito.cartao.cabo} → ${um.cartao.nome}`);
-    await pagina.click('[data-plano-cta]');
-    await pagina.waitForSelector('.sol-painel.sol-painel-visivel', { timeout: 5000 });
-    await pagina.keyboard.press('Escape');
-
-    await irPara(pagina, 'ese');
-    const ese = async (situacao, nobreak) => {
-      await pagina.click(`[data-ese-situacao="${situacao}"]`);
-      if (nobreak) await pagina.click('[data-ese-nobreak]');
-      return { titulo: await pagina.textContent('[data-ese-titulo]'), e: await estado(pagina) };
-    };
-    const semLuz = await ese('energia', false);
-    const comNobreak = await ese('energia', true);
-    const visita = await ese('visita', false);
-    conferir(`${nome}: "E se…?" com os textos da inicial; na visita, o visitante e o acesso acendem`,
-      semLuz.titulo === estadoCena(ambiente, 'energia', false).titulo && comNobreak.titulo === estadoCena(ambiente, 'energia', true).titulo
-        && visita.titulo === estadoCena(ambiente, 'visita', false).titulo && visita.e.visitante && visita.e.camadas.includes('acesso'));
-
-    const q1 = await pagina.$eval('[data-maquete]', (c) => Number(c.dataset.quadros));
-    await pagina.waitForTimeout(1500);
-    const q2 = await pagina.$eval('[data-maquete]', (c) => Number(c.dataset.quadros));
-    const whats = await pagina.evaluate(() => ({ fora: [...document.querySelectorAll('a[href*="wa.me"]')].filter((a) => !a.closest('#contato')).length, dentro: document.querySelectorAll('#contato a[href*="wa.me"]').length }));
-    const texto = await pagina.evaluate(() => document.body.innerText);
-    conferir(`${nome}: "reduzir movimento" sem animação, WhatsApp só em "Fale com a SC", sem condição contratual nem "instalação inclusa", zero erros`,
-      q2 - q1 <= 1 && whats.fora === 0 && whats.dentro > 0 && !/instalação inclu|sem investimento|24 meses|multa|prazo mínimo/i.test(texto) && /aproximadamente 10 dias/.test(texto) && erros.length === 0,
-      `${q2 - q1} quadros parada; WhatsApp ${whats.dentro}/${whats.fora}; erros: ${erros.slice(0, 1).join('') || 0}`);
     const tamanhos = [...bytes.urls].map((u) => { const f = path.join(dist, u.endsWith('/') ? `${u}index.html` : u); return existsSync(f) && statSync(f).isFile() ? { u, t: statSync(f).size } : null; }).filter(Boolean);
-    const pesoCena = tamanhos.filter((x) => /\/assets\/cena\./.test(x.u)).reduce((a, x) => a + x.t, 0);
-    const inicial = tamanhos.filter((x) => !/\/assets\/cena\./.test(x.u) && !/maquete-celular/.test(x.u)).reduce((a, x) => a + x.t, 0);
-    conferir(`${nome}: primeira visão ≤ 300 KB e maquete 3D ≤ 700 KB (baixada depois)`, inicial <= 300 * 1024 && pesoCena > 0 && pesoCena <= 700 * 1024, `primeira visão ${(inicial / 1024).toFixed(0)} KB; maquete ${(pesoCena / 1024).toFixed(0)} KB`);
+    const peso = tamanhos.reduce((s, x) => s + x.t, 0);
+    conferir(`${nome}: página leve (peso total ≤ 300 KB, sem compactação)`, peso <= 300 * 1024, `${(peso / 1024).toFixed(0)} KB em ${tamanhos.length} arquivos`);
+
+    if (id === 'condominio') {
+      // Condomínio é proposta personalizada: nada de preço, dias de gravação nem quantidade de câmeras.
+      conferir('Condomínio: sem preço, dias de gravação, quantidade de câmeras, prazo de contrato nem "instalação inclusa"',
+        !/R\$|\d+\s*(dias|câmeras)|aproximadamente|instalação inclusa|sem investimento|24 meses|multa|mensalidade/i.test(r.texto), r.texto.match(/R\$|\d+\s*(dias|câmeras)|aproximadamente|mensalidade/i)?.[0] ?? '');
+      const botao = await pagina.evaluate(() => {
+        const a = document.querySelector('.solucao-acoes a[data-sol-abrir]');
+        return a && { href: a.getAttribute('href'), msg: a.dataset.solMensagem, orbe: Boolean(a.querySelector('.sol-orbe')), whats: Boolean(a.querySelector('use[href="#ic-whatsapp"]')), config: document.querySelector('.solucao-acoes a[href="/monte-seu-sistema/?ambiente=condominio"]') !== null };
+      });
+      conferir('Condomínio: o botão de proposta tem o orbe da Sol, leva a #contato sem JavaScript e abre o chat da Sol',
+        botao && botao.href === '#contato' && botao.msg?.length > 20 && botao.orbe && !botao.whats && botao.config, JSON.stringify(botao));
+      await pagina.click('.solucao-acoes a[data-sol-abrir]');
+      await pagina.waitForSelector('.sol-painel.sol-painel-visivel', { timeout: 5000 });
+      conferir('Condomínio: "Pedir proposta" abre a Sol e a página não sai do lugar', !pagina.url().endsWith('#contato'), pagina.url());
+      await pagina.keyboard.press('Escape');
+    } else {
+      conferir(`${nome}: planos de 1 a 8 câmeras, gravação de aproximadamente 10 dias, imagens no celular dependem de energia e internet, premium sob orçamento`,
+        /Planos de 1 a 8 câmeras/.test(r.texto) && /aproximadamente 10 dias/.test(r.texto) && /energia e de internet/.test(r.texto) && /sob orçamento/.test(r.texto)
+          && !/24 meses|multa|IPCA/i.test(r.texto), '');
+      const botoes = await pagina.evaluate((amb) => ({
+        planos: document.querySelector('.solucao-acoes a[href="/#planos"]')?.textContent.trim(),
+        config: document.querySelector(`.solucao-acoes a[href="/monte-seu-sistema/?ambiente=${amb}"]`)?.textContent.trim(),
+        whats: document.querySelectorAll('.solucao-acoes a[href*="wa.me"]').length,
+      }), id);
+      conferir(`${nome}: botões levam aos planos (/#planos) e ao configurador (?ambiente=${id})`, Boolean(botoes.planos) && Boolean(botoes.config) && botoes.whats === 0, JSON.stringify(botoes));
+    }
     await contexto.close();
 
-    const cel = await abrir(390, {}, `${ambiente}/`);
-    await esperar3D(cel.pagina);
+    // Celular: sem rolagem lateral, botões ≥ 44 px, menu com "Contato", sem erros
+    const cel = await abrir(390, {}, `${id}/`);
     await rolarTudo(cel.pagina);
-    const celInfo = await cel.pagina.evaluate(() => {
-      const palco = document.querySelector('[data-palco]').getBoundingClientRect();
-      const alvo = '.capitulos button, .capitulos a.btn, .capitulos .plano-cartao-links a, .ese-opcao, .ese-nobreak, .plano-opcao';
-      const pequenos = [...document.querySelectorAll(alvo)].filter((el) => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== 'hidden' && r.height < 44; }).map((el) => `${el.className || el.tagName} ${Math.round(el.getBoundingClientRect().height)}`);
-      return { sobra: document.documentElement.scrollWidth - innerWidth, alturaPalco: Math.round(palco.height), pequenos };
-    });
-    conferir(`${nome} no celular: maquete no alto, sem rolagem lateral, toques ≥ 44 px e sem erros`,
-      celInfo.sobra <= 0 && celInfo.alturaPalco > 250 && celInfo.alturaPalco < 500 && celInfo.pequenos.length === 0 && cel.erros.length === 0,
-      JSON.stringify({ ...celInfo, pequenos: celInfo.pequenos.slice(0, 3), erros: cel.erros.slice(0, 1) }));
+    const celInfo = await cel.pagina.evaluate(() => ({
+      sobra: document.documentElement.scrollWidth - innerWidth,
+      pequenos: [...document.querySelectorAll('.solucao-acoes a, .rodape-nav a, .menu-botao')].filter((el) => { const b = el.getBoundingClientRect(); return b.width > 0 && b.height < 44; }).map((el) => `${el.textContent.trim().slice(0, 20)} ${Math.round(el.getBoundingClientRect().height)}`),
+      contatoNoMenu: Boolean(document.querySelector('#menu-celular nav a[href="#contato"]')),
+    }));
+    conferir(`${nome} no celular: sem rolagem lateral, toques ≥ 44 px, item "Contato" no menu e sem erros`,
+      celInfo.sobra <= 0 && celInfo.pequenos.length === 0 && celInfo.contatoNoMenu && cel.erros.length === 0, JSON.stringify({ ...celInfo, erros: cel.erros.slice(0, 1) }));
     await cel.contexto.close();
-
-    for (const [rotulo, extras, caminho] of [['sem 3D', {}, `${ambiente}/?sem3d`], ['sem JavaScript', { javaScriptEnabled: false }, `${ambiente}/`]]) {
-      const t = await abrir(1440, extras, caminho);
-      const info = await t.pagina.evaluate(() => ({
-        imagem: (() => { const img = document.querySelector('[data-palco-imagem] img'); return img.complete && img.naturalWidth > 0; })(),
-        capitulos: document.querySelectorAll('[data-capitulo] h1, [data-capitulo] h2').length,
-        so3d: [...document.querySelectorAll('[data-so-3d]')].filter((el) => el.getBoundingClientRect().width > 0).length,
-        plano: document.querySelector('[data-plano-nome]')?.textContent,
-        contato: Boolean(document.querySelector('#contato a[href*="wa.me"]')),
-      }));
-      conferir(`${nome} ${rotulo}: imagem da maquete, os ${caps.length} capítulos, o plano de 4 e o contato`,
-        info.imagem && info.capitulos === caps.length && info.so3d === 0 && info.plano === 'Plano de 4 câmeras' && info.contato && t.erros.length === 0, JSON.stringify(info));
+    for (const largura of [360, 768, 1024]) {
+      const t = await abrir(largura, {}, `${id}/`);
+      const sobra = await t.pagina.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+      if (sobra > 0) conferir(`${nome} sem rolagem horizontal em ${largura} px`, false, `${sobra} px`);
       await t.contexto.close();
     }
+
+    // Sem JavaScript: todo o texto e os botões continuam lá; o de proposta leva a "Fale com a SC"
+    const semJs = await abrir(1440, { javaScriptEnabled: false }, `${id}/`);
+    const info = await semJs.pagina.evaluate(() => ({
+      h1: document.querySelectorAll('h1').length,
+      blocos: document.querySelectorAll('.solucao-bloco').length,
+      contato: Boolean(document.querySelector('#contato a[href*="wa.me"]')),
+      botoes: [...document.querySelectorAll('.solucao-acoes a')].map((a) => a.getAttribute('href')).join(' '),
+    }));
+    const botoesEsperados = id === 'condominio' ? '#contato /monte-seu-sistema/?ambiente=condominio' : `/#planos /monte-seu-sistema/?ambiente=${id}`;
+    conferir(`${nome} sem JavaScript: texto, blocos, contato e botões funcionam`, info.h1 === 1 && info.blocos >= 2 && info.contato && info.botoes === botoesEsperados, JSON.stringify(info));
+    await semJs.contexto.close();
   }
+
+  // Inicial: sem os convites antigos; a aba dos planos, o configurador e o menu levam às páginas de solução
+  const ini = await abrir(1440);
+  const outros = await ini.pagina.evaluate(() => ({
+    planos: document.querySelector('#aba-condominio a[href="/condominio/"]')?.textContent.trim(),
+    menu: ['/casa/', '/comercio/', '/empresa/', '/condominio/'].every((h) => document.querySelector(`.nav-menu a[href="${h}"]`) && document.querySelector(`.menu-celular-solucoes a[href="${h}"]`)),
+    rodape: ['/casa/', '/comercio/', '/empresa/', '/condominio/'].every((h) => document.querySelector(`.rodape-nav a[href="${h}"]`)),
+  }));
+  await ini.pagina.goto(`${endereco}monte-seu-sistema/`, { waitUntil: 'networkidle' });
+  outros.configurador = await ini.pagina.evaluate(() => document.querySelector('[data-condominio] a[href="/condominio/"]')?.textContent.trim());
+  conferir('Inicial leva às páginas de solução: aba "Condomínio" dos planos, menu "Soluções" e rodapé; o configurador também (sem falar em 3D)',
+    Boolean(outros.planos) && Boolean(outros.configurador) && outros.menu && outros.rodape && !/3D|maquete/i.test(`${outros.planos} ${outros.configurador}`), JSON.stringify(outros));
+  await ini.contexto.close();
+
+  // O pacote gerado não leva Three.js, maquete nem imagens de maquete
+  const arquivosDist = (function listar(pasta) {
+    return readdirSync(pasta, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? listar(path.join(pasta, e.name)) : [path.join(pasta, e.name)]));
+  })(dist);
+  const comThree = arquivosDist.filter((f) => /\.(js|mjs|html|css)$/.test(f)).filter((f) => /WebGLRenderer|WebGL2RenderingContext|REVISION\s*=|THREE\./.test(readFileSync(f, 'utf8')));
+  const restosMaquete = arquivosDist.filter((f) => /maquete|[\\/]assets[\\/]cena\./i.test(f));
+  const paginasComCanvas = paginasSolucao.filter((p) => /<canvas/i.test(readFileSync(path.join(dist, p.id, 'index.html'), 'utf8')));
+  conferir('Pacote gerado (dist): sem Three.js, sem arquivo de maquete e sem canvas nas páginas de solução',
+    comThree.length === 0 && restosMaquete.length === 0 && paginasComCanvas.length === 0 && paginasSolucao.every((p) => existsSync(path.join(dist, p.id, 'index.html'))),
+    `três: ${comThree.length}; maquete: ${restosMaquete.length}; canvas: ${paginasComCanvas.length}`);
+  const jsDist = arquivosDist.filter((f) => f.endsWith('.js') && !f.includes(`${path.sep}calculadoras${path.sep}`)).reduce((s, f) => s + statSync(f).size, 0);
+  console.log(`   (JavaScript do dist, sem o service worker das calculadoras: ${(jsDist / 1024).toFixed(0)} KB)`);
 }
 
 /* ---------- Acessibilidade automática (axe-core, regras WCAG 2.2 A e AA) ---------- */
@@ -1191,45 +1063,18 @@ if (comFotos) {
   }
   console.log('Fotos em docs/inovacao/site-final/ e comparação em docs/inovacao/comparacao/');
 
-  // Condomínio: foto de cada capítulo e lado a lado com as imagens aprovadas (docs/inovacao/condominio/imagens)
-  const pastaCond = path.join(docs, 'condominio');
-  mkdirSync(path.join(pastaCond, 'site-final'), { recursive: true });
-  mkdirSync(path.join(pastaCond, 'comparacao'), { recursive: true });
-  const capitulosFoto = [['abertura', '01-abertura'], ['cameras', '02-cameras-e-pontos-cegos'], ['acesso', '03-acesso-facial-e-interfonia'], ['energia', '04-e-se-faltar-energia'], ['proposta', '05-monte-a-proposta']];
-  for (const [id, nome] of capitulosFoto) {
-    const { pagina, contexto } = await abrir(1440, { deviceScaleFactor: 1.5 }, 'condominio/');
-    await pagina.waitForFunction(() => Number(document.querySelector('[data-maquete]')?.dataset.quadros) > 1, null, { timeout: 90000 });
-    await pagina.evaluate((i) => { const el = document.getElementById(i); scrollTo({ top: el.getBoundingClientRect().top + scrollY - 60, behavior: 'instant' }); }, id);
-    if (id === 'energia') { await pagina.waitForTimeout(400); await pagina.click('[data-ese-nobreak]'); } // "Faltou energia" com nobreak, como na imagem aprovada
-    await pagina.waitForTimeout(2600);
-    await pagina.screenshot({ path: path.join(pastaCond, 'site-final', `${nome}.jpg`), type: 'jpeg', quality: 88 });
-    await contexto.close();
+  // Páginas de solução (/casa/, /comercio/, /empresa/, /condominio/): foto inteira no computador e no celular, sem comparação com mockup
+  for (const id of ['casa', 'comercio', 'empresa', 'condominio']) {
+    for (const [largura, prefixo] of [[1440, '06-solucao'], [390, '07-celular-solucao']]) {
+      const { pagina, contexto } = await abrir(largura, {}, `${id}/`);
+      await rolarTudo(pagina);
+      await pagina.waitForTimeout(600);
+      await pagina.addStyleTag({ content: '.barra-fixa,.progresso-leitura,.pular{visibility:hidden!important}' });
+      await pagina.screenshot({ path: path.join(pastaFotos, `${prefixo}-${id}.png`), fullPage: true });
+      await contexto.close();
+    }
   }
-  const telasCel = [];
-  for (const id of ['abertura', 'cameras', 'energia']) {
-    const { pagina, contexto } = await abrir(390, {}, 'condominio/');
-    await pagina.waitForFunction(() => Number(document.querySelector('[data-maquete]')?.dataset.quadros) > 1, null, { timeout: 90000 });
-    if (id !== 'abertura') await pagina.evaluate((i) => { const el = document.getElementById(i); scrollTo({ top: el.getBoundingClientRect().top + scrollY - 400, behavior: 'instant' }); }, id);
-    await pagina.waitForTimeout(2600);
-    const arq = path.join(pastaCond, 'site-final', `06-celular-${id}.jpg`);
-    await pagina.screenshot({ path: arq, type: 'jpeg', quality: 88 });
-    telasCel.push(arq);
-    await contexto.close();
-  }
-  const compCond = await (await navegador.newContext({ viewport: { width: 2000, height: 900 } })).newPage();
-  const uri = (arq) => `data:image/jpeg;base64,${readFileSync(arq).toString('base64')}`;
-  const paresCond = [
-    ...capitulosFoto.map(([, nome]) => ({ nome, a: [path.join(pastaCond, 'imagens', `${nome}.jpg`)], b: [path.join(pastaCond, 'site-final', `${nome}.jpg`)] })),
-    { nome: '06-celular', a: [path.join(pastaCond, 'imagens', '06-celular.jpg')], b: telasCel },
-  ];
-  for (const par of paresCond) {
-    const coluna = (lista, rotulo) => `<div class="col"><h2>${rotulo}</h2><div class="imgs">${lista.map((f) => `<img src="${uri(f)}">`).join('')}</div></div>`;
-    await compCond.setContent(`<html><body style="margin:0;background:#0b0f14;font-family:sans-serif;color:#fff">
-      <style>.linha{display:grid;grid-template-columns:1fr 1fr;gap:24px;padding:24px}.col h2{font-size:22px;margin:0 0 12px;color:#ffd84d}.imgs{display:flex;gap:12px;align-items:flex-start}.imgs img{min-width:0;flex:1;width:100%;border:1px solid #2b4358;border-radius:8px}</style>
-      <div class="linha">${coluna(par.a, `Imagem aprovada · ${par.nome}`)}${coluna(par.b, 'Página construída')}</div></body></html>`);
-    await compCond.screenshot({ path: path.join(pastaCond, 'comparacao', `${par.nome}.jpg`), type: 'jpeg', quality: 85, fullPage: true });
-  }
-  console.log('Condomínio: fotos em docs/inovacao/condominio/site-final/ e comparação em docs/inovacao/condominio/comparacao/');
+  console.log('Páginas de solução: fotos em docs/inovacao/site-final/ (06-solucao-*.png e 07-celular-solucao-*.png)');
 }
 
 /* ---------- Calculadoras de campo (/calculadoras/) ---------- */

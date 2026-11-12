@@ -4,7 +4,7 @@ import type { NomeIcone } from './icones';
 export interface LinkSecao { href: string; rotulo: string }
 export interface LinkSolucao extends LinkSecao { icone: NomeIcone; sub: string }
 
-/** Páginas com maquete 3D, no menu "Soluções" (05/10/2026; antes só "Condomínio" no menu). */
+/** Páginas de solução (/casa/, /comercio/, /empresa/, /condominio/), no menu "Soluções". */
 export const solucoes: readonly LinkSolucao[] = [
   { href: '/casa/', rotulo: 'Casa', icone: 'house', sub: 'Do portão ao quintal' },
   { href: '/comercio/', rotulo: 'Comércio', icone: 'store', sub: 'Caixa, estoque e entrada' },
