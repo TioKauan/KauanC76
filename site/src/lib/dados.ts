@@ -154,6 +154,59 @@ export const condicoesContrato: ItemIcone[] = [
   { icone: 'map-pin', titulo: 'Foro', texto: 'Comarca de Francisco Beltrão, Paraná, preservados os direitos do consumidor.' },
 ];
 
+/*
+ * "Condições do contrato" em cinco perguntas (11/11/2026, linguagem simples aprovada pelo dono).
+ * Cada resposta resume só o que já está em `condicoesContrato` e em `duvidas`; nenhuma regra nova.
+ * A lista completa continua no site, dentro de "Ler todas as condições do contrato".
+ */
+export const contratoSimples: Duvida[] = [
+  {
+    pergunta: 'Por quanto tempo é o contrato?',
+    resposta: 'O prazo mínimo é de 24 meses, contados da ativação do sistema. Depois disso, o contrato segue por prazo indeterminado, sem nova fidelidade automática.',
+  },
+  {
+    pergunta: 'Posso cancelar?',
+    resposta: 'Pode. Antes dos 24 meses, a multa é de 30% das mensalidades que faltam; depois dos 24 meses, basta avisar por escrito com pelo menos 30 dias de antecedência.',
+  },
+  {
+    pergunta: 'A mensalidade aumenta?',
+    resposta: 'Uma vez por ano, pela variação acumulada do IPCA (ou índice oficial substituto). A mensalidade não muda no meio do ano.',
+  },
+  {
+    pergunta: 'Quem conserta se der defeito?',
+    resposta: 'A SC conserta ou troca por equipamento equivalente ou superior o que der defeito natural, como parte da manutenção do contrato. Danos externos e mau uso são cobrados à parte.',
+  },
+  {
+    pergunta: 'O que é cobrado à parte?',
+    resposta: 'Furto, roubo, vandalismo, impacto, mau uso, raio, surto e incêndio não são cobertos e geram cobrança; cabo além do limite do plano, obras civis e adequação de internet também são cobrados à parte. A lista completa está logo abaixo.',
+  },
+];
+
+/*
+ * Vídeo de demonstração da abertura (11/11/2026): "ColorVu G2 Cameras Illuminate Darkness and Provide
+ * 24/7 Full Color Images", canal Hikvision USA. Só carrega no clique, pelo endereço sem cookies
+ * (youtube-nocookie.com); sem JavaScript, o botão é um link para o YouTube. O vídeo mostra cor à
+ * noite, que no plano padrão não existe: por isso a legenda abaixo é obrigatória.
+ */
+export const aberturaVideo = {
+  id: 'wKUPPBYbi-Q',
+  /** Título do player (leitores de tela). */
+  titulo: 'Vídeo de demonstração do fabricante: câmeras ColorVu com imagem colorida à noite',
+  rotuloToque: 'Toque para ver',
+  /** Complemento lido por leitores de tela depois de "Toque para ver". */
+  complementoAcessivel: ' o vídeo de demonstração do fabricante',
+  legenda:
+    'Demonstração do fabricante (Hikvision ColorVu). Imagem colorida à noite é um recurso adicional, sob orçamento: ' +
+    'no plano padrão a imagem noturna é em preto e branco.',
+  /** Link do botão sem JavaScript. */
+  linkYoutube: 'https://www.youtube.com/watch?v=wKUPPBYbi-Q',
+  /** Player que entra na página só depois do toque. */
+  embed: 'https://www.youtube-nocookie.com/embed/wKUPPBYbi-Q?autoplay=1&rel=0&playsinline=1',
+} as const;
+
+/** Linha de confiança da abertura: leva ao Perfil da Empresa no Google (`perfis.googleMaps`). Sem nota nem estrelas. */
+export const confiancaGoogle = 'Avaliações e endereço no Perfil da Empresa no Google';
+
 // Serviços que viram proposta personalizada (documento: "Exemplos de soluções personalizadas").
 export const servicosProposta: ServicoProposta[] = [
   {
@@ -380,6 +433,22 @@ export function textoTaxaInstalacao(plano: Plano): string {
 }
 
 export const menorPreco = Math.min(...planos.map((p) => p.preco));
+
+/** Canais do gravador do plano (ex.: "DVR 8 canais" → 8). */
+export function canaisDoGravador(plano: Plano): number {
+  return Number(plano.gravador.match(/(\d+) canais/)?.[1] ?? 0);
+}
+
+const canaisBase = Math.min(...planos.map(canaisDoGravador));
+
+/**
+ * Linha extra do plano que usa um gravador maior que o padrão dos outros (hoje, o de 8 câmeras):
+ * explica por que o gravador é de 8 canais. Vem do campo `gravador`, sem número novo.
+ */
+export function explicacaoGravador(plano: Plano): string | null {
+  const canais = canaisDoGravador(plano);
+  return canais > canaisBase && canais === plano.cameras ? `Gravador de ${canais} canais: um canal para cada câmera` : null;
+}
 
 /**
  * Plano recomendado para uma quantidade de câmeras.

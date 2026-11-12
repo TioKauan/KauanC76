@@ -1,27 +1,62 @@
-/* ===== Tela 1: abertura ===== */
-.abertura {
-  padding-top: 36px;
-  background:
-    radial-gradient(900px 600px at 78% 32%, #0a2a4a66, transparent 70%),
-    radial-gradient(600px 400px at 96% 72%, #ff6a0016, transparent 70%);
-}
-.abertura-texto { max-width: 760px; }
-.abertura h1 { font-size: clamp(38px, 4.1vw, 58px); line-height: 1.05; letter-spacing: -0.05em; }
-.abertura h1 .destaque { display: block; margin-top: 6px; }
-.abertura-lead { color: var(--texto-2); font-size: 18px; line-height: 1.7; margin: 22px 0 26px; max-width: 560px; }
+/* ===== Tela 1: abertura (texto à esquerda, celular com vídeo à direita) ===== */
+.abertura { padding-block: 48px 96px; }
+.abertura-grade { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 48px; align-items: center; }
+.abertura-texto { min-width: 0; }
+.abertura h1 { font-size: clamp(36px, 5.2vw, 64px); font-weight: 700; line-height: 1.05; letter-spacing: -0.04em; }
+.abertura-lead { color: var(--texto-2); margin: 24px 0 32px; max-width: 52ch; }
 .abertura-acoes { display: flex; flex-wrap: wrap; gap: 12px; }
-.preco-chamada { display: flex; align-items: center; gap: 16px; margin-top: 24px; padding: 16px 18px; max-width: 520px; border-radius: 12px; border: 1px solid #ff6a0045; background: linear-gradient(90deg, #ff6a0014, transparent 85%); transition: border-color 0.2s; }
-.preco-chamada:hover { border-color: #ff8a2b99; }
-.preco-chamada > .ic { color: var(--laranja-2); }
-.preco-chamada strong { display: block; font-size: 15px; }
-.preco-chamada em { font-style: normal; white-space: nowrap; color: var(--laranja-claro); font-size: 21px; letter-spacing: -0.02em; }
-.preco-chamada small { display: block; font-size: 12.5px; color: var(--texto-3); margin-top: 2px; }
+.preco-chamada { display: flex; align-items: center; gap: 16px; margin-top: 24px; padding: 16px 20px; max-width: 520px; border-radius: 12px; border: 1px solid var(--linha); background: var(--cartao); transition: border-color 0.2s; }
+.preco-chamada:hover { border-color: var(--borda-ciano); }
+.preco-chamada > .ic { color: var(--ciano); }
+.preco-chamada strong { display: block; font-size: 16px; font-weight: 650; }
+.preco-chamada em { font-style: normal; white-space: nowrap; color: var(--laranja-claro); font-size: 20px; letter-spacing: -0.02em; }
+.preco-chamada small { display: block; font-size: 14px; font-weight: 500; line-height: 1.5; color: var(--texto-3); margin-top: 2px; }
 
-@media (max-width: 800px) {
-  .abertura { padding-top: 18px; overflow-x: clip; }
-  .abertura-texto .sobretitulo { letter-spacing: 0.14em; margin-bottom: 12px; }
-  .abertura h1 { font-size: clamp(30px, 8vw, 38px); }
-  .abertura-lead { font-size: 16px; margin: 16px 0 20px; }
-  .abertura-acoes .btn { width: 100%; }
-  .preco-chamada { margin-top: 18px; padding: 14px; }
+/* Linha de confiança: leva ao Perfil da Empresa no Google (sem estrelas, nota nem logo) */
+.abertura-confianca { margin-top: 16px; }
+.abertura-confianca a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 14px; font-weight: 500; line-height: 1.5; color: var(--texto-2); text-decoration: underline; text-decoration-color: var(--linha-2); text-underline-offset: 4px; transition: color 0.2s, text-decoration-color 0.2s; }
+.abertura-confianca a:hover { color: var(--texto); text-decoration-color: var(--ciano); }
+.abertura-confianca .ic { color: var(--ciano); }
+
+/* Celular deitado, desenhado em CSS: moldura de 10 px, tela 19,5:9, câmera frontal no lado esquerdo */
+.abertura-video { min-width: 0; }
+.celular { position: relative; border: 10px solid var(--cartao); border-radius: 36px; background: var(--fundo); box-shadow: 0 0 0 1px var(--linha-2), var(--sombra); }
+.celular-tela { position: relative; aspect-ratio: 19.5 / 9; display: grid; place-items: center; overflow: hidden; border-radius: 26px; background: var(--fundo); }
+.celular-camera { position: absolute; left: 4.5%; top: 50%; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; background: var(--cartao-2); box-shadow: inset 0 0 0 1px var(--linha-2); }
+/* Quadro 16:9 do vídeo, centralizado na tela */
+.video-quadro { position: relative; width: calc(100% * 16 / 19.5); aspect-ratio: 16 / 9; }
+.video-player { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: var(--fundo); }
+
+/* Antes do toque: cena escura desenhada em CSS (nenhum pedido ao YouTube nem ao Google) */
+.video-capa { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; overflow: hidden; background: linear-gradient(180deg, var(--cena-1), var(--cena-2)); color: var(--texto); }
+.video-capa::before { content: ''; position: absolute; inset: 10px; pointer-events: none; --c: color-mix(in srgb, var(--ciano) 55%, transparent); background:
+    linear-gradient(var(--c), var(--c)) left top / 18px 2px no-repeat,
+    linear-gradient(var(--c), var(--c)) left top / 2px 18px no-repeat,
+    linear-gradient(var(--c), var(--c)) right top / 18px 2px no-repeat,
+    linear-gradient(var(--c), var(--c)) right top / 2px 18px no-repeat,
+    linear-gradient(var(--c), var(--c)) left bottom / 18px 2px no-repeat,
+    linear-gradient(var(--c), var(--c)) left bottom / 2px 18px no-repeat,
+    linear-gradient(var(--c), var(--c)) right bottom / 18px 2px no-repeat,
+    linear-gradient(var(--c), var(--c)) right bottom / 2px 18px no-repeat; }
+/* Silhueta de uma casa na base da cena */
+.video-capa::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: var(--fundo); opacity: 0.8; clip-path: polygon(0 100%, 0 80%, 14% 80%, 14% 68%, 26% 56%, 38% 68%, 38% 80%, 58% 80%, 58% 66%, 76% 66%, 76% 80%, 100% 80%, 100% 100%); }
+.video-capa:focus-visible { outline-offset: -4px; border-radius: 0; }
+.video-play, .video-toque { position: relative; z-index: 1; }
+.video-play { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: var(--laranja); color: var(--sobre-laranja); transition: background-color 0.2s; }
+.video-play svg { width: 26px; height: 26px; margin-left: 3px; fill: currentColor; }
+.video-capa:hover .video-play { background: var(--laranja-2); }
+.video-toque { font-size: 14px; font-weight: 650; }
+.video-legenda { margin-top: 16px; max-width: 62ch; font-size: 14px; font-weight: 500; line-height: 1.5; color: var(--texto-3); }
+
+@media (max-width: 760px) {
+  .abertura { padding-block: 24px 64px; }
+  .abertura-grade { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .abertura .sobretitulo { letter-spacing: 0.14em; margin-bottom: 12px; }
+  .abertura-lead { margin: 16px 0 24px; }
+  .abertura-acoes .btn { width: 100%; white-space: normal; text-align: center; }
+  .preco-chamada { margin-top: 16px; padding: 16px; }
+  .celular { border-width: 8px; border-radius: 28px; }
+  .celular-tela { border-radius: 20px; }
+  .video-play { width: 52px; height: 52px; }
+  .video-play svg { width: 22px; height: 22px; }
 }

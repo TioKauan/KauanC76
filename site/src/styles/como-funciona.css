@@ -1,56 +1,54 @@
-/* ===== Tela 4: como funciona, dúvidas e área do cliente ===== */
-.linha-tempo { position: relative; list-style: none; margin: 10px 0 0; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 18px; }
-.linha-tempo-cabo { position: absolute; left: 23px; right: 23px; top: 30px; height: 2px; background: #1f3a52; border-radius: 2px; }
-.linha-tempo-cabo span { position: absolute; inset: 0; background: linear-gradient(90deg, var(--ciano), var(--azul) 70%, var(--laranja)); border-radius: 2px; transform-origin: left; transform: scaleX(var(--progresso, 1)); box-shadow: 0 0 12px #6de9f666; transition: transform 0.5s var(--suave); }
+/* ===== Tela 4: como funciona e dúvidas ===== */
+.linha-tempo { position: relative; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 24px; }
+.linha-tempo-cabo { position: absolute; left: 24px; right: 24px; top: 30px; height: 2px; background: var(--linha); border-radius: 2px; }
+.linha-tempo-cabo span { position: absolute; inset: 0; background: var(--ciano); border-radius: 2px; transform-origin: left; transform: scaleX(var(--progresso, 1)); transition: transform 0.3s var(--suave); }
 .etapa { position: relative; padding-top: 80px; }
-.etapa-num { position: absolute; top: 7px; left: 0; width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; background: #07121e; border: 1.5px solid #2b5470; color: var(--ciano); font-weight: 800; font-size: 14px; transition: background-color 0.45s, border-color 0.45s, color 0.45s, box-shadow 0.45s; }
-.etapa[data-acesa] .etapa-num { background: var(--ciano); color: #04121a; border-color: var(--ciano); box-shadow: 0 0 0 6px #6de9f61f, 0 0 24px #6de9f666; }
-.etapa[data-atual] .etapa-num { background: var(--laranja); color: #160800; border-color: var(--laranja); box-shadow: 0 0 0 6px #ff6a0022, 0 0 24px #ff6a0066; }
-.etapa-icone { color: #5d7c93; margin-bottom: 12px; transition: color 0.45s; }
+.etapa-num { position: absolute; top: 7px; left: 0; width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; background: var(--cartao); border: 1.5px solid var(--linha-2); color: var(--ciano); font-weight: 800; font-size: 14px; transition: background-color 0.3s, border-color 0.3s, color 0.3s; }
+.etapa[data-acesa] .etapa-num { background: var(--ciano); color: var(--sobre-ciano); border-color: var(--ciano); }
+.etapa[data-atual] .etapa-num { background: var(--laranja); color: var(--sobre-laranja); border-color: var(--laranja); }
+.etapa-icone { color: var(--texto-3); margin-bottom: 12px; transition: color 0.3s; }
 .etapa[data-acesa] .etapa-icone { color: var(--ciano); }
 .etapa h3 { font-size: 20px; }
-.etapa p { font-size: 14px; line-height: 1.6; color: #a6b6c6; margin: 8px 0 12px; }
-.etapa-meta { display: inline-flex; font-size: 12px; color: #8fd9e8; border: 1px solid #1f4658; border-radius: 6px; padding: 5px 9px; }
+.etapa p { font-size: 15px; line-height: 1.6; color: var(--texto-2); margin: 8px 0 16px; }
+.etapa-meta { display: inline-flex; font-size: 14px; color: var(--ciano-suave); border: 1px solid var(--linha); border-radius: 8px; padding: 4px 8px; }
 
-.duvidas-grade { display: grid; grid-template-columns: minmax(0, 860px); gap: 28px; margin-top: 96px; align-items: start; scroll-margin-top: calc(var(--cab-altura) + 16px); }
-.duvidas-titulo { font-size: clamp(30px, 3vw, 40px); }
-.busca { display: flex; align-items: center; gap: 10px; margin-top: 22px; padding: 0 16px; min-height: 52px; border: 1px solid var(--linha-2); border-radius: 12px; background: #050d17; color: #8196ab; max-width: 560px; transition: border-color 0.2s; }
+.duvidas-grade { display: grid; grid-template-columns: minmax(0, 860px); gap: 32px; margin-top: 96px; align-items: start; scroll-margin-top: calc(var(--cab-altura) + 16px); }
+.busca { display: flex; align-items: center; gap: 12px; margin-top: 24px; padding: 0 16px; min-height: 52px; border: 1px solid var(--linha-2); border-radius: 12px; background: var(--cartao); color: var(--texto-3); max-width: 560px; transition: border-color 0.2s; }
 .busca:focus-within { border-color: var(--ciano); }
-.busca input { flex: 1; min-width: 0; border: 0; background: transparent; font-size: 15px; color: var(--texto); outline: none; padding: 12px 0; }
-.busca input::placeholder { color: #7489a0; }
-.busca-status { min-height: 20px; font-size: 13px; color: var(--texto-2); margin: 8px 0 6px; }
+.busca input { flex: 1; min-width: 0; border: 0; background: transparent; font-size: 16px; color: var(--texto); outline: none; padding: 12px 0; }
+.busca input::placeholder { color: var(--texto-3); }
+.busca-status { min-height: 24px; font-size: 14px; color: var(--texto-2); margin: 8px 0; }
 .busca-status a { color: var(--ciano); text-decoration: underline; text-underline-offset: 3px; }
-.perguntas { display: grid; gap: 10px; }
-.pergunta { border: 1px solid var(--linha); border-radius: 12px; background: #07111c; transition: border-color 0.25s, background-color 0.25s; }
+.perguntas { display: grid; gap: 12px; }
+.pergunta { border: 1px solid var(--linha); border-radius: 12px; background: var(--cartao); transition: border-color 0.2s, background-color 0.2s; }
 .pergunta[hidden] { display: none; }
-.pergunta[open] { border-color: #2d6f84; background: linear-gradient(160deg, #0c2031, #07111c 70%); }
-.pergunta summary { display: flex; justify-content: space-between; align-items: center; gap: 16px; min-height: 56px; padding: 14px 20px; font-size: 15.5px; font-weight: 600; cursor: pointer; list-style: none; border-radius: 12px; }
+.pergunta[open] { border-color: var(--borda-ciano); background: var(--cartao-2); }
+.pergunta summary { display: flex; justify-content: space-between; align-items: center; gap: 16px; min-height: 56px; padding: 16px 24px; font-size: 16px; font-weight: 650; cursor: pointer; list-style: none; border-radius: 12px; }
 .pergunta summary::-webkit-details-marker { display: none; }
-.pergunta summary .ic-mais { color: var(--ciano); transition: transform 0.3s var(--suave); }
+.pergunta summary .ic-mais { color: var(--ciano); transition: transform 0.2s var(--suave); }
 .pergunta[open] summary .ic-mais { transform: rotate(45deg); }
-.pergunta p { padding: 0 20px 18px; font-size: 14.5px; line-height: 1.7; color: #b8c7d5; max-width: 700px; }
-.pergunta mark { background: #6de9f633; color: #fff; border-radius: 3px; padding: 0 2px; }
-.sem-resultado { margin-top: 10px; padding: 18px 20px; border: 1px dashed #2a4258; border-radius: 12px; display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: center; }
+.pergunta p { padding: 0 24px 24px; font-size: 16px; line-height: 1.6; color: var(--texto-2); max-width: 62ch; }
+.pergunta mark { background: color-mix(in srgb, var(--ciano) 20%, transparent); color: var(--texto); border-radius: 3px; padding: 0 2px; }
+.sem-resultado { margin-top: 12px; padding: 16px 24px; border: 1px dashed var(--linha-2); border-radius: 12px; display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: center; }
 .sem-resultado[hidden] { display: none; }
 .sem-resultado p { font-size: 14px; color: var(--texto-2); flex: 1 1 240px; }
 
-.bolinha { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid #2b4a66; color: #7f95a9; background: #07121e; position: relative; z-index: 1; }
+.bolinha { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid var(--linha-2); color: var(--texto-3); background: var(--cartao); position: relative; z-index: 1; }
 
 @media (max-width: 1100px) {
-  .linha-tempo { grid-template-columns: 1fr; gap: 0; padding-left: 70px; }
+  .linha-tempo { grid-template-columns: minmax(0, 1fr); gap: 0; padding-left: 72px; }
   .linha-tempo-cabo { left: 23px; right: auto; top: 30px; bottom: 30px; width: 2px; height: auto; }
-  .linha-tempo-cabo span { background: linear-gradient(180deg, var(--ciano), var(--azul) 70%, var(--laranja)); transform-origin: top; transform: scaleY(var(--progresso, 1)); }
-  .etapa { padding: 8px 0 30px; }
-  .etapa-num { left: -70px; top: 6px; }
+  .linha-tempo-cabo span { transform-origin: top; transform: scaleY(var(--progresso, 1)); }
+  .etapa { padding: 8px 0 32px; }
+  .etapa-num { left: -72px; top: 6px; }
   .etapa-icone { display: none; }
-  .duvidas-grade { grid-template-columns: 1fr; margin-top: 64px; }
+  .duvidas-grade { grid-template-columns: minmax(0, 1fr); margin-top: 64px; }
 }
 
-@media (max-width: 800px) {
-  .linha-tempo { padding-left: 62px; }
-  .etapa-num { left: -62px; width: 44px; height: 44px; font-size: 13px; }
+@media (max-width: 760px) {
+  .linha-tempo { padding-left: 64px; }
+  .etapa-num { left: -64px; width: 44px; height: 44px; font-size: 14px; }
   .linha-tempo-cabo { left: 21px; }
-  .etapa h3 { font-size: 19px; }
-  .pergunta summary { padding: 12px 16px; font-size: 15px; }
-  .pergunta p { padding: 0 16px 16px; }
+  .pergunta summary { padding: 12px 20px; font-size: 16px; }
+  .pergunta p { padding: 0 20px 20px; }
 }

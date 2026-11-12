@@ -81,6 +81,8 @@ Princípios:
 | Mudar a estrutura das quatro páginas de solução | `src/components/PaginaSolucao.astro` e `src/styles/solucao.css` |
 | Mudar a taxa de instalação (hoje, 1 mensalidade) | `src/lib/dados.ts` → `taxaInstalacaoMensalidades` |
 | Mudar o que aparece em "Simples de contratar" | `src/lib/dados.ts` → `condicoes` |
+| Mudar as 5 perguntas do contrato ou a lista completa | `src/lib/dados.ts` → `contratoSimples` e `condicoesContrato` (o teste `tests/contrato.test.ts` confere os números) |
+| Mudar o vídeo, a legenda ou a linha do Google da abertura | `src/lib/dados.ts` → `aberturaVideo`, `confiancaGoogle` e `perfis.googleMaps`. O player só entra na página no toque (`src/scripts/abertura.ts`); a privacidade cita isso |
 | Trocar CNPJ, cidade ou e-mail do rodapé | `src/lib/dados.ts` → `empresa` e `contato.email` (os dados para o Google acompanham) |
 
 Depois de qualquer mudança: `npm run validar`. Os testes em `tests/dados.test.ts` conferem invariantes

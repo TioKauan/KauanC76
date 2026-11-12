@@ -5,13 +5,23 @@ export function iniciarPlanos(): void {
   const guias = todos<HTMLButtonElement>('.guias [role="tab"]');
   if (!guias.length) return;
 
+  // Texto e botão "Pedir proposta" (uma vez só, abaixo dos painéis): só aparecem com uma aba de serviço aberta,
+  // e o botão leva a mensagem da aba (a Sol lê data-sol-mensagem na hora do toque).
+  const proposta = document.querySelector<HTMLElement>('[data-proposta-unica]');
+  const botaoProposta = proposta?.querySelector<HTMLElement>('[data-proposta-botao]') ?? null;
+
   const selecionar = (guia: HTMLButtonElement, focar = false) => {
-    guias.forEach((g) => {
+    let mensagem: string | undefined;
+    for (const g of guias) {
       const ativa = g === guia;
       g.setAttribute('aria-selected', String(ativa));
       g.tabIndex = ativa ? 0 : -1;
-      exigir(`#${g.getAttribute('aria-controls')}`).hidden = !ativa;
-    });
+      const painel = exigir(`#${g.getAttribute('aria-controls')}`);
+      painel.hidden = !ativa;
+      if (ativa) mensagem = painel.dataset.propostaMensagem;
+    }
+    if (proposta) proposta.hidden = !mensagem;
+    if (botaoProposta && mensagem) botaoProposta.dataset.solMensagem = mensagem;
     if (focar) guia.focus();
   };
   guias.forEach((g, i) => {

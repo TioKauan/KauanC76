@@ -13,7 +13,10 @@ import { execSync } from 'node:child_process';
 import { readFileSync, writeFileSync, existsSync, statSync, mkdirSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { planos, contato, empresa, formatarPreco, precoPorCamera, duvidas } from '../src/lib/dados.ts';
+import {
+  planos, contato, empresa, formatarPreco, precoPorCamera, duvidas,
+  aberturaVideo, confiancaGoogle, contratoSimples, condicoesContrato, explicacaoGravador, perfis, servicosProposta, textoProposta,
+} from '../src/lib/dados.ts';
 
 const aqui = path.dirname(fileURLToPath(import.meta.url));
 const raizSite = path.resolve(aqui, '..');
@@ -27,6 +30,15 @@ const grupo = (nome) => { grupoAtual = nome; };
 const conferir = (item, ok, detalhe = '') => {
   resultados.push({ grupo: grupoAtual, item, ok: Boolean(ok), detalhe });
   console.log(`${ok ? '✅' : '❌'} [${grupoAtual}] ${item}${detalhe ? ` — ${detalhe}` : ''}`);
+};
+// Conferências novas da renovação de 11/11/2026: se o teste lançar erro (botão que não existe, clique sem resposta),
+// vira um ❌ com o motivo em vez de derrubar o relatório inteiro (o script usa await no nível de cima).
+const protegido = async (titulo, bloco) => {
+  try {
+    await bloco();
+  } catch (e) {
+    conferir(titulo, false, `erro no teste: ${String(e).slice(0, 220)}`);
+  }
 };
 
 /* ---------- 1. Build ---------- */
@@ -71,18 +83,25 @@ await new Promise((r) => servidor.listen(0, '127.0.0.1', r));
 const endereco = `http://127.0.0.1:${servidor.address().port}/`;
 
 const navegador = await chromium.launch();
-const abrir = async (largura, extras = {}, caminho = '') => {
+// `antes(contexto)` roda antes de abrir a página (para interceptar a rede desde o primeiro pedido).
+// `externos` guarda o endereço de todo pedido a outro servidor que não o do teste, desde o carregamento.
+const abrir = async (largura, extras = {}, caminho = '', antes = null) => {
   const celular = largura <= 800;
   const contexto = await navegador.newContext({ viewport: { width: largura, height: celular ? 844 : 900 }, deviceScaleFactor: celular ? 2 : 1, hasTouch: celular, isMobile: celular && largura < 600, ...extras });
+  if (antes) await antes(contexto);
   const pagina = await contexto.newPage();
   const erros = [];
   const bytes = { total: 0, urls: new Set() };
+  const externos = [];
   pagina.on('console', (m) => { if (m.type() === 'error') erros.push(m.text()); });
   pagina.on('pageerror', (e) => erros.push(String(e)));
-  pagina.on('request', (r) => { if (r.url().startsWith(endereco)) bytes.urls.add(new URL(r.url()).pathname); });
+  pagina.on('request', (r) => {
+    if (r.url().startsWith(endereco)) bytes.urls.add(new URL(r.url()).pathname);
+    else if (/^https?:/.test(r.url())) externos.push(r.url());
+  });
   await pagina.goto(endereco + caminho, { waitUntil: 'networkidle' });
   await pagina.evaluate(() => document.fonts.ready);
-  return { pagina, contexto, erros, bytes };
+  return { pagina, contexto, erros, bytes, externos };
 };
 const rolarTudo = (pagina) => pagina.evaluate(async () => {
   for (let y = 0; y < document.body.scrollHeight; y += 350) { scrollTo({ top: y, behavior: 'instant' }); await new Promise((r) => setTimeout(r, 25)); }
@@ -205,14 +224,15 @@ for (const largura of [360, 390, 768, 1024, 1440]) {
     planos: document.querySelectorAll('.plano').length,
     duvidas: document.querySelectorAll('[data-pergunta]').length,
     escondidos: [...document.querySelectorAll('[data-revelar]')].filter((el) => getComputedStyle(el).opacity !== '1').length,
-    // Os botões de venda (planos e propostas; o configurador tem página própria desde 17/10/2026) abrem a Sol; sem JavaScript, levam a "Fale com a SC".
+    // Os botões de venda abrem a Sol; sem JavaScript, levam a "Fale com a SC". Desde 11/11/2026 o "Pedir proposta" é um só
+    // (abaixo dos painéis de serviço), então a inicial tem 1 desses links, e não mais 4 (um por aba).
     vendas: [...document.querySelectorAll('a[data-sol-abrir]')].filter((a) => a.getAttribute('href') === '#contato' && getComputedStyle(a).display !== 'none').length,
     whatsContato: Boolean(document.querySelector('#contato a[href*="wa.me"]')),
     // O chat depende de JavaScript: sem ele, nem o botão da Sol aparece.
     solEscondida: document.querySelector('[data-sol]').hidden && [...document.querySelectorAll('button[data-sol-abrir]')].every((b) => b.hidden && getComputedStyle(b).display === 'none'),
   }));
   conferir('Sem JavaScript o conteúdo aparece e os contatos funcionam (botões de venda levam a "Fale com a SC")',
-    semJs.planos === 5 && semJs.duvidas === 10 && semJs.escondidos === 0 && semJs.vendas === 4 && semJs.whatsContato && semJs.solEscondida, JSON.stringify(semJs));
+    semJs.planos === 5 && semJs.duvidas === 10 && semJs.escondidos === 0 && semJs.vendas === 1 && semJs.whatsContato && semJs.solEscondida, JSON.stringify(semJs));
   await contexto.close();
 }
 
@@ -368,6 +388,149 @@ grupo('Tela 1 · Abertura');
   }
 }
 
+/* ---------- Abertura com celular e vídeo (11/11/2026) ---------- */
+// O vídeo do fabricante só carrega no toque: antes dele, a página não pode falar com o Google nem com o YouTube.
+{
+  const hostsDoGoogle = ['youtube.com', 'youtube-nocookie.com', 'ytimg.com', 'googlevideo.com', 'google.com', 'gstatic.com'];
+  const deGoogle = (url) => { try { const h = new URL(url).hostname; return hostsDoGoogle.some((d) => h === d || h.endsWith(`.${d}`)); } catch { return false; } };
+
+  // 1. Carregar e rolar a inicial: zero pedidos a esses servidores (o ouvinte de rede liga antes do primeiro pedido).
+  for (const largura of [1440, 390]) {
+    const titulo = `Abertura: carregar e rolar a inicial não faz pedido a youtube.com, youtube-nocookie.com, ytimg.com, googlevideo.com, google.com nem gstatic.com (${largura} px)`;
+    await protegido(titulo, async () => {
+      const { pagina, contexto, externos } = await abrir(largura);
+      await rolarTudo(pagina);
+      await pagina.waitForTimeout(600);
+      const dosGoogle = externos.filter(deGoogle);
+      conferir(titulo, dosGoogle.length === 0, dosGoogle.length ? dosGoogle.slice(0, 3).join(' ') : `${externos.length} pedido(s) a outros servidores${externos.length ? `: ${externos.slice(0, 3).join(' ')}` : ''}`);
+      await contexto.close();
+    });
+  }
+
+  // 2. Tocar no play coloca o iframe do youtube-nocookie. A rede do Google é interceptada (resposta falsa, sem erro):
+  //    o teste não depende da internet e conta os pedidos feitos antes e depois do toque.
+  await protegido('Abertura: tocar no play troca a cena por um iframe de www.youtube-nocookie.com/embed/wKUPPBYbi-Q (com título, autoplay e carregamento tardio), sem abrir outra aba', async () => {
+    const pedidos = [];
+    const { pagina, contexto, erros } = await abrir(1440, {}, '', async (c) => {
+      await c.route(/^https?:\/\/([^/]*\.)?(youtube-nocookie|youtube|ytimg|googlevideo|google|gstatic)\.com\//, async (rota) => {
+        pedidos.push(rota.request().url());
+        await rota.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: '<!doctype html><title>player de teste</title><p>player de teste</p>' });
+      });
+    });
+    const antesDoToque = pedidos.length;
+    const capaAntes = await pagina.evaluate(() => ({ capa: Boolean(document.querySelector('[data-video-abrir]')), iframes: document.querySelectorAll('iframe').length }));
+    await pagina.locator('[data-video-abrir]').scrollIntoViewIfNeeded();
+    await pagina.click('[data-video-abrir]');
+    const apareceu = await pagina.waitForSelector('iframe.video-player', { timeout: 5000 }).then(() => true, () => false);
+    await pagina.waitForTimeout(400);
+    const player = await pagina.evaluate(() => {
+      const f = document.querySelector('iframe.video-player');
+      return f && {
+        src: f.src, title: f.title, allow: f.allow, loading: f.getAttribute('loading'),
+        dentroDoCelular: Boolean(f.closest('.celular-tela')), capaSumiu: !document.querySelector('[data-video-abrir]'),
+        legenda: Boolean(document.querySelector('.video-legenda')), total: document.querySelectorAll('iframe').length,
+      };
+    });
+    const depois = pedidos.slice(antesDoToque);
+    conferir('Abertura: tocar no play troca a cena por um iframe de www.youtube-nocookie.com/embed/wKUPPBYbi-Q (com título, autoplay e carregamento tardio), sem abrir outra aba',
+      antesDoToque === 0 && capaAntes.capa && capaAntes.iframes === 0 && apareceu && Boolean(player)
+        && player.src.startsWith(`https://www.youtube-nocookie.com/embed/${aberturaVideo.id}?`) && player.src.includes('autoplay=1')
+        && player.title.length > 20 && /autoplay/.test(player.allow) && player.loading === 'lazy'
+        && player.dentroDoCelular && player.capaSumiu && player.legenda && player.total === 1
+        && contexto.pages().length === 1
+        && depois.some((u) => u.startsWith(`https://www.youtube-nocookie.com/embed/${aberturaVideo.id}`))
+        && depois.every((u) => new URL(u).hostname === 'www.youtube-nocookie.com'),
+      JSON.stringify({ pedidosAntes: antesDoToque, pedidosDepois: depois.map((u) => u.slice(0, 70)), player: player && { ...player, src: player.src.slice(0, 90) }, abas: contexto.pages().length, erros: erros.slice(0, 1) }));
+    await contexto.close();
+  });
+
+  // 3. Sem JavaScript: o play é um link para o vídeo no YouTube, em nova aba.
+  await protegido('Abertura sem JavaScript: o play é um link para https://www.youtube.com/watch?v=wKUPPBYbi-Q em nova aba (noopener), sem iframe e sem pedido ao Google', async () => {
+    const { pagina, contexto, externos } = await abrir(1440, { javaScriptEnabled: false });
+    const r = await pagina.evaluate(() => {
+      const a = document.querySelector('[data-video-abrir]');
+      return { href: a?.getAttribute('href') ?? null, alvo: a?.getAttribute('target') ?? null, rel: a?.getAttribute('rel') ?? '', iframes: document.querySelectorAll('iframe').length, texto: (a?.textContent ?? '').replace(/\s+/g, ' ').trim() };
+    });
+    conferir('Abertura sem JavaScript: o play é um link para https://www.youtube.com/watch?v=wKUPPBYbi-Q em nova aba (noopener), sem iframe e sem pedido ao Google',
+      r.href === aberturaVideo.linkYoutube && r.alvo === '_blank' && /noopener/.test(r.rel) && r.iframes === 0 && /Toque para ver/.test(r.texto) && !externos.some(deGoogle), JSON.stringify({ ...r, externos: externos.filter(deGoogle).length }));
+    await contexto.close();
+  });
+
+  // 4. Legenda obrigatória: logo abaixo do celular, visível, com "sob orçamento".
+  for (const largura of [1440, 390]) {
+    const titulo = `Abertura: a legenda do vídeo aparece logo abaixo do celular e contém "sob orçamento" (${largura} px)`;
+    await protegido(titulo, async () => {
+    const { pagina, contexto } = await abrir(largura);
+    const l = await pagina.evaluate(() => {
+      const leg = document.querySelector('.video-legenda');
+      const cel = document.querySelector('.celular');
+      if (!leg || !cel) return null;
+      const a = leg.getBoundingClientRect();
+      const b = cel.getBoundingClientRect();
+      const estilo = getComputedStyle(leg);
+      return { texto: leg.textContent.replace(/\s+/g, ' ').trim(), visivel: estilo.display !== 'none' && estilo.visibility !== 'hidden' && a.height > 0, abaixo: Math.round(a.top - b.bottom), logoDepois: leg.previousElementSibling === cel, naAbertura: Boolean(leg.closest('#inicio')) };
+    });
+    conferir(titulo,
+      Boolean(l) && l.visivel && l.naAbertura && l.logoDepois && l.abaixo >= 0 && l.abaixo <= 32 && l.texto === aberturaVideo.legenda && /sob orçamento/.test(l.texto) && /preto e branco/.test(l.texto),
+      l ? `${l.abaixo} px abaixo do celular; "${l.texto.slice(0, 70)}…"` : 'legenda ou celular não encontrados');
+    await contexto.close();
+    });
+  }
+
+  // 5. Linha de confiança: link para o Perfil da Empresa no Google, sem estrelas, nota, número nem logo; JSON-LD sem avaliações.
+  await protegido('Abertura: a linha de confiança leva a perfis.googleMaps (nova aba, noopener), fica abaixo dos botões e não tem estrelas, nota, número nem logo; o JSON-LD não tem AggregateRating nem Review', async () => {
+    const { pagina, contexto } = await abrir(1440);
+    const linha = await pagina.evaluate(() => {
+      const a = document.querySelector('[data-confianca-google]');
+      const botoes = document.querySelector('.abertura-acoes');
+      if (!a || !botoes) return null;
+      return {
+        href: a.getAttribute('href'), alvo: a.getAttribute('target'), rel: a.getAttribute('rel') ?? '', texto: a.textContent.replace(/\s+/g, ' ').trim(),
+        imagens: a.querySelectorAll('img').length, naAbertura: Boolean(a.closest('#inicio')),
+        abaixoDosBotoes: a.getBoundingClientRect().top >= botoes.getBoundingClientRect().bottom,
+        textoAbertura: document.querySelector('#inicio').innerText,
+      };
+    });
+    const htmlInicial = readFileSync(path.join(dist, 'index.html'), 'utf8');
+    const jsonLd = [...htmlInicial.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => m[1]).join('');
+    conferir('Abertura: a linha de confiança leva a perfis.googleMaps (nova aba, noopener), fica abaixo dos botões e não tem estrelas, nota, número nem logo; o JSON-LD não tem AggregateRating nem Review',
+      Boolean(linha) && linha.href === perfis.googleMaps && linha.alvo === '_blank' && /noopener/.test(linha.rel) && linha.texto === confiancaGoogle
+        && linha.imagens === 0 && linha.naAbertura && linha.abaixoDosBotoes && !/[★⭐]|estrela/i.test(linha.textoAbertura)
+        && jsonLd.length > 0 && !/AggregateRating|aggregateRating|"Review"|reviewRating|reviewBody/.test(jsonLd),
+      linha ? `${linha.texto}; JSON-LD ${jsonLd.length} caracteres` : 'linha de confiança não encontrada');
+    await contexto.close();
+  });
+
+  // 6. Celular desenhado em CSS: tela 19,5:9 com o vídeo 16:9 centralizado; duas colunas no computador, texto e depois celular no celular.
+  for (const largura of [1440, 390]) {
+    const titulo = `Abertura: celular deitado com tela 19,5:9 e vídeo 16:9 centralizado; ${largura >= 800 ? 'texto e celular lado a lado' : 'texto primeiro, celular embaixo, com 16 px de margem'} (${largura} px)`;
+    await protegido(titulo, async () => {
+    const { pagina, contexto } = await abrir(largura);
+    const g = await pagina.evaluate(() => {
+      const texto = document.querySelector('.abertura-texto')?.getBoundingClientRect();
+      const cel = document.querySelector('.celular')?.getBoundingClientRect();
+      const tela = document.querySelector('.celular-tela')?.getBoundingClientRect();
+      const quadro = document.querySelector('.video-quadro')?.getBoundingClientRect();
+      if (!texto || !cel || !tela || !quadro) return null;
+      return {
+        textoDireita: texto.right, textoBaixo: texto.bottom, celEsquerda: cel.left, celDireita: cel.right, celTopo: cel.top,
+        proporcaoTela: tela.width / tela.height, proporcaoVideo: quadro.width / quadro.height,
+        videoCentrado: Math.abs((quadro.left + quadro.right) / 2 - (tela.left + tela.right) / 2) < 1.5,
+        videoDentro: quadro.left >= tela.left - 0.5 && quadro.right <= tela.right + 0.5 && quadro.top >= tela.top - 0.5 && quadro.bottom <= tela.bottom + 0.5,
+        largura: innerWidth,
+      };
+    });
+    const disposicao = !g ? false : largura >= 800
+      ? g.textoDireita <= g.celEsquerda + 0.5
+      : g.textoBaixo <= g.celTopo + 0.5 && g.celEsquerda >= 15.5 && g.celDireita <= g.largura - 15.5;
+    conferir(titulo,
+      Boolean(g) && disposicao && Math.abs(g.proporcaoTela - 19.5 / 9) < 0.05 && Math.abs(g.proporcaoVideo - 16 / 9) < 0.05 && g.videoCentrado && g.videoDentro,
+      g ? JSON.stringify({ tela: g.proporcaoTela.toFixed(3), video: g.proporcaoVideo.toFixed(3), esq: Math.round(g.celEsquerda), dir: Math.round(g.celDireita) }) : 'elementos não encontrados');
+    await contexto.close();
+    });
+  }
+}
+
 /* ---------- 4. Tela 2 ---------- */
 grupo('Tela 2 · Planos');
 {
@@ -398,6 +561,45 @@ grupo('Tela 2 · Planos');
   conferir('Bloco "Condições do contrato" mostra prazo, multa, reajuste, propriedade e foro', contratoVisivel.length === 0 && Boolean(await pagina.$('#contrato')), contratoVisivel.join(', '));
   const errado = textoPag.match(/multa de 50|50% das mensalidades|renova(ção)? autom[aá]tic[ao] por mais 24|garantia contra raio/i);
   conferir('Nenhuma condição antiga ou promessa fora do documento (50%, renovação automática, garantia contra raio)', !errado, errado ? `achado: "${errado[0]}"` : '');
+
+  // Plano de 8 câmeras: uma linha explica o gravador de 8 canais (texto de dados.ts, ligado ao campo `gravador`); os outros não a têm.
+  const plano8 = planos.find((x) => x.cameras === 8);
+  const linhaGravador = plano8 ? explicacaoGravador(plano8) : null;
+  const comLinhaGravador = cartoes.filter((c) => c.texto.includes('Gravador de ')).map((c) => c.n);
+  conferir('Plano de 8 câmeras mostra "Gravador de 8 canais: um canal para cada câmera"; os outros planos não repetem a linha',
+    linhaGravador === 'Gravador de 8 canais: um canal para cada câmera' && Boolean(cartoes.find((c) => c.n === 8)?.texto.includes(linhaGravador)) && comLinhaGravador.join() === '8',
+    `planos com a linha: ${comLinhaGravador.join(', ') || 'nenhum'}`);
+  // O preço de cada cartão cabe na largura dele (a grade de 5 colunas é o ponto mais apertado; scrollWidth da página não mostra isso).
+  const precosCortados = await pagina.evaluate(() => [...document.querySelectorAll('.plano .preco')].filter((e) => e.scrollWidth > e.clientWidth + 1).length);
+  conferir('Planos no computador: o preço de cada cartão cabe na largura do cartão (sem texto passando da borda)', precosCortados === 0, `${precosCortados} cartão(ões) com o preço cortado`);
+
+  // Contrato em linguagem simples (11/11/2026): 5 perguntas curtas e, embaixo, um <details> com a lista completa.
+  await protegido('Contrato: 5 perguntas curtas com as respostas de dados.ts e um <details> "Ler todas as condições do contrato" fechado, com todos os títulos de condicoesContrato (abre ao tocar)', async () => {
+  const contrato = await pagina.evaluate(() => {
+    const bloco = document.querySelector('#contrato');
+    const detalhes = bloco?.querySelector('details');
+    return {
+      perguntas: [...(bloco?.querySelectorAll('.contrato-pergunta') ?? [])].map((h) => h.textContent.trim()),
+      respostas: [...(bloco?.querySelectorAll('.contrato-item p') ?? [])].map((p) => p.textContent.trim()),
+      detalhes: Boolean(detalhes), aberto: Boolean(detalhes?.open),
+      resumo: (detalhes?.querySelector('summary')?.textContent ?? '').replace(/\s+/g, ' ').trim(),
+      textoDetalhes: detalhes?.textContent ?? '',
+      itensNoDetalhe: detalhes?.querySelectorAll('.condicao').length ?? 0,
+      perguntasForaDoFaq: document.querySelectorAll('#contrato [data-pergunta], #contrato .pergunta').length,
+    };
+  });
+  const titulosFaltando = condicoesContrato.filter((c) => !contrato.textoDetalhes.includes(c.titulo)).map((c) => c.titulo);
+  await pagina.click('#contrato details summary');
+  const detalheAberto = await pagina.evaluate(() => Boolean(document.querySelector('#contrato details')?.open));
+  const ultimoVisivel = await pagina.locator('#contrato details .condicao').last().isVisible();
+  conferir('Contrato: 5 perguntas curtas com as respostas de dados.ts e um <details> "Ler todas as condições do contrato" fechado, com todos os títulos de condicoesContrato (abre ao tocar)',
+    contrato.perguntas.length === 5 && contrato.perguntas.join('|') === contratoSimples.map((q) => q.pergunta).join('|')
+      && contrato.respostas.join('|') === contratoSimples.map((q) => q.resposta).join('|')
+      && contrato.detalhes && !contrato.aberto && /Ler todas as condições do contrato/.test(contrato.resumo)
+      && titulosFaltando.length === 0 && contrato.itensNoDetalhe === condicoesContrato.length && contrato.perguntasForaDoFaq === 0
+      && detalheAberto && ultimoVisivel,
+    `${contrato.perguntas.length} perguntas; ${contrato.itensNoDetalhe}/${condicoesContrato.length} condições no <details>${titulosFaltando.length ? `; faltam: ${titulosFaltando.join(', ')}` : ''}`);
+  });
   const zap = await pagina.$$eval('.plano-cta', (els) => els.filter((a) => { const u = new URL(a.href); const t = u.searchParams.get('text') || ''; return u.host === 'wa.me' && /quero contratar/.test(t) && /R\$ \d/.test(t) && /instalação/.test(t); }).length);
   conferir('"Quero este plano" abre o WhatsApp da equipe com o plano, o valor e a pergunta da instalação', zap === 5, `${zap}/5`);
   const simular = await pagina.$$eval('.plano', (els) => els.filter((e) => e.querySelector('.plano-simular')?.getAttribute('href') === `/monte-seu-sistema/?cameras=${e.dataset.plano}`).length);
@@ -408,6 +610,57 @@ grupo('Tela 2 · Planos');
   await pagina.keyboard.press('ArrowRight');
   const teclado = await pagina.evaluate(() => document.activeElement.id);
   conferir('Abas de proposta funcionam (clique e setas do teclado)', aba.redes && !aba.cameras && teclado === 'guia-alarme');
+
+  // "Pedir proposta" e o texto da proposta aparecem uma vez só (11/11/2026), abaixo dos painéis, com uma aba de serviço aberta.
+  const htmlDaInicial = readFileSync(path.join(dist, 'index.html'), 'utf8');
+  const vezesNoHtml = htmlDaInicial.split(textoProposta).length - 1;
+  conferir('O textoProposta aparece uma vez só no HTML da inicial', vezesNoHtml === 1, `${vezesNoHtml} vez(es)`);
+  await protegido('"Pedir proposta": um só botão e um só texto, abaixo do painel, visíveis nas 4 abas de serviço (cada uma com a própria mensagem) e escondidos nas câmeras; o condomínio mantém os links próprios', async () => {
+  const lerProposta = () => pagina.evaluate((texto) => {
+    const bloco = document.querySelector('[data-proposta-unica]');
+    const botao = document.querySelector('[data-proposta-botao]');
+    const painel = [...document.querySelectorAll('.painel-servico')].find((p) => !p.hidden);
+    return {
+      blocos: document.querySelectorAll('[data-proposta-unica]').length,
+      visivel: Boolean(bloco) && !bloco.hidden && getComputedStyle(bloco).display !== 'none',
+      mensagem: botao?.dataset.solMensagem ?? '',
+      href: botao?.getAttribute('href') ?? null,
+      orbe: Boolean(botao?.querySelector('.sol-orbe')), whats: Boolean(botao?.querySelector('use[href="#ic-whatsapp"]')),
+      abreSol: Boolean(botao?.hasAttribute('data-sol-abrir')),
+      botoesPedir: [...document.querySelectorAll('#planos a, #planos button')].filter((e) => /Pedir proposta/.test(e.textContent)).length,
+      textoVisivel: document.body.innerText.split(texto).length - 1,
+      abaixoDoPainel: Boolean(bloco && painel) && bloco.getBoundingClientRect().top >= painel.getBoundingClientRect().bottom,
+      painelRepete: document.querySelectorAll('.painel-servico a[data-sol-abrir], .painel-servico [data-proposta-botao]').length,
+    };
+  }, textoProposta);
+  const estados = [];
+  for (const s of servicosProposta) {
+    await pagina.click(`#guia-${s.id}`);
+    estados.push({ id: s.id, ...(await lerProposta()) });
+  }
+  const esperadaDe = (s) => `Quero uma proposta de ${s.titulo.toLowerCase()} para o meu ambiente.`;
+  const abasOk = estados.every((e, i) => e.blocos === 1 && e.visivel && e.mensagem === esperadaDe(servicosProposta[i]) && e.href === '#contato' && e.orbe && !e.whats && e.abreSol
+    && e.botoesPedir === 1 && e.textoVisivel === 1 && e.abaixoDoPainel && e.painelRepete === 0);
+  await pagina.click('#guia-cameras');
+  const nasCameras = await lerProposta();
+  const condominioLinks = await pagina.evaluate(() => {
+    document.querySelector('#guia-condominio').click();
+    const p = document.querySelector('#aba-condominio');
+    return { conhecer: p.querySelector('a[href="/condominio/"]')?.textContent.trim(), configurador: p.querySelector('a[href="/monte-seu-sistema/?ambiente=condominio"]')?.textContent.trim() };
+  });
+  conferir('"Pedir proposta": um só botão e um só texto, abaixo do painel, visíveis nas 4 abas de serviço (cada uma com a própria mensagem) e escondidos nas câmeras; o condomínio mantém os links próprios',
+    abasOk && !nasCameras.visivel && nasCameras.textoVisivel === 0 && Boolean(condominioLinks.conhecer) && Boolean(condominioLinks.configurador),
+    JSON.stringify(estados.map((e) => ({ id: e.id, visivel: e.visivel, botoes: e.botoesPedir, texto: e.textoVisivel, msg: e.mensagem.slice(0, 40) }))));
+
+  // Tocar no botão abre a Sol com a mensagem da aba escolhida; a página não sai do lugar.
+  await pagina.route('**/webhook/sol-site', (rota) => rota.abort());
+  await pagina.click('#guia-alarme');
+  const mensagemDoAlarme = (await lerProposta()).mensagem;
+  await pagina.click('[data-proposta-botao]');
+  const solAbriu = await pagina.waitForSelector('.sol-painel.sol-painel-visivel', { timeout: 5000 }).then(() => true, () => false);
+  const primeiraFala = await pagina.waitForSelector('.sol-msg-eu .sol-msg-corpo', { timeout: 5000 }).then((el) => el.textContent(), () => '');
+  conferir('"Pedir proposta" abre a Sol com a mensagem da aba escolhida e a página não sai do lugar', solAbriu && (primeiraFala ?? '').trim() === mensagemDoAlarme.trim() && !pagina.url().endsWith('#contato'), `${mensagemDoAlarme} → ${primeiraFala}`);
+  });
   await contexto.close();
 }
 
@@ -985,6 +1238,50 @@ grupo('Páginas de solução');
   console.log(`   (JavaScript do dist, sem o service worker das calculadoras: ${(jsDist / 1024).toFixed(0)} KB)`);
 }
 
+/* ---------- Layout em 375 px (renovação de 11/11/2026) ---------- */
+// O corpo da página tem overflow-x: clip, que esconde a sobra lateral de scrollWidth. Por isso, além de
+// scrollWidth <= 375, a inicial confere a margem de 16 px, o celular dentro da tela e botões sem texto cortado.
+grupo('Layout em 375 px');
+{
+  const paginas375 = [
+    ['', 'Página inicial'], ['monte-seu-sistema/', '/monte-seu-sistema/'], ['calculadoras/', '/calculadoras/'], ['privacidade/', '/privacidade/'],
+    ['casa/', '/casa/'], ['comercio/', '/comercio/'], ['empresa/', '/empresa/'], ['condominio/', '/condominio/'], ['nao-existe/', 'Página 404'],
+  ];
+  for (const [caminho, nome] of paginas375) {
+    const { pagina, contexto } = await abrir(375, {}, caminho);
+    await rolarTudo(pagina);
+    const m = await pagina.evaluate(() => {
+      const largura = document.documentElement.clientWidth;
+      // Informativo: elementos que passam da borda direita (fora das áreas que rolam por dentro).
+      const alem = [...document.body.querySelectorAll('*')]
+        .filter((el) => {
+          if (el.closest('.planos-trilho, .guias, svg, [hidden], .sol, .barra-fixa, .sr, .pular, .menu-celular')) return false;
+          const r = el.getBoundingClientRect();
+          const estilo = getComputedStyle(el);
+          return r.width > 0 && r.height > 0 && estilo.position !== 'fixed' && estilo.visibility !== 'hidden' && (r.right > largura + 1 || r.left < -1);
+        })
+        .map((el) => `${el.tagName.toLowerCase()}.${String(el.className).split(' ')[0]}`);
+      const texto = document.querySelector('.abertura-texto')?.getBoundingClientRect();
+      const celular = document.querySelector('.celular')?.getBoundingClientRect();
+      return {
+        largura,
+        sobra: document.documentElement.scrollWidth - largura,
+        alem: [...new Set(alem)].slice(0, 5),
+        esquerda: texto ? texto.left : null,
+        celularDireita: celular ? celular.right : null,
+        botoesCortados: [...document.querySelectorAll('.btn')]
+          .filter((b) => { const r = b.getBoundingClientRect(); return r.width > 0 && !b.closest('[hidden], .sol') && b.scrollWidth > b.clientWidth + 1; })
+          .map((b) => b.textContent.trim().slice(0, 30)),
+      };
+    });
+    const inicialOk = caminho !== '' || (m.esquerda !== null && Math.abs(m.esquerda - 16) <= 0.5 && m.celularDireita !== null && m.celularDireita <= m.largura - 16 + 0.5);
+    conferir(`${nome} em 375 px: scrollWidth ≤ 375${caminho === '' ? ', margem lateral de 16 px, celular dentro da tela' : ''} e nenhum botão com texto cortado`,
+      m.largura === 375 && m.sobra <= 0 && m.botoesCortados.length === 0 && inicialOk,
+      JSON.stringify({ sobra: m.sobra, cortados: m.botoesCortados, esquerda: m.esquerda, celularDireita: m.celularDireita, alemDaBorda: m.alem }));
+    await contexto.close();
+  }
+}
+
 /* ---------- Acessibilidade automática (axe-core, regras WCAG 2.2 A e AA) ---------- */
 grupo('Acessibilidade (axe)');
 {
@@ -1075,6 +1372,19 @@ if (comFotos) {
     }
   }
   console.log('Páginas de solução: fotos em docs/inovacao/site-final/ (06-solucao-*.png e 07-celular-solucao-*.png)');
+
+  // Renovação de 11/11/2026: a inicial e as páginas que usam o mesmo base.css, inteiras, no computador (1440) e no celular (375)
+  for (const [caminho, nome] of [['', 'inicial'], ['monte-seu-sistema/', 'monte-seu-sistema'], ['calculadoras/', 'calculadoras'], ['privacidade/', 'privacidade'], ['nao-existe/', '404']]) {
+    for (const [largura, prefixo] of [[1440, '08-pagina'], [375, '09-celular-pagina']]) {
+      const { pagina, contexto } = await abrir(largura, {}, caminho);
+      await rolarTudo(pagina);
+      await pagina.waitForTimeout(700);
+      await pagina.addStyleTag({ content: '.barra-fixa,.progresso-leitura,.pular{visibility:hidden!important}' });
+      await pagina.screenshot({ path: path.join(pastaFotos, `${prefixo}-${nome}-${largura}.png`), fullPage: true });
+      await contexto.close();
+    }
+  }
+  console.log('Renovação: fotos inteiras em docs/inovacao/site-final/ (08-pagina-*-1440.png e 09-celular-pagina-*-375.png)');
 }
 
 /* ---------- Calculadoras de campo (/calculadoras/) ---------- */

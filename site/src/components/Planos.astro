@@ -2,22 +2,26 @@
 /**
  * Tela 2: planos de locação. Abas e carrossel em src/scripts/planos.ts.
  * Desde 28/09/2026 (noite) os botões de venda abrem a Sol com a escolha já
- * escrita; sem JavaScript, levam à seção "Fale com a SC" (#contato).
+ * escrita; sem JavaScript, levam à seção de contato (#contato).
  * 17/10/2026: inicial mais enxuta; saíram "Personalize seu sistema" (os recursos extras ficam
  * no configurador) e "Por que locar" (o título da seção já diz o principal).
+ * 11/11/2026: o texto da proposta e o botão "Pedir proposta" aparecem uma vez só, abaixo dos painéis, quando
+ * uma aba de serviço está aberta (a mensagem do botão acompanha a aba); as condições do contrato viram cinco
+ * perguntas curtas, com a lista completa dentro de um <details>.
  */
 import Icone from './Icone.astro';
 import IconeWhatsapp from './IconeWhatsapp.astro';
 import MiniPlanta from './MiniPlanta.astro';
 import {
-  planos, condicoes, condicoesContrato, servicosProposta, textoProposta,
+  planos, condicoes, condicoesContrato, contratoSimples, servicosProposta, textoProposta,
   formatarPreco, mostrarPrecos, nomePlano, textoTaxaInstalacao, rotuloTaxa,
-  linkWhatsapp, mensagemContratar, precoPorCamera,
+  linkWhatsapp, mensagemContratar, precoPorCamera, explicacaoGravador,
 } from '../lib/dados';
 
 const preco3 = planos.find((x) => x.cameras === 3)?.preco ?? 0;
 const preco4 = planos.find((x) => x.cameras === 4)?.preco ?? 0;
 const cameras = (n: number) => `${n} ${n > 1 ? 'câmeras' : 'câmera'}`;
+const mensagemProposta = (titulo: string) => `Quero uma proposta de ${titulo.toLowerCase()} para o meu ambiente.`;
 ---
 
 <section class="secao planos" id="planos" aria-labelledby="planos-titulo">
@@ -68,6 +72,7 @@ const cameras = (n: number) => `${n} ${n > 1 ? 'câmeras' : 'câmera'}`;
                   <li><Icone nome="check" tamanho={16} traco={2.2} />{cameras(p.cameras)} Full HD (2 MP ou superior)</li>
                   <li><Icone nome="check" tamanho={16} traco={2.2} />Gravação no local por aproximadamente 10 dias</li>
                   <li><Icone nome="check" tamanho={16} traco={2.2} />{p.gravador} e imagens no celular</li>
+                  {explicacaoGravador(p) && <li class="plano-gravador"><Icone nome="check" tamanho={16} traco={2.2} />{explicacaoGravador(p)}</li>}
                   <li><Icone nome="check" tamanho={16} traco={2.2} />Suporte e manutenção</li>
                 </ul>
                 <a class:list={['btn plano-cta', p.destaque ? 'btn-primario' : 'btn-contorno']} href={linkWhatsapp(mensagemContratar(p))} target="_blank" rel="noopener" data-plano-cta={p.cameras}>
@@ -86,36 +91,55 @@ const cameras = (n: number) => `${n} ${n > 1 ? 'câmeras' : 'câmera'}`;
 
     {
       servicosProposta.map((s) => (
-        <div class="painel-servico cartao" role="tabpanel" id={`aba-${s.id}`} aria-labelledby={`guia-${s.id}`} hidden>
-          <div class="servico-texto">
-            <span class="selo selo-ciano"><Icone nome={s.icone} tamanho={14} /> Proposta personalizada</span>
-            <h3>{s.titulo}</h3>
-            <p>{s.texto}</p>
-            <ul>{s.itens.map((i) => <li><Icone nome="check" tamanho={16} traco={2.2} />{i}</li>)}</ul>
-          </div>
-          <div class="servico-acao">
-            <p>{textoProposta}</p>
-            <a class="btn btn-primario" href="#contato" data-sol-abrir data-sol-mensagem={`Quero uma proposta de ${s.titulo.toLowerCase()} para o meu ambiente.`}>
-              <span class="sol-orbe sol-orbe-p" aria-hidden="true"></span> Pedir proposta<span class="sr"> (abre o chat da Sol)</span>
-            </a>
-            {s.id === 'condominio' && (
+        <div class="painel-servico cartao" role="tabpanel" id={`aba-${s.id}`} aria-labelledby={`guia-${s.id}`} data-proposta-mensagem={mensagemProposta(s.titulo)} hidden>
+          <span class="selo selo-ciano"><Icone nome={s.icone} tamanho={14} /> Proposta personalizada</span>
+          <h3>{s.titulo}</h3>
+          <p>{s.texto}</p>
+          <ul>{s.itens.map((i) => <li><Icone nome="check" tamanho={16} traco={2.2} />{i}</li>)}</ul>
+          {s.id === 'condominio' && (
+            <div class="servico-links">
               <a class="btn btn-contorno" href="/condominio/">Conhecer o Condomínio Evoluído</a>
               <a class="btn btn-contorno" href="/monte-seu-sistema/?ambiente=condominio">Montar a proposta no configurador</a>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       ))
     }
+
+    <!-- Uma vez só: aparece quando uma aba de serviço está aberta; a mensagem do botão é a da aba (src/scripts/planos.ts). -->
+    <div class="proposta-unica cartao" data-proposta-unica hidden>
+      <p>{textoProposta}</p>
+      <a class="btn btn-primario" href="#contato" data-sol-abrir data-proposta-botao data-sol-mensagem={mensagemProposta(servicosProposta[0]?.titulo ?? '')}>
+        <span class="sol-orbe sol-orbe-p" aria-hidden="true"></span> Pedir proposta<span class="sr"> (abre o chat da Sol)</span>
+      </a>
+    </div>
 
     <div class="tudo-claro" data-revelar>
       <h3>Simples de contratar<small>Sem papel e sem burocracia.</small></h3>
       {condicoes.map((c) => <div class="condicao"><Icone nome={c.icone} tamanho={20} /><div><b>{c.titulo}</b><span>{c.texto}</span></div></div>)}
     </div>
 
-    <div class="tudo-claro" id="contrato" data-revelar>
-      <h3>Condições do contrato<small>O resumo do que você assina, antes de assinar.</small></h3>
-      {condicoesContrato.map((c) => <div class="condicao"><Icone nome={c.icone} tamanho={20} /><div><b>{c.titulo}</b><span>{c.texto}</span></div></div>)}
+    <div class="contrato" id="contrato" data-revelar>
+      <div class="contrato-cabeca">
+        <h3>Condições do contrato</h3>
+        <p>O essencial do que você assina, em cinco perguntas. A lista completa fica logo abaixo.</p>
+      </div>
+      <div class="contrato-lista">
+        {
+          contratoSimples.map((q) => (
+            <div class="contrato-item">
+              <h4 class="contrato-pergunta">{q.pergunta}</h4>
+              <p>{q.resposta}</p>
+            </div>
+          ))
+        }
+      </div>
+      <details class="contrato-completo">
+        <summary>Ler todas as condições do contrato<Icone nome="plus" tamanho={18} classe="ic-mais" /></summary>
+        <div class="contrato-todas">
+          {condicoesContrato.map((c) => <div class="condicao"><Icone nome={c.icone} tamanho={20} /><div><b>{c.titulo}</b><span>{c.texto}</span></div></div>)}
+        </div>
+      </details>
     </div>
   </div>
 </section>
-<div class="fio" aria-hidden="true"></div>

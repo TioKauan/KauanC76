@@ -1,15 +1,15 @@
 # Relatório de validação do site
 
-Gerado por `npm run validar` em 11/11/2026, 21:25:21.
-Resultado: **157 de 157 itens ✅** — checklist completa.
+Gerado por `npm run validar` em 12/11/2026, 08:02:21.
+Resultado: **181 de 181 itens ✅** — checklist completa.
 
 ## Geral
 
 | | Item | Detalhe |
 |---|---|---|
 | ✅ | Tipos conferidos (astro check) e build sem erro |  |
-| ✅ | Testes unitários das regras (Vitest) passam | 155 testes |
-| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 250 KB em 9 arquivos; maiores: / 80 KB, /marca/sc-logo.webp 52 KB, /assets/sol.CBCAuobH.js 39 KB |
+| ✅ | Testes unitários das regras (Vitest) passam | 164 testes |
+| ✅ | Peso total da página ≤ 500 KB (sem compactação) | 258 KB em 9 arquivos; maiores: / 83 KB, /marca/sc-logo.webp 52 KB, /assets/sol.CT3Pa8eK.js 39 KB |
 | ✅ | Todo link interno leva a uma seção que existe | 6 destinos conferidos |
 | ✅ | Todo WhatsApp usa wa.me/5546991331306 com mensagem preenchida | 6 links |
 | ✅ | Todo botão de WhatsApp mostra o ícone do WhatsApp |  |
@@ -33,7 +33,7 @@ Resultado: **157 de 157 itens ✅** — checklist completa.
 | ✅ | Sem rolagem horizontal em 1440 px |  |
 | ✅ | "Reduzir movimento": nenhuma animação contínua roda | 0 animações contínuas |
 | ✅ | "Reduzir movimento": todo conteúdo aparece sem animação | 0 blocos escondidos |
-| ✅ | Sem JavaScript o conteúdo aparece e os contatos funcionam (botões de venda levam a "Fale com a SC") | {"planos":5,"duvidas":10,"escondidos":0,"vendas":4,"whatsContato":true,"solEscondida":true} |
+| ✅ | Sem JavaScript o conteúdo aparece e os contatos funcionam (botões de venda levam a "Fale com a SC") | {"planos":5,"duvidas":10,"escondidos":0,"vendas":1,"whatsContato":true,"solEscondida":true} |
 | ✅ | Rodapé tem link para a Política de privacidade |  |
 | ✅ | /privacidade/ abre com as 9 seções, sem erro no console e sem rolagem lateral | 9 seções; erros: 0; sobra 0 px |
 | ✅ | Buscadores: robots.txt aponta o sitemap, e o sitemap lista todas as páginas | páginas: /, /calculadoras/, /casa/, /comercio/, /condominio/, /empresa/, /monte-seu-sistema/, /privacidade/; no sitemap: /, /calculadoras/, /casa/, /comercio/, /condominio/, /empresa/, /monte-seu-sistema/, /privacidade/ |
@@ -58,8 +58,17 @@ Resultado: **157 de 157 itens ✅** — checklist completa.
 | ✅ | Abertura da inicial: sem cena, sem chips "Veja no seu ambiente" e sem convites para as páginas de solução | {"cena":false,"chips":0,"convites":0,"rotulosSistema":0} |
 | ✅ | Abertura da inicial não promete energia no plano (o nobreak é adicional, sob orçamento) | INTEGRADORA DE SEGURANÇA E TECNOLOGIA Câmeras em locação em Francisco Beltrão. Tecnologia que funciona. Planos a partir de R$ 49,90/mês, sem comprar os equipamentos. Câmeras com gravação local e imagens no celular. Rede, |
 | ✅ | Inicial enxuta: sem "E se…?", faixa de serviços, configurador, "Personalize" e Área do cliente; botão leva a /monte-seu-sistema/ | {"ese":false,"faixa":false,"monte":false,"cliente":false,"personalize":false,"botaoMonte":"/monte-seu-sistema/"} |
-| ✅ | "A partir de R$ 49,90/mês" visível sem rolar em 1440 px | fim do bloco em 652 de 900 px |
-| ✅ | "A partir de R$ 49,90/mês" visível sem rolar em 390 px | fim do bloco em 442 de 768 px |
+| ✅ | "A partir de R$ 49,90/mês" visível sem rolar em 1440 px | fim do bloco em 760 de 900 px |
+| ✅ | "A partir de R$ 49,90/mês" visível sem rolar em 390 px | fim do bloco em 493 de 768 px |
+| ✅ | Abertura: carregar e rolar a inicial não faz pedido a youtube.com, youtube-nocookie.com, ytimg.com, googlevideo.com, google.com nem gstatic.com (1440 px) | 0 pedido(s) a outros servidores |
+| ✅ | Abertura: carregar e rolar a inicial não faz pedido a youtube.com, youtube-nocookie.com, ytimg.com, googlevideo.com, google.com nem gstatic.com (390 px) | 0 pedido(s) a outros servidores |
+| ✅ | Abertura: tocar no play troca a cena por um iframe de www.youtube-nocookie.com/embed/wKUPPBYbi-Q (com título, autoplay e carregamento tardio), sem abrir outra aba | {"pedidosAntes":0,"pedidosDepois":["https://www.youtube-nocookie.com/embed/wKUPPBYbi-Q?autoplay=1&rel=0&pl"],"player":{"src":"https://www.youtube-nocookie.com/embed/wKUPPBYbi-Q?autoplay=1&rel=0&playsinline=1","title":"Vídeo de demonstração do fabricante: câmeras ColorVu com imagem colorida à noite","allow":"autoplay; encrypted-media; picture-in-picture","loading":"lazy","dentroDoCelular":true,"capaSumiu":true,"legenda":true,"total":1},"abas":1,"erros":[]} |
+| ✅ | Abertura sem JavaScript: o play é um link para https://www.youtube.com/watch?v=wKUPPBYbi-Q em nova aba (noopener), sem iframe e sem pedido ao Google | {"href":"https://www.youtube.com/watch?v=wKUPPBYbi-Q","alvo":"_blank","rel":"noopener","iframes":0,"texto":"Toque para ver o vídeo de demonstração do fabricante","externos":0} |
+| ✅ | Abertura: a legenda do vídeo aparece logo abaixo do celular e contém "sob orçamento" (1440 px) | 16 px abaixo do celular; "Demonstração do fabricante (Hikvision ColorVu). Imagem colorida à noit…" |
+| ✅ | Abertura: a legenda do vídeo aparece logo abaixo do celular e contém "sob orçamento" (390 px) | 16 px abaixo do celular; "Demonstração do fabricante (Hikvision ColorVu). Imagem colorida à noit…" |
+| ✅ | Abertura: a linha de confiança leva a perfis.googleMaps (nova aba, noopener), fica abaixo dos botões e não tem estrelas, nota, número nem logo; o JSON-LD não tem AggregateRating nem Review | Avaliações e endereço no Perfil da Empresa no Google; JSON-LD 4108 caracteres |
+| ✅ | Abertura: celular deitado com tela 19,5:9 e vídeo 16:9 centralizado; texto e celular lado a lado (1440 px) | {"tela":"2.167","video":"1.778","esq":840,"dir":1320} |
+| ✅ | Abertura: celular deitado com tela 19,5:9 e vídeo 16:9 centralizado; texto primeiro, celular embaixo, com 16 px de margem (390 px) | {"tela":"2.167","video":"1.778","esq":16,"dir":374} |
 
 ## Tela 2 · Planos
 
@@ -71,9 +80,15 @@ Resultado: **157 de 157 itens ✅** — checklist completa.
 | ✅ | Cada plano mostra a taxa de instalação (1 mensalidade) e nada diz que a instalação é grátis | 5/5 |
 | ✅ | Bloco "Condições do contrato" mostra prazo, multa, reajuste, propriedade e foro |  |
 | ✅ | Nenhuma condição antiga ou promessa fora do documento (50%, renovação automática, garantia contra raio) |  |
+| ✅ | Plano de 8 câmeras mostra "Gravador de 8 canais: um canal para cada câmera"; os outros planos não repetem a linha | planos com a linha: 8 |
+| ✅ | Planos no computador: o preço de cada cartão cabe na largura do cartão (sem texto passando da borda) | 0 cartão(ões) com o preço cortado |
+| ✅ | Contrato: 5 perguntas curtas com as respostas de dados.ts e um <details> "Ler todas as condições do contrato" fechado, com todos os títulos de condicoesContrato (abre ao tocar) | 5 perguntas; 11/11 condições no <details> |
 | ✅ | "Quero este plano" abre o WhatsApp da equipe com o plano, o valor e a pergunta da instalação | 5/5 |
 | ✅ | "Ver no configurador" leva à página /monte-seu-sistema/ com a quantidade de câmeras do plano | 5/5 |
 | ✅ | Abas de proposta funcionam (clique e setas do teclado) |  |
+| ✅ | O textoProposta aparece uma vez só no HTML da inicial | 1 vez(es) |
+| ✅ | "Pedir proposta": um só botão e um só texto, abaixo do painel, visíveis nas 4 abas de serviço (cada uma com a própria mensagem) e escondidos nas câmeras; o condomínio mantém os links próprios | [{"id":"redes","visivel":true,"botoes":1,"texto":1,"msg":"Quero uma proposta de redes gerenciadas "},{"id":"alarme","visivel":true,"botoes":1,"texto":1,"msg":"Quero uma proposta de alarme monitorado "},{"id":"condominio","visivel":true,"botoes":1,"texto":1,"msg":"Quero uma proposta de condomínio evoluíd"},{"id":"nobreak","visivel":true,"botoes":1,"texto":1,"msg":"Quero uma proposta de locação de nobreak"}] |
+| ✅ | "Pedir proposta" abre a Sol com a mensagem da aba escolhida e a página não sai do lugar | Quero uma proposta de alarme monitorado pelo app para o meu ambiente. → Quero uma proposta de alarme monitorado pelo app para o meu ambiente. |
 
 ## Tela 3 · Configurador (/monte-seu-sistema/)
 
@@ -88,7 +103,7 @@ Resultado: **157 de 157 itens ✅** — checklist completa.
 | ✅ | Mensagem para a Sol leva ambiente, quantidade, pontos, plano, valor e recursos | Olá! Montei meu sistema no site da SC. / Ambiente: Casa / Câmeras: 8 (entrada principal, garagem e portão, fundos / quintal, lateral esquerda, fundos / quintal  |
 | ✅ | Condomínio vai para proposta personalizada |  |
 | ✅ | ?ambiente=condominio abre o configurador no condomínio (link da aba Condomínio) | true |
-| ✅ | Link antigo /#monte leva a /monte-seu-sistema/ | http://127.0.0.1:55257/monte-seu-sistema/ |
+| ✅ | Link antigo /#monte leva a /monte-seu-sistema/ | http://127.0.0.1:62982/monte-seu-sistema/ |
 
 ## Tela 4 · Como funciona
 
@@ -154,7 +169,7 @@ Resultado: **157 de 157 itens ✅** — checklist completa.
 | ✅ | Comércio: "reduzir movimento": nenhuma animação contínua roda | 0 animações contínuas |
 | ✅ | Comércio: nada fala de maquete, 3D nem "instalação inclusa"; menu "Soluções" leva às quatro páginas |  |
 | ✅ | Comércio: dados estruturados (schema.org) da página e título com a cidade | 1 bloco(s); Câmeras de segurança para comércio / SC Soluções, Francisco Beltrão |
-| ✅ | Comércio: página leve (peso total ≤ 300 KB, sem compactação) | 161 KB em 7 arquivos |
+| ✅ | Comércio: página leve (peso total ≤ 300 KB, sem compactação) | 160 KB em 7 arquivos |
 | ✅ | Comércio: planos de 1 a 8 câmeras, gravação de aproximadamente 10 dias, imagens no celular dependem de energia e internet, premium sob orçamento |  |
 | ✅ | Comércio: botões levam aos planos (/#planos) e ao configurador (?ambiente=comercio) | {"planos":"Ver os planos de locação","config":"Montar no configurador","whats":0} |
 | ✅ | Comércio no celular: sem rolagem lateral, toques ≥ 44 px, item "Contato" no menu e sem erros | {"sobra":0,"pequenos":[],"contatoNoMenu":true,"erros":[]} |
@@ -164,7 +179,7 @@ Resultado: **157 de 157 itens ✅** — checklist completa.
 | ✅ | Empresa: "reduzir movimento": nenhuma animação contínua roda | 0 animações contínuas |
 | ✅ | Empresa: nada fala de maquete, 3D nem "instalação inclusa"; menu "Soluções" leva às quatro páginas |  |
 | ✅ | Empresa: dados estruturados (schema.org) da página e título com a cidade | 1 bloco(s); Câmeras e rede para empresas / SC Soluções, Francisco Beltrão |
-| ✅ | Empresa: página leve (peso total ≤ 300 KB, sem compactação) | 161 KB em 7 arquivos |
+| ✅ | Empresa: página leve (peso total ≤ 300 KB, sem compactação) | 160 KB em 7 arquivos |
 | ✅ | Empresa: planos de 1 a 8 câmeras, gravação de aproximadamente 10 dias, imagens no celular dependem de energia e internet, premium sob orçamento |  |
 | ✅ | Empresa: botões levam aos planos (/#planos) e ao configurador (?ambiente=empresa) | {"planos":"Ver os planos de locação","config":"Montar no configurador","whats":0} |
 | ✅ | Empresa no celular: sem rolagem lateral, toques ≥ 44 px, item "Contato" no menu e sem erros | {"sobra":0,"pequenos":[],"contatoNoMenu":true,"erros":[]} |
@@ -177,11 +192,25 @@ Resultado: **157 de 157 itens ✅** — checklist completa.
 | ✅ | Condomínio: página leve (peso total ≤ 300 KB, sem compactação) | 160 KB em 7 arquivos |
 | ✅ | Condomínio: sem preço, dias de gravação, quantidade de câmeras, prazo de contrato nem "instalação inclusa" |  |
 | ✅ | Condomínio: o botão de proposta tem o orbe da Sol, leva a #contato sem JavaScript e abre o chat da Sol | {"href":"#contato","msg":"Quero uma proposta do Condomínio Evoluído para o meu condomínio.","orbe":true,"whats":false,"config":true} |
-| ✅ | Condomínio: "Pedir proposta" abre a Sol e a página não sai do lugar | http://127.0.0.1:55257/condominio/ |
+| ✅ | Condomínio: "Pedir proposta" abre a Sol e a página não sai do lugar | http://127.0.0.1:62982/condominio/ |
 | ✅ | Condomínio no celular: sem rolagem lateral, toques ≥ 44 px, item "Contato" no menu e sem erros | {"sobra":0,"pequenos":[],"contatoNoMenu":true,"erros":[]} |
 | ✅ | Condomínio sem JavaScript: texto, blocos, contato e botões funcionam | {"h1":1,"blocos":4,"contato":true,"botoes":"#contato /monte-seu-sistema/?ambiente=condominio"} |
 | ✅ | Inicial leva às páginas de solução: aba "Condomínio" dos planos, menu "Soluções" e rodapé; o configurador também (sem falar em 3D) | {"planos":"Conhecer o Condomínio Evoluído","menu":true,"rodape":true,"configurador":"Conhecer o Condomínio Evoluído"} |
 | ✅ | Pacote gerado (dist): sem Three.js, sem arquivo de maquete e sem canvas nas páginas de solução | três: 0; maquete: 0; canvas: 0 |
+
+## Layout em 375 px
+
+| | Item | Detalhe |
+|---|---|---|
+| ✅ | Página inicial em 375 px: scrollWidth ≤ 375, margem lateral de 16 px, celular dentro da tela e nenhum botão com texto cortado | {"sobra":0,"cortados":[],"esquerda":16,"celularDireita":359,"alemDaBorda":[]} |
+| ✅ | /monte-seu-sistema/ em 375 px: scrollWidth ≤ 375 e nenhum botão com texto cortado | {"sobra":0,"cortados":[],"esquerda":null,"celularDireita":null,"alemDaBorda":[]} |
+| ✅ | /calculadoras/ em 375 px: scrollWidth ≤ 375 e nenhum botão com texto cortado | {"sobra":0,"cortados":[],"esquerda":null,"celularDireita":null,"alemDaBorda":[]} |
+| ✅ | /privacidade/ em 375 px: scrollWidth ≤ 375 e nenhum botão com texto cortado | {"sobra":0,"cortados":[],"esquerda":null,"celularDireita":null,"alemDaBorda":[]} |
+| ✅ | /casa/ em 375 px: scrollWidth ≤ 375 e nenhum botão com texto cortado | {"sobra":0,"cortados":[],"esquerda":null,"celularDireita":null,"alemDaBorda":[]} |
+| ✅ | /comercio/ em 375 px: scrollWidth ≤ 375 e nenhum botão com texto cortado | {"sobra":0,"cortados":[],"esquerda":null,"celularDireita":null,"alemDaBorda":[]} |
+| ✅ | /empresa/ em 375 px: scrollWidth ≤ 375 e nenhum botão com texto cortado | {"sobra":0,"cortados":[],"esquerda":null,"celularDireita":null,"alemDaBorda":[]} |
+| ✅ | /condominio/ em 375 px: scrollWidth ≤ 375 e nenhum botão com texto cortado | {"sobra":0,"cortados":[],"esquerda":null,"celularDireita":null,"alemDaBorda":[]} |
+| ✅ | Página 404 em 375 px: scrollWidth ≤ 375 e nenhum botão com texto cortado | {"sobra":0,"cortados":[],"esquerda":null,"celularDireita":null,"alemDaBorda":[]} |
 
 ## Acessibilidade (axe)
 
@@ -210,7 +239,7 @@ Resultado: **157 de 157 itens ✅** — checklist completa.
 | ✅ | Calculadoras: energia com os valores iniciais dá 70 W, fonte de 10 A e bateria de 65 Ah | Potência total70 WCorrente a 12 V5,83 A (7 A com folga)Fonte indicada10 ABateria para 4 h54,9 Ah necessários → 65 Ah |
 | ✅ | Calculadoras: rede com os valores iniciais dá 57,6 Mbps e enlace de 100 Mbps | Câmeras somadas48 MbpsCom a folga de protocolo57,6 MbpsEnlace até o gravador100 Mbps (usa até 70 %)Upload para ver de fora1,2 Mbps |
 | ✅ | Calculadoras: manifesto, rodapé, orbe da Sol, um h1, WhatsApp só em "Fale com a SC" e fora do menu do topo | {"manifesto":"/calculadoras/manifest.webmanifest","whatsFora":0,"h1":1,"orbe":true,"rodape":true,"menuTopo":false} |
-| ✅ | Calculadoras: service worker só em /calculadoras/ e a página abre e calcula sem internet | http://127.0.0.1:55257/calculadoras/; Calculadoras para instalação de câmeras / SC Soluções, Francisco Beltrão |
+| ✅ | Calculadoras: service worker só em /calculadoras/ e a página abre e calcula sem internet | http://127.0.0.1:62982/calculadoras/; Calculadoras para instalação de câmeras / SC Soluções, Francisco Beltrão |
 | ✅ | Calculadoras: o service worker é versionado, limpa caches velhos e usa rede primeiro para a página |  |
 | ✅ | Calculadoras: zero erros no console |  |
 | ✅ | Calculadoras no celular: sem rolagem lateral e campos/botões ≥ 44 px | sobra 0; pequenos 0 |

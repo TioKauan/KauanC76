@@ -1,4 +1,5 @@
 import { iniciarMoldura } from './moldura';
+import { iniciarAbertura } from './abertura';
 import { iniciarBarra } from './barra';
 import { iniciarPlanos } from './planos';
 import { iniciarConfigurador } from './configurador';
@@ -10,6 +11,7 @@ import { iniciarSol } from './sol';
 if (document.querySelector('.menu-botao')) {
   // A barra fixa começa antes para receber o primeiro resumo do configurador.
   iniciarMoldura();
+  iniciarAbertura();
   iniciarBarra();
   iniciarPlanos();
   iniciarConfigurador();

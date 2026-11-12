@@ -1,7 +1,7 @@
 import { reduzirMovimento } from './movimento';
 import { exigir, todos } from './dom';
 
-/** Menu do celular, progresso de leitura, revelar ao rolar, fio condutor e link ativo. */
+/** Menu do celular, progresso de leitura, revelar ao rolar e link ativo. */
 export function iniciarMoldura(): void {
   const raiz = document.documentElement;
   if (!reduzirMovimento()) raiz.dataset.movimento = '';
@@ -44,18 +44,12 @@ export function iniciarMoldura(): void {
   }, { threshold: 0, rootMargin: '0px 0px -40px 0px' });
   todos('[data-revelar]').forEach((el) => revelar.observe(el));
 
-  // Progresso de leitura + fio condutor
-  const fios = todos('.fio');
+  // Progresso de leitura
   let quadro = 0;
   const atualizar = () => {
     quadro = 0;
     const faixa = raiz.scrollHeight - innerHeight;
     raiz.style.setProperty('--leitura', faixa > 0 ? Math.min(1, scrollY / faixa).toFixed(4) : '0');
-    for (const fio of fios) {
-      const r = fio.getBoundingClientRect();
-      const p = Math.min(1, Math.max(0, (innerHeight * 0.92 - r.top) / (r.height + innerHeight * 0.25)));
-      fio.style.setProperty('--fio', reduzirMovimento() ? '1' : p.toFixed(3));
-    }
   };
   const agendar = () => { if (!quadro) quadro = requestAnimationFrame(atualizar); };
   addEventListener('scroll', agendar, { passive: true });

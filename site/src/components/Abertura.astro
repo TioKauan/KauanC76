@@ -1,40 +1,74 @@
 ---
 /**
- * Tela 1: abertura da inicial, em uma coluna: título, texto, os dois botões e a chamada de preço.
+ * Tela 1: abertura da inicial. No computador, o texto (título, frase, botões, preço e linha de confiança)
+ * fica ao lado de um celular deitado, desenhado em CSS, com o vídeo do fabricante; no celular, o texto vem
+ * primeiro e o celular embaixo. O vídeo só entra na página no toque (src/scripts/abertura.ts): antes disso
+ * a tela mostra uma cena desenhada em CSS e a página não faz nenhum pedido ao YouTube nem ao Google.
+ * Sem JavaScript, o botão de play é um link para o vídeo no YouTube, em nova aba.
  * Desde 17/10/2026 a inicial é enxuta (abertura, planos, como funciona, dúvidas e contato).
  */
 import Icone from './Icone.astro';
-import { formatarPreco, menorPreco, mostrarPrecos, rotuloTaxa } from '../lib/dados';
+import { aberturaVideo, confiancaGoogle, formatarPreco, menorPreco, mostrarPrecos, perfis, rotuloTaxa } from '../lib/dados';
 
 const precoMenor = `R$ ${formatarPreco(menorPreco)}`;
 ---
 
 <section class="abertura" id="inicio" aria-labelledby="abertura-titulo">
-  <div class="wrap">
-   <div class="abertura-texto">
-    <p class="sobretitulo">Integradora de segurança e tecnologia</p>
-    <h1 id="abertura-titulo">Câmeras em locação em Francisco Beltrão. <span class="destaque">Tecnologia que funciona.</span></h1>
-    <p class="abertura-lead">
-      {mostrarPrecos ? `Planos a partir de ${precoMenor}/mês, sem comprar os equipamentos. ` : 'Sem comprar os equipamentos. '}Câmeras com gravação local e imagens no celular. Rede, acesso e alarme em projeto personalizado.
-    </p>
-    <div class="abertura-acoes">
-      <a class="btn btn-primario btn-g" href="#planos">
-        <span class="so-grande">Ver planos de locação</span>
-        <span class="so-celular">{mostrarPrecos ? `Ver planos a partir de ${precoMenor}` : 'Ver planos de locação'}</span>
-        <Icone nome="arrow-right" tamanho={18} traco={2} />
+  <div class="wrap abertura-grade">
+    <div class="abertura-texto">
+      <p class="sobretitulo">Integradora de segurança e tecnologia</p>
+      <h1 id="abertura-titulo">Câmeras em locação em Francisco Beltrão. <span class="destaque">Tecnologia que funciona.</span></h1>
+      <p class="abertura-lead">
+        {mostrarPrecos ? `Planos a partir de ${precoMenor}/mês, sem comprar os equipamentos. ` : 'Sem comprar os equipamentos. '}Câmeras com gravação local e imagens no celular. Rede, acesso e alarme em projeto personalizado.
+      </p>
+      <div class="abertura-acoes">
+        <a class="btn btn-primario btn-g" href="#planos">
+          <span class="so-grande">Ver planos de locação</span>
+          <span class="so-celular">{mostrarPrecos ? `Ver planos a partir de ${precoMenor}` : 'Ver planos de locação'}</span>
+          <Icone nome="arrow-right" tamanho={18} traco={2} />
+        </a>
+        <a class="btn btn-contorno btn-g" href="/monte-seu-sistema/"><Icone nome="mouse-pointer-click" tamanho={18} /> Monte seu sistema</a>
+      </div>
+      <a class="preco-chamada" href="#planos">
+        <Icone nome="cctv" tamanho={30} traco={1.4} />
+        <span>
+          <strong>
+            {mostrarPrecos ? <>Locação de câmeras a partir de <em>{precoMenor}</em>/mês</> : 'Planos de locação de câmeras'}
+          </strong>
+          <small>Instalação no valor de {rotuloTaxa} · mensalidades a partir da ativação</small>
+        </span>
       </a>
-      <a class="btn btn-contorno btn-g" href="/monte-seu-sistema/"><Icone nome="mouse-pointer-click" tamanho={18} /> Monte seu sistema</a>
+      <p class="abertura-confianca">
+        <a href={perfis.googleMaps} target="_blank" rel="noopener" data-confianca-google>
+          <Icone nome="map-pin" tamanho={18} />
+          {confiancaGoogle}
+        </a>
+      </p>
     </div>
-    <a class="preco-chamada" href="#planos">
-      <Icone nome="cctv" tamanho={30} traco={1.4} />
-      <span>
-        <strong>
-          {mostrarPrecos ? <>Locação de câmeras a partir de <em>{precoMenor}</em>/mês</> : 'Planos de locação de câmeras'}
-        </strong>
-        <small>Instalação no valor de {rotuloTaxa} · mensalidades a partir da ativação</small>
-      </span>
-    </a>
-   </div>
+
+    <div class="abertura-video">
+      <div class="celular" data-celular>
+        <div class="celular-tela">
+          <span class="celular-camera" aria-hidden="true"></span>
+          <div class="video-quadro" data-video-quadro>
+            <a
+              class="video-capa"
+              href={aberturaVideo.linkYoutube}
+              target="_blank"
+              rel="noopener"
+              data-video-abrir
+              data-video-src={aberturaVideo.embed}
+              data-video-titulo={aberturaVideo.titulo}
+            >
+              <span class="video-play" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M6 3.5v17a1 1 0 0 0 1.5.86l14-8.5a1 1 0 0 0 0-1.72l-14-8.5A1 1 0 0 0 6 3.5Z" /></svg>
+              </span>
+              <span class="video-toque">{aberturaVideo.rotuloToque}<span class="sr">{aberturaVideo.complementoAcessivel}</span></span>
+            </a>
+          </div>
+        </div>
+      </div>
+      <p class="video-legenda" data-video-legenda>{aberturaVideo.legenda}</p>
+    </div>
   </div>
 </section>
-<div class="fio" aria-hidden="true"></div>
