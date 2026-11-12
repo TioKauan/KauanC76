@@ -54,7 +54,7 @@ solução, não a mais simples de entender; nas conversas, explique o porquê da
 - **Páginas de solução** (`/casa/`, `/comercio/`, `/empresa/`, `/condominio/`): páginas leves de texto, sem
   canvas, todas pelo componente `src/components/PaginaSolucao.astro` (título, texto de apoio, destaques, de 2
   a 4 blocos e botões). Textos em `dados.ts`: `paginasAmbiente` (casa, comércio, empresa: planos de 1 a 8
-  câmeras, botões para `/#planos` e para `/monte-seu-sistema/?ambiente=`) e `paginaCondominio` (nada de
+  câmeras, botões para `/#planos` e para o configurador com `?ambiente=`) e `paginaCondominio` (nada de
   preço, dias de gravação ou quantidade de câmeras: é proposta personalizada, e o botão abre a Sol). O
   slot `ferramenta` da página (seção `#ferramenta`) é o ponto de entrada para uma ferramenta própria: em
   `/casa/` e `/comercio/` ele leva "Toque onde quer câmera" (`ToqueCamera.astro`; pontos em
