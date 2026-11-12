@@ -1,6 +1,6 @@
 # Relatório de validação do site
 
-Gerado por `npm run validar` em 12/11/2026, 09:42:37.
+Gerado por `npm run validar` em 12/11/2026, 11:19:06.
 Resultado: **201 de 201 itens ✅** — checklist completa.
 
 ## Geral
@@ -103,7 +103,7 @@ Resultado: **201 de 201 itens ✅** — checklist completa.
 | ✅ | Mensagem para a Sol leva ambiente, quantidade, pontos, plano, valor e recursos | Olá! Montei meu sistema no site da SC. / Ambiente: Casa / Câmeras: 8 (entrada principal, garagem e portão, fundos / quintal, lateral esquerda, fundos / quintal  |
 | ✅ | Condomínio vai para proposta personalizada |  |
 | ✅ | ?ambiente=condominio abre o configurador no condomínio (link da aba Condomínio) | true |
-| ✅ | Link antigo /#monte leva a /monte-seu-sistema/ | http://127.0.0.1:58266/monte-seu-sistema/ |
+| ✅ | Link antigo /#monte leva a /monte-seu-sistema/ | http://127.0.0.1:52964/monte-seu-sistema/ |
 
 ## Tela 4 · Como funciona
 
@@ -192,7 +192,7 @@ Resultado: **201 de 201 itens ✅** — checklist completa.
 | ✅ | Condomínio: página leve (peso total ≤ 300 KB, sem compactação) | 161 KB em 8 arquivos |
 | ✅ | Condomínio: sem preço, dias de gravação, quantidade de câmeras, prazo de contrato nem "instalação inclusa" |  |
 | ✅ | Condomínio: o botão de proposta tem o orbe da Sol, leva a #contato sem JavaScript e abre o chat da Sol | {"href":"#contato","msg":"Quero uma proposta do Condomínio Evoluído para o meu condomínio.","orbe":true,"whats":false,"config":true} |
-| ✅ | Condomínio: "Pedir proposta" abre a Sol e a página não sai do lugar | http://127.0.0.1:58266/condominio/ |
+| ✅ | Condomínio: "Pedir proposta" abre a Sol e a página não sai do lugar | http://127.0.0.1:52964/condominio/ |
 | ✅ | Condomínio no celular: sem rolagem lateral, toques ≥ 44 px, item "Contato" no menu e sem erros | {"sobra":0,"pequenos":[],"contatoNoMenu":true,"erros":[]} |
 | ✅ | Condomínio sem JavaScript: texto, blocos, contato e botões funcionam | {"h1":1,"blocos":4,"contato":true,"botoes":"#contato /monte-seu-sistema/?ambiente=condominio"} |
 | ✅ | Inicial leva às páginas de solução: aba "Condomínio" dos planos, menu "Soluções" e rodapé; o configurador também (sem falar em 3D) | {"planos":"Conhecer o Condomínio Evoluído","menu":true,"rodape":true,"configurador":"Conhecer o Condomínio Evoluído"} |
@@ -264,7 +264,7 @@ Resultado: **201 de 201 itens ✅** — checklist completa.
 | ✅ | Calculadoras: energia com os valores iniciais dá 70 W, fonte de 10 A e bateria de 65 Ah | Potência total70 WCorrente a 12 V5,83 A (7 A com folga)Fonte indicada10 ABateria para 4 h54,9 Ah necessários → 65 Ah |
 | ✅ | Calculadoras: rede com os valores iniciais dá 57,6 Mbps e enlace de 100 Mbps | Câmeras somadas48 MbpsCom a folga de protocolo57,6 MbpsEnlace até o gravador100 Mbps (usa até 70 %)Upload para ver de fora1,2 Mbps |
 | ✅ | Calculadoras: manifesto, rodapé, orbe da Sol, um h1, WhatsApp só em "Fale com a SC" e fora do menu do topo | {"manifesto":"/calculadoras/manifest.webmanifest","whatsFora":0,"h1":1,"orbe":true,"rodape":true,"menuTopo":false} |
-| ✅ | Calculadoras: service worker só em /calculadoras/ e a página abre e calcula sem internet | http://127.0.0.1:58266/calculadoras/; Calculadoras para instalação de câmeras / SC Soluções, Francisco Beltrão |
+| ✅ | Calculadoras: service worker só em /calculadoras/ e a página abre e calcula sem internet | http://127.0.0.1:52964/calculadoras/; Calculadoras para instalação de câmeras / SC Soluções, Francisco Beltrão |
 | ✅ | Calculadoras: o service worker é versionado, limpa caches velhos e usa rede primeiro para a página |  |
 | ✅ | Calculadoras: zero erros no console |  |
 | ✅ | Calculadoras no celular: sem rolagem lateral e campos/botões ≥ 44 px | sobra 0; pequenos 0 |
