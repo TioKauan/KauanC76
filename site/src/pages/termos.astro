@@ -1,0 +1,150 @@
+---
+/**
+ * Termos de uso (21/11/2026). Criados para o cadastro dos apps das redes sociais (TikTok pede
+ * Termos e Privacidade). Mesmo layout da página de privacidade. Descreve o que o site faz de
+ * fato: informações e preços são referência, orçamento só por proposta; calculadoras e a Sol
+ * dão estimativas; conteúdo e marca da SC; links de terceiros; publicações da SC nas redes.
+ */
+import Base from '../layouts/Base.astro';
+import Logo from '../components/Logo.astro';
+import { contato, empresa } from '../lib/dados';
+
+const atualizada = '21 de novembro de 2026';
+---
+
+<Base
+  titulo="Termos de uso | SC Soluções"
+  descricao="Regras de uso do site da SC Soluções: informações e preços de referência, orçamentos, calculadoras, assistente virtual, conteúdo, links de terceiros e nossas publicações nas redes sociais."
+  tituloSocial="Termos de uso | SC Soluções"
+  descricaoSocial="Regras de uso do site e dos canais da SC Soluções."
+>
+  <header class="priv-topo">
+    <div class="wrap">
+      <a href="/" class="logo-link" aria-label="SC Soluções, página inicial"><Logo /></a>
+    </div>
+  </header>
+
+  <main id="conteudo" class="wrap priv">
+    <h1>Termos de uso</h1>
+    <p class="priv-data">Atualizados em {atualizada}.</p>
+
+    <p>
+      Estes termos valem para quem usa o site <strong>somoscella.online</strong> e os canais digitais da{' '}
+      <strong>{empresa.nome} em {empresa.descricao}</strong> (CNPJ {empresa.cnpj}, {empresa.cidade}). Ao usar
+      o site, você concorda com eles. O tratamento de dados pessoais está na{' '}
+      <a href="/privacidade/">Política de privacidade</a>.
+    </p>
+
+    <h2>1. O que o site oferece</h2>
+    <p>
+      O site apresenta os serviços da {empresa.nome} em segurança eletrônica e tecnologia (câmeras, alarmes,
+      controle de acesso, redes e energia), tira dúvidas e ajuda você a pedir um orçamento. O uso do site é
+      gratuito.
+    </p>
+
+    <h2>2. Informações, preços e orçamentos</h2>
+    <p>
+      As informações, fotos, faixas de preço e exemplos de kits são de referência e podem mudar sem aviso.
+      O valor e as condições que valem são os da proposta enviada pela {empresa.nome} depois de entender o
+      local e a necessidade, e só passam a valer quando você aceita a proposta ou assina o contrato.
+    </p>
+
+    <h2>3. Calculadoras e assistente virtual</h2>
+    <p>
+      As calculadoras e a Sol, assistente virtual com inteligência artificial, dão estimativas e orientações
+      gerais. Elas podem errar e não substituem a visita técnica nem o projeto feito pela nossa equipe. Não
+      use essas respostas como única base para decisões de segurança.
+    </p>
+
+    <h2>4. Uso correto</h2>
+    <p>Ao usar o site e os nossos canais, você se compromete a não:</p>
+    <ul>
+      <li>enviar informações falsas ou de outra pessoa sem autorização;</li>
+      <li>tentar invadir, sobrecarregar ou atrapalhar o funcionamento do site ou da assistente virtual;</li>
+      <li>usar o conteúdo do site para fins ilegais ou para se passar pela {empresa.nome}.</li>
+    </ul>
+
+    <h2>5. Conteúdo e marca</h2>
+    <p>
+      Textos, imagens, vídeos e a marca da {empresa.nome} pertencem à empresa ou são usados com permissão. Você
+      pode compartilhar links e publicações nossas. Para copiar ou reutilizar o conteúdo de outra forma, peça
+      autorização antes. Marcas de fabricantes citadas pertencem aos seus donos.
+    </p>
+
+    <h2>6. Redes sociais e ferramentas de terceiros</h2>
+    <p>
+      A {empresa.nome} publica o próprio conteúdo no Instagram, Facebook, LinkedIn, TikTok e YouTube, às vezes
+      por ferramentas de agendamento que se conectam a essas redes com a nossa autorização. Essas ferramentas
+      são usadas só para as contas da própria empresa. O uso de cada rede segue também os termos dela.
+    </p>
+    <p>
+      O site tem links para sites de terceiros (como Google, YouTube e WhatsApp). Não controlamos esses sites e
+      não respondemos pelo conteúdo nem pelas regras deles.
+    </p>
+
+    <h2>7. Responsabilidade</h2>
+    <p>
+      Fazemos o possível para manter o site no ar e as informações corretas, mas ele pode ficar fora do ar ou
+      ter erros. Isso não limita os seus direitos de consumidor nem as garantias dos serviços contratados, que
+      seguem o contrato e o Código de Defesa do Consumidor.
+    </p>
+
+    <h2>8. Mudanças, lei e contato</h2>
+    <p>
+      Quando estes termos mudarem, a data no topo será atualizada. A versão válida é sempre a publicada nesta
+      página. Valem as leis do Brasil. Dúvidas: <a href={`mailto:${contato.email}`}>{contato.email}</a> ou
+      WhatsApp {contato.whatsappExibicao}.
+    </p>
+
+    <p class="priv-voltar"><a href="/">← Voltar para o site</a></p>
+  </main>
+
+  <footer class="rodape">
+    <p class="wrap rodape-empresa">
+      {empresa.nome} em {empresa.descricao} · CNPJ {empresa.cnpj} · {empresa.cidade} ·
+      <a href={`mailto:${contato.email}`}>{contato.email}</a>
+    </p>
+  </footer>
+</Base>
+
+<style>
+  .priv-topo {
+    padding: 1.25rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .priv {
+    max-width: 46rem;
+    padding-top: 2.5rem;
+    padding-bottom: 3rem;
+    line-height: 1.65;
+  }
+  .priv h1 {
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    margin: 0 0 0.25rem;
+  }
+  .priv h2 {
+    font-size: 1.2rem;
+    margin: 2rem 0 0.5rem;
+  }
+  .priv p,
+  .priv li {
+    color: rgba(255, 255, 255, 0.82);
+  }
+  .priv ul {
+    padding-left: 1.2rem;
+  }
+  .priv li {
+    margin: 0.3rem 0;
+  }
+  .priv a {
+    color: inherit;
+    text-decoration: underline;
+  }
+  .priv-data {
+    opacity: 0.7;
+    margin-bottom: 1.5rem;
+  }
+  .priv-voltar {
+    margin-top: 2.5rem;
+  }
+</style>
