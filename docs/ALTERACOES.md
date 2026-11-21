@@ -5,6 +5,20 @@ Cada publicação tem uma tag `publicado-<data>` no Git, apontando para o commit
 
 ---
 
+## 21/11/2026, 14:18 (Brasília) — Página de Termos de uso
+
+Tag `publicado-2026-11-21-171820` (a data da tag é UTC, como a do script).
+
+### O que mudou para quem visita o site
+
+- Nova página `/termos/` (Termos de uso), no mesmo visual da Política de privacidade.
+- O rodapé ganhou o link "Termos de uso", ao lado de "Política de privacidade".
+- Arquivo de verificação do TikTok for Developers na raiz do site (não aparece na navegação).
+
+Validador: 201/201. Para desfazer: `bash /tmp/publicar-no-vps.sh --voltar 20261121-171820` no VPS.
+
+---
+
 ## 12/11/2026, 12:55 (Brasília) — Visual novo, vídeo na abertura e "Toque onde quer câmera"
 
 Tag `publicado-2026-11-12-155539` (a data da tag é UTC, como a do script).
